@@ -1,0 +1,25 @@
+## Interface: 16001
+## Title: Declarus
+## Notes: Lightweight declarative UI library for World of Warcraft
+## Author: Simon Zwicker
+## Version: 0.1.0
+
+Core\Init.lua
+UI\Init.lua
+
+UI\Types\Alignment.lua
+UI\Types\Size.lua
+UI\Types\Edge.lua
+UI\Types\Color.lua
+
+Core\View.lua
+
+UI\Layout\Layout.lua
+UI\Layout\Stack.lua
+UI\Layout\HStack.lua
+UI\Layout\VStack.lua
+
+UI\Components\Text.lua
+UI\Components\Button.lua
+
+UI\Renderer.lua
