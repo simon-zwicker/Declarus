@@ -18,7 +18,6 @@ local UI = _G.Declarus.UI
 -- Description: Defines test cases for declaritive views
 -- ============================================================================
 
----Tests view initialization
 local function TestViewCreation()
     local view = UI._View.New("Test")
 
@@ -27,7 +26,6 @@ local function TestViewCreation()
     assert(view.children ~= nil)
 end
 
----Tests the size modifier
 local function TestSize()
     local view = UI._View.New("Test")
         :size(320, 520)
@@ -36,7 +34,6 @@ local function TestSize()
     assert(view.properties.height == 520)
 end
 
----Tests additive padding modifiers
 local function TestPadding()
     local view = UI._View.New("Test")
         :padding(16)
@@ -52,7 +49,6 @@ local function TestPadding()
     assert(padding.right == 40)
 end
 
----Tests the background color modifier.
 local function TestBackgroundColor()
     local color = UI.Color.RGBA(20, 20, 20, 0.9)
 
@@ -62,7 +58,6 @@ local function TestBackgroundColor()
     assert(view.properties.backgroundColor == color)
 end
 
----Tests the foreground color modifier.
 local function TestForegroundColor()
     local color = UI.Color.RGB(255, 200, 50)
 
@@ -72,7 +67,6 @@ local function TestForegroundColor()
     assert(view.properties.foregroundColor == color)
 end
 
----Tests the opacity modifier.
 local function TestOpacity()
     local view = UI._View.New("Test")
         :opacity(0.5)
@@ -84,7 +78,6 @@ local function TestOpacity()
     assert(view.properties.opacity == 0.8)
 end
 
----Tests the visibility modifier.
 local function TestVisibility()
     local view = UI._View.New("Test")
         :visible(false)

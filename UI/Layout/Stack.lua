@@ -69,11 +69,31 @@ function Stack:spacing(value)
 end
 
 ---Sets the cross-axis alignment of stack children.
----@param self DeclarusStack
----@param value DeclarusAlignment
----@return DeclarusStack
+---@generic T: DeclarusStack
+---@param self T
+---@param value string
+---@return T
 function Stack:alignment(value)
+    local alignment = UI.Alignment
+
+    local valid
+
+    if self.kind == "HStack" then
+        valid = value == alignment.Top
+            or value == alignment.Center
+            or value == alignment.Bottom
+            or value == alignment.Stretch
+    else
+        valid = value == alignment.Left
+            or value == alignment.Center
+            or value == alignment.Right
+            or value == alignment.Stretch
+    end
+
+    assert(valid, "Invalid alignment for " .. tostring(self.kind))
+
     self.properties.alignment = value
+
     return self
 end
 

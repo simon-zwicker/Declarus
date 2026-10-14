@@ -11,6 +11,8 @@
 -- Description: Loads the required modules
 -- ============================================================================
 
+---@diagnostic disable: undefined-global
+
 dofile("Core/Init.lua")
 dofile("UI/Init.lua")
 
@@ -19,7 +21,7 @@ dofile("UI/Types/Size.lua")
 dofile("UI/Types/Edge.lua")
 dofile("UI/Types/Color.lua")
 
-dofile("Core/View.lua")
+dofile("UI/Core/View.lua")
 
 dofile("UI/Engine/Measure.lua")
 dofile("UI/Engine/Arrange.lua")

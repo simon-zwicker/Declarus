@@ -11,9 +11,11 @@
 -- ============================================================================
 
 ---@class DeclarusAlignmentValues
----@field Start DeclarusAlignment
+---@field Top DeclarusAlignment
+---@field Bottom DeclarusAlignment
+---@field Left DeclarusAlignment
+---@field Right DeclarusAlignment
 ---@field Center DeclarusAlignment
----@field End DeclarusAlignment
 ---@field Stretch DeclarusAlignment
 
 ---@class DeclarusSizeValues
@@ -36,10 +38,12 @@
 ---@field Color DeclarusColorFactory
 ---@field HStack fun(children: DeclarusView[]): DeclarusStack
 ---@field VStack fun(children: DeclarusView[]): DeclarusStack
+---@field View fun(): DeclarusView
 ---@field _View DeclarusViewClass
 ---@field _Stack DeclarusStackClass
 ---@field _Measure DeclarusMeasureEngine
 ---@field _Arrange DeclarusArrangeEngine
+---@field _Render DeclarusRenderEngine
 
 -- ============================================================================
 -- Title:       Locals

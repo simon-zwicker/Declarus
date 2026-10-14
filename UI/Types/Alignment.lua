@@ -20,9 +20,16 @@ local UI = _G.Declarus.UI
 
 ---@enum DeclarusAlignment
 local Alignment = {
-    Start = "STAR",
+    -- VStack
+    Left = "LEFT",
+    Right = "RIGHT",
+
+    -- HStack
+    Top = "TOP",
+    Bottom = "BOTTOM",
+    
+    -- All Stacks
     Center = "CENTER",
-    End = "END",
     Stretch = "STRETCH",
 }
 

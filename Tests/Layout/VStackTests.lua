@@ -39,14 +39,14 @@ local function TestVStackLayoutModifiers()
     local stack = UI.VStack({})
         :size(320, 200)
         :spacing(12)
-        :alignment(UI.Alignment.Start)
+        :alignment(UI.Alignment.Left)
         :padding(20)
 
     assert(stack.kind == "VStack")
     assert(stack.properties.width == 320)
     assert(stack.properties.height == 200)
     assert(stack.properties.spacing == 12)
-    assert(stack.properties.alignment == UI.Alignment.Start)
+    assert(stack.properties.alignment == UI.Alignment.Left)
     assert(stack.properties.padding.left == 20)
 end
 

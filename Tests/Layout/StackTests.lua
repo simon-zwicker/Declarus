@@ -66,13 +66,13 @@ local function TestModifierChaining()
     local stack = UI._Stack.New("VStack")
         :spacing(8)
         :padding(16)
-        :alignment(UI.Alignment.Start)
+        :alignment(UI.Alignment.Left)
         :width(UI.Size.Fill)
         :spacing(12)
 
     assert(stack.properties.spacing == 12)
     assert(stack.properties.padding.left == 16)
-    assert(stack.properties.alignment == UI.Alignment.Start)
+    assert(stack.properties.alignment == UI.Alignment.Left)
     assert(stack.properties.width == UI.Size.Fill)
 end
 

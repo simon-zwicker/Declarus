@@ -11,6 +11,8 @@
 -- Description: Defines terminal colors and test statistics.
 -- ============================================================================
 
+---@diagnostic disable: undefined-global
+
 local RESET = "\27[0m"
 local GREEN = "\27[32m"
 local RED = "\27[31m"

@@ -12,9 +12,13 @@ UI\Types\Size.lua
 UI\Types\Edge.lua
 UI\Types\Color.lua
 
-Core\View.lua
+UI\Core\View.lua
+
+UI\Components\View.lua
 
 UI\Engine\Measure.lua
+UI\Engine\Arrange.lua
+UI\Engine\Render.lua
 
 UI\Layout\Stack.lua
 UI\Layout\HStack.lua
@@ -22,5 +26,3 @@ UI\Layout\VStack.lua
 
 UI\Components\Text.lua
 UI\Components\Button.lua
-
-UI\Renderer.lua
