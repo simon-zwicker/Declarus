@@ -21,6 +21,8 @@ dofile("UI/Types/Color.lua")
 
 dofile("Core/View.lua")
 
+dofile("UI/Engine/Measure.lua")
+
 dofile("UI/Layout/Stack.lua")
 dofile("UI/Layout/HStack.lua")
 dofile("UI/Layout/VStack.lua")
@@ -32,6 +34,8 @@ dofile("UI/Layout/VStack.lua")
 
 dofile("Tests/Core/ViewTests.lua")
 dofile("Tests/Core/ColorTests.lua")
+
+dofile("Tests/Engine/MeasureTests.lua")
 
 dofile("Tests/Layout/HStackTests.lua")
 dofile("Tests/Layout/VStackTests.lua")

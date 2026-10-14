@@ -33,6 +33,22 @@ local function TestHStackCreation()
     assert(stack.children[2] == second)
 end
 
+---Tests stack-specific layout modifiers
+local function TestHStackLayoutModifiers()
+    local stack = UI.HStack({})
+        :size(320, 100)
+        :spacing(8)
+        :alignment(UI.Alignment.Center)
+        :padding(16)
+
+    assert(stack.kind == "HStack")
+    assert(stack.properties.width == 320)
+    assert(stack.properties.height == 100)
+    assert(stack.properties.spacing == 8)
+    assert(stack.properties.alignment == UI.Alignment.Center)
+    assert(stack.properties.padding.top == 16)
+end
+
 ---Tests inherited view modifiers.
 local function TestHStackModifiers()
     local stack = UI.HStack({})
@@ -119,6 +135,7 @@ end
 -- ============================================================================
 
 TestHStackCreation()
+TestHStackLayoutModifiers()
 TestHStackModifiers()
 TestHStackChildrenModifiers()
 TestNestedStacks()

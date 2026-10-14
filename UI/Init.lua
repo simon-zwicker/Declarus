@@ -34,10 +34,11 @@
 ---@field Size DeclarusSizeValues
 ---@field Edge DeclarusEdgeValues
 ---@field Color DeclarusColorFactory
----@field HStack fun(children: DeclarusView[]): DeclarusView
----@field VStack fun(children: DeclarusView[]): DeclarusView
+---@field HStack fun(children: DeclarusView[]): DeclarusStack
+---@field VStack fun(children: DeclarusView[]): DeclarusStack
 ---@field _View DeclarusViewClass
 ---@field _Stack DeclarusStackClass
+---@field _Measure DeclarusMeasureEngine
 
 -- ============================================================================
 -- Title:       Locals

@@ -34,6 +34,22 @@ local function TestVStackCreation()
     assert(stack.children[2] == second)
 end
 
+---Tests stack-specific layout modifiers.
+local function TestVStackLayoutModifiers()
+    local stack = UI.VStack({})
+        :size(320, 200)
+        :spacing(12)
+        :alignment(UI.Alignment.Start)
+        :padding(20)
+
+    assert(stack.kind == "VStack")
+    assert(stack.properties.width == 320)
+    assert(stack.properties.height == 200)
+    assert(stack.properties.spacing == 12)
+    assert(stack.properties.alignment == UI.Alignment.Start)
+    assert(stack.properties.padding.left == 20)
+end
+
 ---Tests nested horizontal and vertical stacks.
 local function TestNestedStacks()
     local view = UI.VStack({
@@ -64,6 +80,7 @@ end
 -- ============================================================================
 
 TestVStackCreation()
+TestVStackLayoutModifiers()
 TestNestedStacks()
 
 print("Declarus VStackTests: \27[32m✓ passed\27[0m")

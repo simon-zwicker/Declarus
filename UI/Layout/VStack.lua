@@ -20,9 +20,9 @@ local UI = _G.Declarus.UI
 
 ---Creates a vertical stack containing the specified children.
 ---@param children DeclarusView[]
----@return DeclarusView
+---@return DeclarusStack
 local function VStack(children)
-    return UI._View.New("VStack", children)
+    return UI._Stack.New("VStack", children)
 end
 
 -- ============================================================================
