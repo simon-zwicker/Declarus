@@ -23,8 +23,12 @@ dofile("UI/Types/Color.lua")
 
 dofile("UI/Core/View.lua")
 
+dofile("UI/Components/View.lua")
+
 dofile("UI/Engine/Measure.lua")
 dofile("UI/Engine/Arrange.lua")
+dofile("Tests/Mocks/WoW.lua")
+dofile("UI/Engine/Render.lua")
 
 dofile("UI/Layout/Stack.lua")
 dofile("UI/Layout/HStack.lua")
@@ -42,6 +46,7 @@ TestRunner.RunSuite("Core/ColorTests")
 
 TestRunner.RunSuite("Engine/MeasureTests")
 TestRunner.RunSuite("Engine/ArrangeTests")
+TestRunner.RunSuite("Engine/RenderTests")
 
 TestRunner.RunSuite("Layout/HStackTests")
 TestRunner.RunSuite("Layout/VStackTests")
