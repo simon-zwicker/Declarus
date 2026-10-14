@@ -57,8 +57,8 @@ end
 -- Description: Executes all color test cases
 -- ============================================================================
 
-TestRGB()
-TestRGBA()
-TestColorBoundaries()
-
-print("Declarus ColorTests: \27[32m✓ passed\27[0m")
+return {
+    TestRGB = TestRGB,
+    TestRGBA = TestRGB,
+    TestColorBoundaries = TestColorBoundaries,
+}

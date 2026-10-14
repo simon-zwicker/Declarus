@@ -388,23 +388,23 @@ end
 -- Description: Executes all measurement tests.
 -- ============================================================================
 
-TestHStackMeasure()
-TestVStackMeasure()
-TestPaddingMeasure()
-TestNestedStackMeasure()
-TestFillWidth()
-TestFillHeight()
-TestFillSize()
-TestHStackFillDistribution()
-TestVStackFillDistribution()
-TestMeasuredChildren()
-TestNestedFillDistribution()
-TestFillMatchesSiblingWithoutAvailableSize()
-TestFillWithIntrinsicSize()
-TestWrapWithAvailableSize()
-TestHStackWrapFillMatchesLargestSibling()
-TestVStackWrapFillMatchesLargestSibling()
-TestFillMatchesLargestIntrinsicSibling()
-TestNestedFillWithUnknownCrossAxis()
-
-print("Declarus MeasureTests: \27[32m✓ passed\27[0m")
+return {
+    TestHStackMeasure = TestHStackMeasure,
+    TestVStackMeasure = TestVStackMeasure,
+    TestPaddingMeasure = TestPaddingMeasure,
+    TestNestedStackMeasure = TestNestedStackMeasure,
+    TestFillWidth = TestFillWidth,
+    TestFillHeight = TestFillHeight,
+    TestFillSize = TestFillSize,
+    TestHStackFillDistribution = TestHStackFillDistribution,
+    TestVStackFillDistribution = TestVStackFillDistribution,
+    TestMeasuredChildren = TestMeasuredChildren,
+    TestNestedFillDistribution = TestNestedFillDistribution,
+    TestFillMatchesSiblingWithoutAvailableSize = TestFillMatchesSiblingWithoutAvailableSize,
+    TestFillWithIntrinsicSize = TestFillWithIntrinsicSize,
+    TestWrapWithAvailableSize = TestWrapWithAvailableSize,
+    TestHStackWrapFillMatchesLargestSibling = TestHStackWrapFillMatchesLargestSibling,
+    TestVStackWrapFillMatchesLargestSibling = TestVStackWrapFillMatchesLargestSibling,
+    TestFillMatchesLargestIntrinsicSibling = TestFillMatchesLargestIntrinsicSibling,
+    TestNestedFillWithUnknownCrossAxis = TestNestedFillWithUnknownCrossAxis,
+}

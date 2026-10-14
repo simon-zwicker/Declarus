@@ -101,12 +101,12 @@ end
 -- Description: Executes all view test cases
 -- ============================================================================
 
-TestViewCreation()
-TestSize()
-TestPadding()
-TestBackgroundColor()
-TestForegroundColor()
-TestOpacity()
-TestVisibility()
-
-print("Declarus ViewTests: \27[32m✓ passed\27[0m")
+return {
+    TestViewCreation = TestViewCreation,
+    TestSize = TestSize,
+    TestPadding = TestPadding,
+    TestBackgroundColor = TestBackgroundColor,
+    TestForegroundColor = TestForegroundColor,
+    TestOpacity = TestOpacity,
+    TestVisibility = TestVisibility,
+}

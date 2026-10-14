@@ -39,6 +39,7 @@
 ---@field _View DeclarusViewClass
 ---@field _Stack DeclarusStackClass
 ---@field _Measure DeclarusMeasureEngine
+---@field _Arrange DeclarusArrangeEngine
 
 -- ============================================================================
 -- Title:       Locals

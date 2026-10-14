@@ -81,9 +81,9 @@ end
 -- Description: Executes all stack test cases.
 -- ============================================================================
 
-TestStackCreation()
-TestStackModifiers()
-TestInheritedModifiers()
-TestModifierChaining()
-
-print("Declarus StackTests: \27[32m✓ passed\27[0m")
+return {
+    TestStackCreation = TestStackCreation,
+    TestStackModifiers = TestStackModifiers,
+    TestInheritedModifiers = TestInheritedModifiers,
+    TestModifierChaining = TestModifierChaining,
+}

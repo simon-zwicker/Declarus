@@ -22,6 +22,7 @@ dofile("UI/Types/Color.lua")
 dofile("Core/View.lua")
 
 dofile("UI/Engine/Measure.lua")
+dofile("UI/Engine/Arrange.lua")
 
 dofile("UI/Layout/Stack.lua")
 dofile("UI/Layout/HStack.lua")
@@ -32,11 +33,16 @@ dofile("UI/Layout/VStack.lua")
 -- Description: Executes the registered test suites
 -- ============================================================================
 
-dofile("Tests/Core/ViewTests.lua")
-dofile("Tests/Core/ColorTests.lua")
+local TestRunner = dofile("Tests/TestRunner.lua")
 
-dofile("Tests/Engine/MeasureTests.lua")
+TestRunner.RunSuite("Core/ViewTests")
+TestRunner.RunSuite("Core/ColorTests")
 
-dofile("Tests/Layout/HStackTests.lua")
-dofile("Tests/Layout/VStackTests.lua")
-dofile("Tests/Layout/StackTests.lua")
+TestRunner.RunSuite("Engine/MeasureTests")
+TestRunner.RunSuite("Engine/ArrangeTests")
+
+TestRunner.RunSuite("Layout/HStackTests")
+TestRunner.RunSuite("Layout/VStackTests")
+TestRunner.RunSuite("Layout/StackTests")
+
+TestRunner.Summary()

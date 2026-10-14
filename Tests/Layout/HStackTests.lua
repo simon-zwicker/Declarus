@@ -134,10 +134,10 @@ end
 -- Description: Executes horizontal stack tests.
 -- ============================================================================
 
-TestHStackCreation()
-TestHStackLayoutModifiers()
-TestHStackModifiers()
-TestHStackChildrenModifiers()
-TestNestedStacks()
-
-print("Declarus HStackTests: \27[32m✓ passed\27[0m")
+return {
+    TestHStackCreation = TestHStackCreation,
+    TestHStackLayoutModifiers = TestHStackLayoutModifiers,
+    TestHStackModifiers = TestHStackModifiers,
+    TestHStackChildrenModifiers = TestHStackChildrenModifiers,
+    TestNestedStacks = TestNestedStacks,
+}

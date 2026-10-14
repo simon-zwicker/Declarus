@@ -79,8 +79,8 @@ end
 -- Description: Executes vertical stack tests.
 -- ============================================================================
 
-TestVStackCreation()
-TestVStackLayoutModifiers()
-TestNestedStacks()
-
-print("Declarus VStackTests: \27[32m✓ passed\27[0m")
+return {
+    TestVStackCreation = TestVStackCreation,
+    TestVStackLayoutModifiers = TestVStackLayoutModifiers,
+    TestNestedStacks = TestNestedStacks,
+}
