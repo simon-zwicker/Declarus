@@ -39,6 +39,7 @@
 ---@field HStack fun(children: DeclarusView[]): DeclarusStack
 ---@field VStack fun(children: DeclarusView[]): DeclarusStack
 ---@field View fun(): DeclarusView
+---@field Mount fun(view: DeclarusView, parent: Frame): DeclarusMountHandle
 ---@field _View DeclarusViewClass
 ---@field _Stack DeclarusStackClass
 ---@field _Measure DeclarusMeasureEngine

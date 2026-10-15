@@ -296,6 +296,49 @@ local function TestNestedStretchWithFill()
     assert(result.children[2].height == 200)
 end
 
+---Tests Fill distribution inside a wrapping parent stack.
+local function TestNestedFillWithinWrapStack()
+    local view = UI.VStack({
+        UI.View()
+            :size(300, 60),
+
+        UI.View()
+            :size(200, 40),
+
+        UI.HStack({
+            UI.View()
+                :height(50)
+                :width(UI.Size.Fill),
+
+            UI.View()
+                :height(50)
+                :width(UI.Size.Fill),
+        })
+            :spacing(20)
+            :padding(UI.Edge.Horizontal, 20)
+            :width(UI.Size.Fill),
+    })
+        :spacing(50)
+        :padding(20)
+
+    local measured = UI._Measure.Measure(view)
+    local arranged = UI._Arrange.Arrange(view, measured)
+
+    local hstack = arranged.children[3]
+
+    assert(arranged.width == 340)
+    assert(arranged.height == 290)
+
+    assert(hstack.width == 300)
+    assert(hstack.height == 50)
+
+    assert(hstack.children[1].width == 120)
+    assert(hstack.children[2].width == 120)
+
+    assert(hstack.children[1].x == 40)
+    assert(hstack.children[2].x == 180)
+end
+
 -- ============================================================================
 -- Title:       Test Execution
 -- Description: Executes all arrange tests.
@@ -314,4 +357,5 @@ return {
     TestStretchWithPadding = TestStretchWithPadding,
     TestStretchDoesNotModifyMeasure = TestStretchDoesNotModifyMeasure,
     TestNestedStretchWithFill = TestNestedStretchWithFill,
+    TestNestedFillWithinWrapStack = TestNestedFillWithinWrapStack,
 }

@@ -11,6 +11,8 @@
 -- Description: Defines arranged layout structures.
 -- ============================================================================
 
+print("|cff00ff00Declarus Arrange DEBUG VERSION 2|r")
+
 ---@class DeclarusArrangedSize: DeclarusSize2D
 ---@field x number
 ---@field y number
@@ -167,7 +169,12 @@ local function ArrangeStack(view, measured, x, y)
     for index, child in ipairs(view.children) do
         local childMeasured = measured.children[index]
 
-        if alignment == UI.Alignment.Stretch then
+        local crossAxis = isHorizontal and "height" or "width"
+        local childCrossProperty = child.properties[crossAxis]
+
+        local shouldStretch = childCrossProperty == UI.Size.Fill or alignment == UI.Alignment.Stretch
+
+        if shouldStretch then
             childMeasured = GetStretchedSize(
                 child,
                 childMeasured,

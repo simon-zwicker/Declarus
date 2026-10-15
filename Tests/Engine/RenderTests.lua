@@ -191,6 +191,46 @@ local function TestRenderNestedFramePositions()
     assert(nestedSecond.points[1].y == 0)
 end
 
+local function TestRenderNestedFillWithinWrapStack()
+    local view = UI.VStack({
+        UI.View():size(300, 60),
+
+        UI.HStack({
+            UI.View()
+                :size(UI.Size.Fill, 50)
+                :backgroundColor(UI.Color.RGB(0, 150, 255)),
+
+            UI.View()
+                :size(UI.Size.Fill, 50)
+                :backgroundColor(UI.Color.RGB(0, 150, 255)),
+        })
+            :spacing(20)
+            :padding(UI.Edge.Horizontal, 20)
+            :width(UI.Size.Fill),
+    })
+        :padding(20)
+
+    local measured = UI._Measure.Measure(view)
+    local arranged = UI._Arrange.Arrange(view, measured)
+
+    local root = UI._Render.Render(view, arranged, UIParent)
+    local hstack = root.children[2]
+
+    assert(hstack.width == 300)
+
+    local first = hstack.children[1]
+    local second = hstack.children[2]
+
+    assert(first.width == 120)
+    assert(second.width == 120)
+
+    assert(first.height == 50)
+    assert(second.height == 50)
+
+    assert(#first.textures == 1)
+    assert(#second.textures == 1)
+end
+
 -- ============================================================================
 -- Title:       Export
 -- Description: Exposes tests to the test runner
@@ -204,4 +244,5 @@ return {
     TestRenderWithoutBackground = TestRenderWithoutBackground,
     TestRenderNestedStacks = TestRenderNestedStacks,
     TestRenderNestedFramePositions = TestRenderNestedFramePositions,
+    TestRenderNestedFillWithinWrapStack = TestRenderNestedFillWithinWrapStack,
 }
