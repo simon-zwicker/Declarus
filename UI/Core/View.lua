@@ -25,6 +25,7 @@
 ---@field foregroundColor? DeclarusColor
 ---@field opacity? number
 ---@field visible? boolean
+---@field localization? DeclarusLocalization
 
 ---@class DeclarusView
 ---@field kind string

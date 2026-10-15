@@ -17,16 +17,29 @@
 ---@field SetAllPoints fun(self: DeclarusMockTexture, frame: Frame)
 ---@field SetColorTexture fun(self: DeclarusMockTexture, r: number, g: number, b: number, a?: number)
 
----@class DeclarusMockFrame
+---@class DeclarusMockFrame: Frame
 ---@field parent Frame?
 ---@field width number
 ---@field height number
 ---@field points table[]
 ---@field children DeclarusMockFrame[]
 ---@field textures DeclarusMockTexture[]
+---@field fontStrings DeclarusMockFontString[]
+---@field CreateFontString fun(self: DeclarusMockFrame, name?: string, layer?: string): DeclarusMockFontString
 ---@field SetSize fun(self: DeclarusMockFrame, width: number, height: number)
 ---@field SetPoint fun(self: DeclarusMockFrame, point: string, relativeTo: Frame, relativePoint: string, x: number, y: number)
 ---@field CreateTexture fun(self: DeclarusMockFrame, name?: string, layer?: string): DeclarusMockTexture
+
+---@class DeclarusMockFontString
+---@field text string
+---@field font string
+---@field fontSize number
+---@field point? table
+---@field SetPoint fun(self: DeclarusMockFontString, point: string, relativeTo: Frame, relativePoint: string, x: number, y: number)
+---@field SetFont fun(self: DeclarusMockFontString, font: string, size: number)
+---@field SetText fun(self: DeclarusMockFontString, text: string)
+---@field GetStringWidth fun(self: DeclarusMockFontString): number
+---@field GetStringHeight fun(self: DeclarusMockFontString): number
 
 -- ============================================================================
 -- Title:       Locals
@@ -38,6 +51,9 @@ FrameMock.__index = FrameMock
 
 local TextureMock = {}
 TextureMock.__index = TextureMock
+
+local FontStringMock = {}
+FontStringMock.__index = FontStringMock
 
 -- ============================================================================
 -- Title:       Texture Implementation
@@ -87,6 +103,20 @@ function FrameMock:GetObjectType()
     return self.frameType
 end
 
+function FrameMock:CreateFontString(name, layer)
+    local fontString = setmetatable({
+        name = name,
+        layer = layer,
+        text = "",
+        font = "",
+        fontSize = 12,
+    }, FontStringMock)
+
+    table.insert(self.fontStrings, fontString)
+
+    return fontString
+end
+
 -- ============================================================================
 -- Title:       WoW API
 -- Description: Simulates CreateFrame and UIParent
@@ -106,17 +136,67 @@ function CreateFrame(frameType, name, parent)
         height = 0,
         points = {},
         textures = {},
+        fontStrings = {}, -- NEU
         children = {},
     }, FrameMock)
 
-    -- Register the frame as a child of its parent.
     if parent then
         ---@cast parent DeclarusMockFrame
         table.insert(parent.children, frame)
     end
 
-    ---@diagnostic disable-next-line: return-type-mismatch
     return frame
+end
+
+-- ============================================================================
+-- Title:       Localization
+-- Description: Mocks the World of Warcraft locale API
+-- ============================================================================
+
+local activeLocale = "enUS"
+
+---Returns the currently active mock locale.
+---@return string
+function GetLocale()
+    return activeLocale
+end
+
+---Sets the active locale for testing.
+---@param locale string
+function SetMockLocale(locale)
+    activeLocale = locale
+end
+
+-- ============================================================================
+-- Title:       FontString Implementation
+-- Description: Simulates WoW FontString methods
+-- ============================================================================
+
+function FontStringMock:SetFont(font, size)
+    self.font = font
+    self.fontSize = size
+end
+
+function FontStringMock:SetText(text)
+    self.text = text
+end
+
+function FontStringMock:GetStringWidth()
+    return #self.text * self.fontSize * 0.5
+end
+
+function FontStringMock:GetStringHeight()
+    return self.fontSize
+end
+
+function FontStringMock:SetPoint(point, relativeTo, relativePoint, x, y)
+    self.point = {
+        point = point,
+        relativeTo = relativeTo,
+        relativePoint = relativePoint,
+        x = x,
+        y = y,
+    }
 end
 
 UIParent = CreateFrame("Frame", "UIParent")

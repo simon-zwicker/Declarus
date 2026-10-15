@@ -339,6 +339,31 @@ local function TestNestedFillWithinWrapStack()
     assert(hstack.children[2].x == 180)
 end
 
+local function TestNestedHStackAutomaticallyFillsWidth()
+    local view = UI.VStack({
+        UI.View():size(300, 60),
+        UI.View():size(50, 25),
+
+        UI.HStack({
+            UI.View():width(UI.Size.Fill):height(50),
+            UI.View():width(UI.Size.Fill):height(50),
+        }):spacing(20),
+    })
+    :spacing(10)
+    :padding(20)
+
+    local measured = UI._Measure.Measure(view)
+    local arranged = UI._Arrange.Arrange(view, measured)
+
+    local hstack = arranged.children[3]
+
+    assert(hstack.width == 300)
+    assert(hstack.height == 50)
+
+    assert(hstack.children[1].width == 140)
+    assert(hstack.children[2].width == 140)
+end
+
 -- ============================================================================
 -- Title:       Test Execution
 -- Description: Executes all arrange tests.
@@ -358,4 +383,5 @@ return {
     TestStretchDoesNotModifyMeasure = TestStretchDoesNotModifyMeasure,
     TestNestedStretchWithFill = TestNestedStretchWithFill,
     TestNestedFillWithinWrapStack = TestNestedFillWithinWrapStack,
+    TestNestedHStackAutomaticallyFillsWidth = TestNestedHStackAutomaticallyFillsWidth,
 }

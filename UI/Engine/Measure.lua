@@ -55,6 +55,14 @@ local function MeasureView(view, availableSize)
     local explicitWidth = properties.width
     local explicitHeight = properties.height
 
+    if view.kind == "Text" then
+        ---@cast view DeclarusTextView
+        local textSize = UI._TextMeasure.Measure(view)
+
+        width = width + textSize.width
+        height = height + textSize.height
+    end
+
     if type(explicitWidth) == "number" then
         width = explicitWidth
     elseif explicitWidth == UI.Size.Fill and availableSize then

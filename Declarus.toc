@@ -5,6 +5,7 @@
 ## Version: 0.1.0
 
 Core\Init.lua
+Core\Localization.lua
 UI\Init.lua
 
 UI\Types\Alignment.lua
@@ -13,8 +14,13 @@ UI\Types\Edge.lua
 UI\Types\Color.lua
 
 UI\Core\View.lua
+UI\Core\TextView.lua
+UI\Engine\LocalizationResolver.lua
 
+UI\Components\Text.lua
 UI\Components\View.lua
+
+UI\Typography\TextMeasure.lua
 
 UI\Engine\Measure.lua
 UI\Engine\Arrange.lua

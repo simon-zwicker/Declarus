@@ -383,6 +383,15 @@ local function TestNestedFillWithUnknownCrossAxis()
     assert(vStack.children[2].height == 30)
 end
 
+local function TestMeasureTextView()
+    local view = UI.Text("Hello")
+
+    local measured = UI._Measure.Measure(view)
+
+    assert(measured.width == 40)
+    assert(measured.height == 16)
+end
+
 -- ============================================================================
 -- Title:       Test Execution
 -- Description: Executes all measurement tests.
@@ -407,4 +416,5 @@ return {
     TestVStackWrapFillMatchesLargestSibling = TestVStackWrapFillMatchesLargestSibling,
     TestFillMatchesLargestIntrinsicSibling = TestFillMatchesLargestIntrinsicSibling,
     TestNestedFillWithUnknownCrossAxis = TestNestedFillWithUnknownCrossAxis,
+    TestMeasureTextView = TestMeasureTextView,
 }

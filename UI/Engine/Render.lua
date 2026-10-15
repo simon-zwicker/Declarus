@@ -50,6 +50,30 @@ local function ApplyBackground(frame, view)
     )
 end
 
+---@param frame Frame
+---@param view DeclarusTextView
+local function RenderText(frame, view)
+    local properties = view.properties
+
+    local text = UI._LocalizationResolver.Resolve(
+        properties.text or "",
+        properties.localization
+    )
+
+    local fontString = frame:CreateFontString(nil, "ARTWORK")
+
+    fontString:SetFont("Fonts\\FRIZQT__.TTF", 16)
+    fontString:SetText(text)
+
+    fontString:SetPoint(
+        "TOPLEFT",
+        frame,
+        "TOPLEFT",
+        0,
+        0
+    )
+end
+
 ---Creates a WoW frame for a declarative view.
 ---@param view DeclarusView
 ---@param arranged DeclarusArrangedSize
@@ -76,6 +100,11 @@ local function RenderView(view, arranged, parent, parentArranged)
         relativeX,
         -relativeY
     )
+
+    if view.kind == "Text" then
+        ---@cast view DeclarusTextView
+        RenderText(frame, view)
+    end
 
     ApplyBackground(frame, view)
 

@@ -40,11 +40,15 @@
 ---@field VStack fun(children: DeclarusView[]): DeclarusStack
 ---@field View fun(): DeclarusView
 ---@field Mount fun(view: DeclarusView, parent: Frame): DeclarusMountHandle
+---@field Text fun(value: string): DeclarusTextView
 ---@field _View DeclarusViewClass
 ---@field _Stack DeclarusStackClass
 ---@field _Measure DeclarusMeasureEngine
 ---@field _Arrange DeclarusArrangeEngine
 ---@field _Render DeclarusRenderEngine
+---@field _LocalizationResolver DeclarusLocalizationResolver
+---@field _TextView DeclarusTextView
+---@field _TextMeasure DeclarusTextMeasure
 
 -- ============================================================================
 -- Title:       Locals

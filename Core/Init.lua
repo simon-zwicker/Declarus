@@ -13,6 +13,7 @@
 
 ---@class Declarus
 ---@field UI DeclarusUI
+---@field Localization DeclarusLocalizationManager
 
 -- ============================================================================
 -- Title:       Locals

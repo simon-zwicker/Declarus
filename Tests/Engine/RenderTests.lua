@@ -40,6 +40,8 @@ local function TestRenderSize()
 
     local frame = UI._Render.Render(view, arranged, UIParent)
 
+    ---@cast frame DeclarusMockFrame
+
     assert(frame.width == 200)
     assert(frame.height == 100)
 end
@@ -52,6 +54,9 @@ local function TestRenderPosition()
     local arranged = UI._Arrange.Arrange(view, measured, 20, 30)
 
     local frame = UI._Render.Render(view, arranged, UIParent)
+
+    ---@cast frame DeclarusMockFrame
+
     local point = frame.points[1]
 
     assert(point.point == "TOPLEFT")
@@ -71,6 +76,8 @@ local function TestRenderBackground()
     local arranged = UI._Arrange.Arrange(view, measured)
 
     local frame = UI._Render.Render(view, arranged, UIParent)
+
+    ---@cast frame DeclarusMockFrame
 
     assert(#frame.textures == 1)
 
@@ -92,6 +99,8 @@ local function TestRenderWithoutBackground()
 
     local frame = UI._Render.Render(view, arranged, UIParent)
 
+    ---@cast frame DeclarusMockFrame
+
     assert(#frame.textures == 0)
 end
 
@@ -112,6 +121,8 @@ local function TestRenderNestedStacks()
     local arranged = UI._Arrange.Arrange(view, measured)
 
     local frame = UI._Render.Render(view, arranged, UIParent)
+
+    ---@cast frame DeclarusMockFrame
 
     -- Root VStack
     assert(frame.width == 150)
@@ -152,6 +163,8 @@ local function TestRenderNestedFramePositions()
     local arranged = UI._Arrange.Arrange(view, measured)
 
     local root = UI._Render.Render(view, arranged, UIParent)
+
+    ---@cast root DeclarusMockFrame
 
     -- Verify root frame.
     assert(root.width == 150)
@@ -214,6 +227,9 @@ local function TestRenderNestedFillWithinWrapStack()
     local arranged = UI._Arrange.Arrange(view, measured)
 
     local root = UI._Render.Render(view, arranged, UIParent)
+
+    ---@cast root DeclarusMockFrame
+
     local hstack = root.children[2]
 
     assert(hstack.width == 300)
@@ -231,6 +247,54 @@ local function TestRenderNestedFillWithinWrapStack()
     assert(#second.textures == 1)
 end
 
+local function TestRenderText()
+    local view = UI.Text("Hello World")
+
+    local measured = UI._Measure.Measure(view)
+    local arranged = UI._Arrange.Arrange(view, measured)
+
+    local frame = UI._Render.Render(view, arranged, UIParent)
+
+    ---@cast frame DeclarusMockFrame
+
+    assert(#frame.fontStrings == 1)
+
+    local fontString = frame.fontStrings[1]
+
+    assert(fontString.text == "Hello World")
+    assert(fontString.fontSize == 16)
+    assert(fontString.font == "Fonts\\FRIZQT__.TTF")
+end
+
+local function TestRenderLocalizedText()
+    SetMockLocale("deDE")
+
+    local L = _G.Declarus.Localization.Create("RenderTextTests")
+
+    L:Register("enUS", {
+        TITLE = "Hello World",
+    })
+
+    L:Register("deDE", {
+        TITLE = "Hallo Welt",
+    })
+
+    local view = UI.Text("TITLE")
+        :localize(L)
+
+    local measured = UI._Measure.Measure(view)
+    local arranged = UI._Arrange.Arrange(view, measured)
+
+    local frame = UI._Render.Render(view, arranged, UIParent)
+
+    ---@cast frame DeclarusMockFrame
+
+    assert(#frame.fontStrings == 1)
+    assert(frame.fontStrings[1].text == "Hallo Welt")
+
+    SetMockLocale("enUS")
+end
+
 -- ============================================================================
 -- Title:       Export
 -- Description: Exposes tests to the test runner
@@ -245,4 +309,6 @@ return {
     TestRenderNestedStacks = TestRenderNestedStacks,
     TestRenderNestedFramePositions = TestRenderNestedFramePositions,
     TestRenderNestedFillWithinWrapStack = TestRenderNestedFillWithinWrapStack,
+    TestRenderText = TestRenderText,
+    TestRenderLocalizedText = TestRenderLocalizedText,
 }
