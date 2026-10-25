@@ -25,12 +25,8 @@ function Client.GetInfo()
         flavor = "Classic Era"
     elseif interface >= 20500 and interface < 20600 then
         flavor = "Burning Crusade Classic"
-    elseif interface >= 30400 and interface < 30500 then
-        flavor = "Wrath Classic"
     elseif interface >= 38000 and interface < 38100 then
         flavor = "Titan Reforged"
-    elseif interface >= 40400 and interface < 40500 then
-        flavor = "Cataclysm Classic"
     elseif interface >= 50500 and interface < 50600 then
         flavor = "Mists Classic"
     end

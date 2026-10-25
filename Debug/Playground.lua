@@ -1,92 +1,68 @@
-
--- ============================================================================
--- Declarus
--- ============================================================================
--- Title:       Debug/Playground
--- Description: Demonstrates Declarus rendering in World of Warcraft
--- ============================================================================
-
--- ============================================================================
--- Title:       Locals
--- Description: Defines dependencies
--- ============================================================================
-
+-- Opt-in smoke test for the same UI on every official client.
 local UI = _G.Declarus.UI
+---@type DeclarusMountHandle?
+local handle
 
--- ============================================================================
--- Title:       Playground
--- Description: Creates a declarative test layout
--- ============================================================================
+local state = { clicks = 0, text = "Declarus", value = 50, enabled = true, choice = "Standard" }
 
--- ============================================================================
--- Title:       Localization Playground
--- ============================================================================
-
-local Localization = Declarus.Localization
-
-local L = Localization.Create("DeclarusPlayground")
-
-L:Register("enUS", {
-    TITLE = "Welcome to Declarus",
-    DESCRIPTION = "Declarative UI for World of Warcraft",
-})
-
-L:Register("deDE", {
-    TITLE = "Willkommen bei Declarus",
-    DESCRIPTION = "Deklarative UI für World of Warcraft",
-})
-
-print("Declarus Locale:", GetLocale())
-print("Declarus Title:", L:Get("TITLE"))
-print("Declarus Description:", L:Get("DESCRIPTION"))
-
-local textContent = UI.VStack({
-    UI.Text("Welcome to Declarus"),
-
-    UI.Text("TITLE")
-        :localize(L),
-
-    UI.Text("This text is inside a VStack"),
-})
-:spacing(10)
-:padding(20)
-
-local playground = UI.VStack({
-    UI.View()
-        :size(300, 60)
-        :backgroundColor(UI.Color.RGB(255, 0, 0)),
-
-    UI.View()
-        :size(50, 25)
-        :backgroundColor(UI.Color.RGB(255, 0, 0)),
-
-    UI.HStack({
-        UI.View()
-            :height(50)
-            :width(UI.Size.Fill)
-            :backgroundColor(UI.Color.RGB(0, 150, 255)),
-
-        textContent
-    })
-    :spacing(20)
-})
-:spacing(10)
-:padding(20)
-:backgroundColor(UI.Color.RGB(0, 0, 0))
-
-local measured = UI._Measure.Measure(playground)
-local arranged = UI._Arrange.Arrange(playground, measured)
-
-local hstack = arranged.children[3]
-
-print("Arranged HStack:", hstack.width, hstack.height)
-
-for index, child in ipairs(hstack.children) do
-    print(
-        "Arranged Blue View " .. index .. ":",
-        child.width,
-        child.height
-    )
+local function close()
+    if handle then handle:Unmount(); handle = nil end
 end
 
-UI.Mount(playground, UIParent)
+local function report()
+    local info = _G.Declarus.Client.GetInfo()
+    print(string.format("Declarus: %s | %s | build %s | Interface %d | %s",
+        info.flavor, info.version, info.build, info.interface, GetLocale()))
+end
+
+---@return DeclarusView
+local function buildDemo()
+    local content = {
+        UI.Text("Declarus Client Test"):fontSize(22):padding(4),
+        UI.Text("Text / Padding / Font"):padding(8),
+        UI.View():size(32, 32):texture("Interface\\Icons\\INV_Misc_QuestionMark"),
+        UI.Text("TextField"),
+        UI.TextField(state.text, function(value) state.text = value end),
+        UI.Text("Slider: 0 - 100, step 5"),
+        UI.Slider(state.value, 0, 100, 5, function(value)
+            state.value = value
+            print("Declarus Slider:", value)
+        end),
+        UI.Text("Toggle"),
+        UI.Toggle(state.enabled, function(value)
+            state.enabled = value
+            print("Declarus Toggle:", value)
+        end),
+        UI.Text("Dropdown"),
+        UI.Dropdown({"Standard", "Raid", "Solo"}, state.choice, function(value)
+            state.choice = value
+            print("Declarus Dropdown:", value)
+        end),
+    }
+    for index = 1, 8 do content[#content + 1] = UI.Text("Scroll row " .. index) end
+    return UI.VStack({
+        UI.ScrollView(UI.VStack(content):spacing(8):padding(12)):size(380, 340),
+        UI.Text("Updates: " .. state.clicks),
+        UI.Button("Update", function()
+            state.clicks = state.clicks + 1
+            if handle then handle:Update(buildDemo()) end
+        end),
+        UI.Button("Close", close),
+    }):padding(12):spacing(8):backgroundColor(UI.Color.RGBA(10, 10, 10, 0.95))
+end
+
+SLASH_DECLARUS1 = "/declarus"
+SlashCmdList.DECLARUS = function(message)
+    local command = message:lower():match("^%s*(.-)%s*$")
+    if command == "hide" then
+        close()
+    elseif command == "info" then
+        report()
+    elseif command == "" or command == "demo" then
+        close()
+        report()
+        handle = UI.Mount(buildDemo(), UIParent)
+    else
+        print("Declarus: /declarus [demo|hide|info]")
+    end
+end

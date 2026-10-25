@@ -23,3 +23,13 @@
 7. [ ] Ingame-Abnahme durch Nutzer.
 
 Die Reihenfolge ist ein Implementierungsplan. Nicht belegte PoisonFlow-Sonderanforderungen werden nicht erfunden.
+
+
+## Client-Roadmap
+
+- [x] Gemeinsame TOC für aktuelle offizielle Client-Ziele und zentrale Diagnose.
+- [x] Client-Standardschrift gemeinsam für Messung und Rendering.
+- [x] Opt-in-Demo `/declarus` und Matrixlauf mit echter TOC-Ladereihenfolge.
+- [ ] Ingame-Abnahme auf Retail und verfügbarem Classic-Client durch Nutzer.
+- [ ] Forever-Abnahme, sobald ein Test im offiziellen Client möglich ist.
+- Prüfmatrix, Einschränkungen und Quellen: `Docs/ClientCompatibility.md`.

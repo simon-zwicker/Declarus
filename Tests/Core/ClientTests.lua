@@ -1,12 +1,19 @@
 local Client = _G.Declarus.Client
 local UI = _G.Declarus.UI
 return {
+    TestClientDeclaredByTOC = function()
+        local interface = tostring(Client.GetInfo().interface)
+        local file = assert(io.open("Declarus.toc"))
+        local header = file:read("*l")
+        file:close()
+        assert(header:find(interface, 1, true), "Client fixture missing from TOC")
+    end,
     TestClientIdentities = function()
         local original = GetBuildInfo
         local cases = {
             {16001, "Forever"}, {120105, "Retail"}, {11509, "Classic Era"},
-            {20506, "Burning Crusade Classic"}, {30405, "Wrath Classic"},
-            {38002, "Titan Reforged"}, {40402, "Cataclysm Classic"}, {50504, "Mists Classic"},
+            {20506, "Burning Crusade Classic"},
+            {38002, "Titan Reforged"}, {50504, "Mists Classic"},
             {17000, "Unknown"}, {11200, "Unknown"}, {30300, "Unknown"},
         }
         for _, case in ipairs(cases) do

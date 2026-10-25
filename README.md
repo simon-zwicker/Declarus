@@ -25,7 +25,7 @@ handle:Unmount()
 ```
 
 `Text` und Controls unterstützen `:font(path, flags)` und `:fontSize(size)`.
-Textmessung und Rendering verwenden denselben FontResolver (Standard: FRIZQT, 16).
+Textmessung und Rendering verwenden denselben FontResolver (Client-Standardschrift, 16; FRIZQT als Fallback).
 `Text` berücksichtigt Padding und Foreground-Farbe. `:texture(pathOrFileID)` legt
 auf jeder View eine gestreckte ARTWORK-Textur über einen optionalen Hintergrund.
 Größe explizit setzen; Texturen besitzen keine automatische intrinsische Größe.
@@ -76,9 +76,26 @@ Falls das Programm nicht im Suchpfad liegt, `LUA_LANGUAGE_SERVER` auf die ausfü
 Datei setzen. `Types/WoW.lua` beschreibt den von Declarus verwendeten WoW-API-Ausschnitt
 nur für den Editor; diese Datei gehört nicht in die TOC und wird nicht ausgeführt.
 Mock-spezifische Daten bleiben in den Testtypen. Geprüft mit LuaLS 3.19.2:
-keine Diagnosen bei `--checklevel=Hint`, alle 103 LuaJIT-Tests erfolgreich.
+keine Diagnosen bei `--checklevel=Hint`, alle 107 LuaJIT-Tests erfolgreich.
 
 Noch nicht im WoW-Client abgenommen: Darstellung der Controls, Font-Dateien und
 Flags, EditBox-Fokus, Slider-Dragging, Checkbox-Klicks, Dropdown-Ebenen und Scroll-Clipping.
 PoisonFlow wurde nicht verändert; konkrete Integrationsanforderungen bleiben dort
 später separat zu prüfen. Lokale Entwicklungsregeln und Roadmap stehen in AGENTS.md.
+
+
+## Mehrere offizielle Clients
+
+Ein gemeinsamer Codekern und eine gemeinsame TOC zielen auf Retail, Forever und
+die aktuellen offiziellen Classic-Zweige, einschließlich regionalem Titan Reforged.
+Keine Unterstützung für Privatserver oder historische Original-Clients.
+`Declarus.Client.GetInfo()` liefert die Client-Diagnose. Die aktuelle Zielmatrix,
+Quellen und der genaue Abnahmestand stehen in [Docs/ClientCompatibility.md](Docs/ClientCompatibility.md).
+
+`/declarus` öffnet einen optionalen Testdialog mit den vorhandenen Basics.
+`/declarus info` zeigt Client-/Build-Informationen, `/declarus hide` schließt ihn.
+Beim Laden öffnet sich keine Demo mehr. Auf Retail und Classic ist derselbe
+Prüfablauf vorgesehen; Forever bleibt bis zu einem echten Client-Test unbestätigt.
+
+`sh Tests/RunClients.sh` prüft die gemeinsame Suite mit sechs Metadatenprofilen.
+Das sind keine vollständigen Client-Emulationen und keine Ingame-Abnahmen.

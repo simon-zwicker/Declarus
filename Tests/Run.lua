@@ -19,79 +19,20 @@
 dofile("Tests/Mocks/WoW.lua")
 dofile("Tests/Mocks/Client.lua")
 
--- ============================================================================
--- Title:       Core
--- ============================================================================
-
-dofile("Core/Init.lua")
-dofile("Core/Client.lua")
-dofile("Core/Localization.lua")
-
--- ============================================================================
--- Title:       UI
--- ============================================================================
-
-dofile("UI/Init.lua")
-
--- ============================================================================
--- Title:       Types
--- ============================================================================
-
-dofile("UI/Types/Alignment.lua")
-dofile("UI/Types/Size.lua")
-dofile("UI/Types/Edge.lua")
-dofile("UI/Types/Color.lua")
-
--- ============================================================================
--- Title:       View Foundations
--- ============================================================================
-
-dofile("UI/Core/View.lua")
-dofile("UI/Core/TextView.lua")
-
--- ============================================================================
--- Title:       Resolvers
--- ============================================================================
-
-dofile("UI/Engine/LocalizationResolver.lua")
-
--- ============================================================================
--- Title:       Components
--- ============================================================================
-
-dofile("UI/Components/View.lua")
-dofile("UI/Components/Text.lua")
-dofile("UI/Components/Controls.lua")
-
--- ============================================================================
--- Title:       Typography
--- ============================================================================
-
-dofile("UI/Typography/FontResolver.lua")
-dofile("UI/Typography/TextMeasure.lua")
-
--- ============================================================================
--- Title:       Layout
--- ============================================================================
-
-dofile("UI/Layout/Stack.lua")
-dofile("UI/Layout/HStack.lua")
-dofile("UI/Layout/VStack.lua")
-
--- ============================================================================
--- Title:       Engine
--- ============================================================================
-
-dofile("UI/Engine/Measure.lua")
-dofile("UI/Engine/Arrange.lua")
-dofile("UI/Engine/ControlRender.lua")
-dofile("UI/Engine/Render.lua")
-dofile("UI/Mount.lua")
+-- Load exactly the production TOC order, including the opt-in debug command.
+for line in io.lines("Declarus.toc") do
+    local path = line:match("^%s*([^#].-%.lua)%s*$")
+    if path then dofile((path:gsub("\\", "/"))) end
+end
 
 -- ============================================================================
 -- Title:       Tests
 -- Description: Executes the registered test suites
 -- ============================================================================
+
+local parent = UIParent
+---@cast parent DeclarusMockFrame
+assert(#parent.children == 1, "Loading Declarus must not mount the demo")
 
 local TestRunner = dofile("Tests/TestRunner.lua")
 
@@ -132,5 +73,7 @@ TestRunner.RunSuite("Engine/BasicsTests")
 TestRunner.RunSuite("Engine/ControlTests")
 
 TestRunner.RunSuite("Engine/MountTests")
+
+TestRunner.RunSuite("Core/PlaygroundTests")
 
 TestRunner.Summary()
