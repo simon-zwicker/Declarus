@@ -33,3 +33,11 @@ Die Reihenfolge ist ein Implementierungsplan. Nicht belegte PoisonFlow-Sonderanf
 - [ ] Ingame-Abnahme auf Retail und verfügbarem Classic-Client durch Nutzer.
 - [ ] Forever-Abnahme, sobald ein Test im offiziellen Client möglich ist.
 - Prüfmatrix, Einschränkungen und Quellen: `Docs/ClientCompatibility.md`.
+
+
+## Playground
+
+- [x] Sechs Bereiche decken die bisherige UI-API ab; Beschreibung in `Docs/Playground.md`.
+- [x] Separate Vorschau-/Status-Mounts bewahren Seitenfokus und Scrollposition bei Eingaben.
+- [x] Navigation, Events, Alignment, dynamische Kinder, Unicode und Cleanup durch Tests geprueft.
+- [ ] Visuelle Ingame-Abnahme auf den verfuegbaren offiziellen Clients.

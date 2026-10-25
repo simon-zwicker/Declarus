@@ -66,15 +66,16 @@ PoisonFlow ist hierfür nicht erforderlich und wurde nicht verändert.
 
 1. Declarus im Addon-Menü aktivieren und einloggen: kein automatisch geöffnetes UI.
 2. `/declarus info` ausführen. Client, Patch, Build, Interface und Sprache notieren.
-3. `/declarus` öffnet den gemeinsamen Testdialog.
-4. Text-Padding und Schrift prüfen; das Fragezeichen-Icon muss sichtbar sein.
-5. TextField bearbeiten und Enter/Escape testen. Slider ziehen: Werte 0–100 in
-   Fünferschritten. Toggle und alle Dropdown-Einträge testen; ihre Änderungen
-   erscheinen im Chat.
-6. Im Inhaltsbereich mit dem Mausrad bis zu beiden Grenzen scrollen.
-7. `Update` klicken: Zähler steigt; gewählte Eingabewerte bleiben durch den
-   Demo-Zustand erhalten. Der ersetzte UI-Baum verliert Fokus und Scrollposition.
-8. `Close` oder `/declarus hide` schließt den Dialog. Wieder öffnen und wiederholen.
+3. `/declarus` oeffnet den umfangreichen Playground. Den vollstaendigen Ablauf
+   und alle API-Beispiele beschreibt [Playground.md](Playground.md).
+4. In allen sechs Bereichen Schrift, Texturen, Padding, Farben und Layout pruefen.
+5. Unter Controls TextField, beide Slider, Toggle, Dropdown und Links-/Rechtsklick
+   testen. Die feste Vorschau und Ereignisanzeige muessen sofort reagieren, waehrend
+   TextField-Fokus und Seiten-Scrollposition bestehen bleiben.
+6. Jede Seite bis zu beiden Scrollgrenzen pruefen. Unter Updates Kinder hinzufuegen
+   und entfernen sowie die Vorschau gezielt neu mounten.
+7. Reset ausprobieren, dann `Schliessen` oder `/declarus hide`. Wieder oeffnen und
+   sicherstellen, dass kein zusaetzlicher aktiver Playground zurueckbleibt.
 
 Bei Fehlern Client-Ausgabe, konkrete Aktion und vollständigen Lua-Fehler melden.
 Erst nach erfolgreichem Ablauf wird die entsprechende Ingame-Abnahme eingetragen.

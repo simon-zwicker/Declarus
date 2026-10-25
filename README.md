@@ -76,7 +76,7 @@ Falls das Programm nicht im Suchpfad liegt, `LUA_LANGUAGE_SERVER` auf die ausfü
 Datei setzen. `Types/WoW.lua` beschreibt den von Declarus verwendeten WoW-API-Ausschnitt
 nur für den Editor; diese Datei gehört nicht in die TOC und wird nicht ausgeführt.
 Mock-spezifische Daten bleiben in den Testtypen. Geprüft mit LuaLS 3.19.2:
-keine Diagnosen bei `--checklevel=Hint`, alle 107 LuaJIT-Tests erfolgreich.
+keine Diagnosen bei `--checklevel=Hint`, alle 113 LuaJIT-Tests erfolgreich.
 
 Noch nicht im WoW-Client abgenommen: Darstellung der Controls, Font-Dateien und
 Flags, EditBox-Fokus, Slider-Dragging, Checkbox-Klicks, Dropdown-Ebenen und Scroll-Clipping.
@@ -92,8 +92,12 @@ Keine Unterstützung für Privatserver oder historische Original-Clients.
 `Declarus.Client.GetInfo()` liefert die Client-Diagnose. Die aktuelle Zielmatrix,
 Quellen und der genaue Abnahmestand stehen in [Docs/ClientCompatibility.md](Docs/ClientCompatibility.md).
 
-`/declarus` öffnet einen optionalen Testdialog mit den vorhandenen Basics.
-`/declarus info` zeigt Client-/Build-Informationen, `/declarus hide` schließt ihn.
+`/declarus` öffnet den umfangreichen Playground mit sechs Bereichen: Übersicht,
+Layouts, Typografie, Darstellung, Controls und Updates. Eine feste Live-Vorschau
+und Ereignisanzeige reagieren auf Eingaben, ohne die aktive Seite zu ersetzen.
+`/declarus info` zeigt Client-/Build-Informationen, `/declarus reset` setzt die
+Demo-Werte zurück, `/declarus hide` schließt den Playground.
+Bedienung und vollständige API-Abdeckung: [Docs/Playground.md](Docs/Playground.md).
 Beim Laden öffnet sich keine Demo mehr. Auf Retail und Classic ist derselbe
 Prüfablauf vorgesehen; Forever bleibt bis zu einem echten Client-Test unbestätigt.
 
