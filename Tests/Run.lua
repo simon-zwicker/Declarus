@@ -70,6 +70,7 @@ TestRunner.RunSuite("Layout/StackTests")
 
 TestRunner.RunSuite("Engine/BasicsTests")
 TestRunner.RunSuite("Engine/TextureTests")
+TestRunner.RunSuite("Engine/GradientTests")
 
 TestRunner.RunSuite("Engine/ControlTests")
 

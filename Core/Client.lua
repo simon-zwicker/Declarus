@@ -45,4 +45,17 @@ function Client.GetDefaultFont()
     return _G.STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF"
 end
 
+---Internal boundary: use the shared modern API, never infer it from a project ID.
+---@param texture Texture
+---@param orientation DeclarusGradientOrientation
+---@param fromColor DeclarusColor
+---@param toColor DeclarusColor
+function Client._ApplyGradient(texture, orientation, fromColor, toColor)
+    assert(type(texture.SetGradient) == "function" and type(CreateColor) == "function",
+        "Declarus gradient requires Texture:SetGradient and CreateColor from the official client")
+    texture:SetGradient(orientation,
+        CreateColor(fromColor[1], fromColor[2], fromColor[3], fromColor[4]),
+        CreateColor(toColor[1], toColor[2], toColor[3], toColor[4]))
+end
+
 Declarus.Client = Client

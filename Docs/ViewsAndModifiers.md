@@ -101,6 +101,14 @@ Button-Beschriftung angewendet. Eine Farbe auf dem Stack wird nicht automatisch
 zur Textfarbe seiner Kinder. Native EditBox-/Dropdown-Texte werden durch diesen
 Modifier aktuell nicht eingefärbt. Texturtönung hat einen separaten Modifier.
 
+## Farbverläufe
+
+`:gradient("HORIZONTAL", fromColor, toColor)` färbt die eigene Bildfläche von
+links nach rechts; VERTICAL von unten nach oben. Ohne Bildquelle wird eine weiße
+Fläche für den Verlauf erzeugt. Alpha und `textureTint` sind kombinierbar, Text
+und Kinder werden nicht mitgefärbt. `:gradient(nil)` entfernt ihn. Beispiele und
+erwartete Ergebnisse stehen unter [Farbverläufe](Gradients.md).
+
 ## Opacity
 
 ```lua

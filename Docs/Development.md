@@ -68,7 +68,7 @@ sh Tests/RunClients.sh
 
 **Ergebnis:** Der erste Aufruf führt alle Suiten aus. Der zweite startet dieselbe
 Suite in separaten LuaJIT-Prozessen mit sechs Client-Metadatenprofilen. Stand dieser
-Dokumentation: 122 erfolgreiche Tests pro Profil, keine Fehler.
+Dokumentation: 131 erfolgreiche Tests pro Profil, keine Fehler.
 
 Die Profile variieren Kennungen/Metadaten. Sie emulieren keine echten Clients
 und belegen keine vollständige Gleichheit ihrer nativen APIs oder Darstellung.

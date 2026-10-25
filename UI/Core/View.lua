@@ -25,12 +25,20 @@
 ---@field top number
 ---@field bottom number
 
+---@alias DeclarusGradientOrientation 'HORIZONTAL'|'VERTICAL'
+
+---@class DeclarusGradient
+---@field orientation DeclarusGradientOrientation
+---@field fromColor DeclarusColor
+---@field toColor DeclarusColor
+
 ---@class DeclarusViewProperties
 ---@field width? number|DeclarusSize
 ---@field height? number|DeclarusSize
 ---@field padding? DeclarusPadding
 ---@field backgroundColor? DeclarusColor
 ---@field foregroundColor? DeclarusColor
+---@field gradient? DeclarusGradient
 ---@field texture? string|number
 ---@field texCoords? DeclarusTexCoords
 ---@field textureTint? DeclarusColor
@@ -48,6 +56,7 @@
 ---@field height fun<T>(self: T, value: number|DeclarusSize): T
 ---@field size fun<T>(self: T, width: number|DeclarusSize, height: number|DeclarusSize): T
 ---@field padding fun<T>(self: T, edge: DeclarusEdge|number, value?: number): T
+---@field gradient fun<T>(self: T, orientation?: DeclarusGradientOrientation, fromColor?: DeclarusColor, toColor?: DeclarusColor): T
 ---@field texture fun<T>(self: T, source: string|number): T
 ---@field texCoords fun<T>(self: T, left: number, right: number, top: number, bottom: number): T
 ---@field textureTint fun<T>(self: T, color: DeclarusColor): T
@@ -240,6 +249,15 @@ local function normalized(value)
     return type(value) == "number" and value >= 0 and value <= 1
 end
 
+---@param color DeclarusColor
+---@return DeclarusColor
+local function copyColor(color)
+    assert(type(color) == "table" and normalized(color[1]) and normalized(color[2])
+        and normalized(color[3]) and (color[4] == nil or normalized(color[4])),
+        "Color requires normalized RGB or RGBA channels")
+    return {color[1], color[2], color[3], color[4] or 1}
+end
+
 ---Selects normalized UV coordinates. Reversed edges mirror the texture.
 ---@generic T: DeclarusView
 ---@param self T
@@ -261,10 +279,7 @@ end
 ---@param color DeclarusColor
 ---@return T
 function View:textureTint(color)
-    assert(type(color) == "table" and normalized(color[1]) and normalized(color[2])
-        and normalized(color[3]) and (color[4] == nil or normalized(color[4])),
-        "Texture tint requires normalized RGB or RGBA channels")
-    self.properties.textureTint = {color[1], color[2], color[3], color[4] or 1}
+    self.properties.textureTint = copyColor(color)
     return self
 end
 
@@ -281,6 +296,28 @@ function View:textureLayer(layer, sublevel)
         and sublevel == math.floor(sublevel), "Texture sublevel must be an integer from -8 to 7")
     self.properties.textureLayer = layer
     self.properties.textureSublevel = sublevel
+    return self
+end
+
+---Colors the view's image, or a white surface when no texture is set.
+---Horizontal: left to right. Vertical: bottom to top. Nil clears the gradient.
+---@generic T: DeclarusView
+---@param self T
+---@param orientation? DeclarusGradientOrientation
+---@param fromColor? DeclarusColor
+---@param toColor? DeclarusColor
+---@return T
+function View:gradient(orientation, fromColor, toColor)
+    if orientation == nil then
+        assert(fromColor == nil and toColor == nil, "Clearing a gradient takes no colors")
+        self.properties.gradient = nil
+        return self
+    end
+    assert(orientation == "HORIZONTAL" or orientation == "VERTICAL", "Invalid gradient orientation")
+    assert(fromColor and toColor, "Gradient requires two colors")
+    local from = copyColor(fromColor)
+    local to = copyColor(toColor)
+    self.properties.gradient = {orientation = orientation, fromColor = from, toColor = to}
     return self
 end
 

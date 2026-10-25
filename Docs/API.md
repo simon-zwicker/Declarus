@@ -47,6 +47,7 @@ keine vorhandenen Konstruktoren; korrekt sind `UI.View():texture(...)` und
 | `:foregroundColor(color: Color)` | derzeit Text-/Button-Beschriftung |
 | `:opacity(value: number)` | natives Frame-Alpha, regulär 0–1 |
 | `:visible(value: boolean)` | Frame ein-/ausblenden, Layout bleibt |
+| `:gradient(orientation?: GradientOrientation, fromColor?: Color, toColor?: Color)` | zwei Endpunkte, HORIZONTAL/VERTICAL; nil entfernt den Verlauf |
 | `:texture(source: string|number)` | Datei-/FileDataID-Textur über die Elementfläche |
 | `:texCoords(left: number, right: number, top: number, bottom: number)` | vier UV-Werte 0–1, umgekehrte Seiten spiegeln |
 | `:textureTint(color: Color)` | kopierte normalisierte RGB-/RGBA-Tönung der Textur |
@@ -54,7 +55,7 @@ keine vorhandenen Konstruktoren; korrekt sind `UI.View():texture(...)` und
 
 Ohne Appearance-Modifier ist eine normale leere View transparent. Controls
 konfigurieren einen eigenen dunklen Hintergrund. TexCoords, Tint und Layer sind
-wirkungslos, solange keine eigene Textur gesetzt ist; sie bleiben aber als
+wirkungslos, solange weder eine eigene Textur noch ein Gradient gesetzt ist; sie bleiben aber als
 Eigenschaften gespeichert.
 
 ## TextView-Modifier
@@ -88,6 +89,7 @@ sind kombinierbar. Feste Kind-Maße haben Vorrang vor Stretch.
 | `UI.Size` | `Wrap`, `Fill` |
 | `UI.Edge` | `All`, `Horizontal`, `Vertical`, `Top`, `Bottom`, `Left`, `Right` |
 | `UI.Alignment` | `Top`, `Bottom`, `Left`, `Right`, `Center`, `Stretch` |
+| GradientOrientation-Strings | `"HORIZONTAL"`, `"VERTICAL"` |
 | DrawLayer-Strings | `"BACKGROUND"`, `"BORDER"`, `"ARTWORK"`, `"OVERLAY"`, `"HIGHLIGHT"` |
 
 Alignment-Kombinationen sind auf die jeweilige Stack-Querachse beschränkt.
@@ -153,6 +155,8 @@ verfügbaren API oder abgeschlossenen Ingame-Abnahme.
 
 Mit `_` beginnende UI-Felder sind Implementierungsdetails:
 `_View`, `_TextView`, `_Stack`, `_Measure`, `_Arrange`, `_Render`, `_ControlRender`,
-`_LocalizationResolver`, `_FontResolver`, `_TextMeasure`.
+`_LocalizationResolver`, `_FontResolver`, `_TextMeasure`. Auch
+`Declarus.Client._ApplyGradient` ist eine interne native Übergabe, kein
+Anwendungs-Modifier.
 Diese Dokumentation empfiehlt sie nicht als Integrations-API. Tests greifen
 bewusst darauf zu. Eigenen Anwendungscode auf die öffentlichen Funktionen stützen.

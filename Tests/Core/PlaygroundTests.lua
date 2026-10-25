@@ -167,6 +167,11 @@ return {
             end
             return false
         end))
+        assert(findText(root, "Farbverlaeufe: horizontal und vertikal"))
+        local gradientButton = assert(findText(root, "Gradient-Button"))
+        assert(gradientButton.textures[2].gradient and gradientButton.fontStrings[1].layer == "OVERLAY")
+        click(root, "Gradient-Button")
+        assert(findText(root, "Gradient-Button geklickt."))
         click(root, "Text bleibt vorn")
         assert(findText(root, "Texturierter Button geklickt."))
         click(root, "ARTWORK -2")

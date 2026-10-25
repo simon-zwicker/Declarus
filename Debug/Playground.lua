@@ -302,6 +302,26 @@ local function appearance()
             text("OVERLAY -1: Text bleibt sichtbar"):size(420, 30):padding(6)
                 :texture("Interface\\Buttons\\WHITE8X8"):textureTint(C.RGBA(75, 120, 65, 0.6)):textureLayer("OVERLAY", -1),
         }),
+        card("Farbverlaeufe: horizontal und vertikal", {
+            UI.HStack({
+                UI.View():size(300, 55):gradient("HORIZONTAL", C.RGB(30, 100, 200), C.RGB(100, 220, 160)),
+                UI.View():size(120, 100):gradient("VERTICAL", C.RGB(240, 100, 50), C.RGB(70, 100, 220)),
+            }):spacing(18):alignment(UI.Alignment.Center),
+            text("Horizontal: links nach rechts. Vertikal: unten nach oben."),
+            UI.View():size(420, 35):gradient("HORIZONTAL", C.RGBA(90, 195, 240, 0), C.RGBA(90, 195, 240, 1)),
+            text("Alpha-Verlauf: transparent nach deckend. Hintergrund bleibt separat."),
+        }),
+        card("Gradient auf Texturen und Buttons", {
+            UI.HStack({
+                UI.View():size(64, 64):texture(134400)
+                    :gradient("VERTICAL", C.RGBA(255, 255, 255, 0.1), C.RGB(255, 255, 255)),
+                button("Gradient-Button", function() log("Gradient-Button geklickt.") end, 220)
+                    :gradient("HORIZONTAL", C.RGB(25, 70, 120), C.RGB(35, 120, 80)),
+            }):spacing(18):alignment(UI.Alignment.Center),
+            UI.View():size(420, 30):gradient("HORIZONTAL", C.RGB(255, 255, 255), C.RGB(80, 160, 255))
+                :textureTint(C.RGBA(100, 220, 160, 0.7)),
+            text("Texturtint und Gradient werden multipliziert; Schrift bleibt unabhaengig."),
+        }),
         card("RGB / RGBA / Opacity", {
             UI.HStack({
                 tile(100, 46, C.RGB(90, 195, 240)),

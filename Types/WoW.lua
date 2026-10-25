@@ -1,6 +1,20 @@
 ---@meta
 -- Minimal WoW API surface used by Declarus. Editor-only; never loaded by the TOC.
 
+---@class ColorMixin
+---@field r number
+---@field g number
+---@field b number
+---@field a number
+---@field GetRGBA fun(self: ColorMixin): number, number, number, number
+
+---@param r number
+---@param g number
+---@param b number
+---@param a? number
+---@return ColorMixin
+function CreateColor(r, g, b, a) end
+
 ---@class Texture
 ---@field SetAllPoints fun(self: Texture, frame: Frame)
 ---@field SetColorTexture fun(self: Texture, r: number, g: number, b: number, a?: number)
@@ -8,6 +22,7 @@
 ---@field SetTexCoord fun(self: Texture, left: number, right: number, top: number, bottom: number)
 ---@field SetVertexColor fun(self: Texture, r: number, g: number, b: number, a?: number)
 ---@field SetDrawLayer fun(self: Texture, layer: string, sublevel?: number)
+---@field SetGradient fun(self: Texture, orientation: string, fromColor: ColorMixin, toColor: ColorMixin)
 
 ---@class FontString
 ---@field SetFont fun(self: FontString, path: string, size: number, flags?: string): boolean

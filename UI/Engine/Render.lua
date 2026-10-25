@@ -112,16 +112,30 @@ local function RenderView(view, arranged, parent, parentArranged)
 
     UI._ControlRender.Apply(frame, view)
     ApplyBackground(frame, view)
-    if view.properties.texture then
+    if view.properties.texture or view.properties.gradient then
         local properties = view.properties
         local texture = frame:CreateTexture(nil, properties.textureLayer or "BORDER")
         texture:SetDrawLayer(properties.textureLayer or "BORDER", properties.textureSublevel or 0)
         texture:SetAllPoints(frame)
-        texture:SetTexture(properties.texture)
+        if properties.texture then texture:SetTexture(properties.texture)
+        else texture:SetColorTexture(1, 1, 1, 1) end
         local coords = properties.texCoords
         if coords then texture:SetTexCoord(coords.left, coords.right, coords.top, coords.bottom) end
         local tint = properties.textureTint
-        if tint then texture:SetVertexColor(tint[1], tint[2], tint[3], tint[4]) end
+        local gradient = properties.gradient
+        if gradient then
+            -- Both native tint and gradient color the vertices. Combine them before
+            -- setting the gradient instead of letting one setter erase the other.
+            local from, to = {}, {}
+            for index = 1, 4 do
+                local channel = tint and tint[index] or 1
+                from[index] = gradient.fromColor[index] * channel
+                to[index] = gradient.toColor[index] * channel
+            end
+            _G.Declarus.Client._ApplyGradient(texture, gradient.orientation, from, to)
+        elseif tint then
+            texture:SetVertexColor(tint[1], tint[2], tint[3], tint[4])
+        end
     end
     if view.properties.opacity then frame:SetAlpha(view.properties.opacity) end
     if view.properties.visible == false then frame:Hide() end

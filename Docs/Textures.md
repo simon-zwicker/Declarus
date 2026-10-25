@@ -77,6 +77,13 @@ UI.Button("Speichern", function() print("Gespeichert") end)
     :textureTint(UI.Color.RGB(30, 85, 120))
 ```
 
+## Farbverläufe
+
+`:gradient(...)` kann eine Textur zusätzlich mit zwei Endpunktfarben und Alpha
+filtern. `textureTint` wird in beide Endpunkte multipliziert. Ohne Bildquelle
+entsteht eine weiße Fläche als Gradient-Basis. Richtung, Beispiele und Entfernen
+sind unter [Farbverläufe](Gradients.md) dokumentiert.
+
 ## Playground und Pruefung
 
 `/declarus` > Darstellung zeigt Original/Ausschnitt/Spiegelung, RGB-/RGBA-Tint,

@@ -34,6 +34,7 @@ Es gibt keine SavedVariables. Das Fenster besitzt noch keine Drag-/Resize-Funkti
 | Typografie | Localization-Namespace, enUS/deDE, aktiver Locale-Wert, englischer Fallback und fehlender Key, lokalisierter Button |
 | Darstellung | View-Texture per Dateipfad und numerischer File-ID, gestrecktes Icon, Texture plus BackgroundColor |
 | Darstellung | TexCoords/Ausschnitt/Spiegelung, RGB-/RGBA-Texturtoenung, Layer/Sublevel und lesbare texturierte Buttons |
+| Darstellung | horizontale/vertikale Farbverläufe, Alpha-Fade, Gradient auf Icons/Buttons und Kombination mit Tint |
 | Darstellung | RGB/RGBA, View-Opacity und vererbte Stack-Opacity, Visible true/false mit reserviertem Layoutplatz |
 | Controls | Button mit linker/rechter Maustaste, TextField, ganzzahliger und dezimaler Slider, Toggle, Dropdown |
 | Updates | explizite Teilbaum-Updates, dynamische Kinder von 0 bis 12, neues Measure/Arrange, gezieltes Unmount/Remount |
@@ -86,3 +87,5 @@ Frame-Ebenen, Menue-Clipping, Checkbox-Klicks, Slider-Dragging und UI-Skalierung
 muessen im jeweiligen Client betrachtet werden.
 
 Die Textur-API ist in [Textures.md](Textures.md) beschrieben. Automatischer proportionaler Zuschnitt ist noch nicht implementiert.
+
+[Farbverläufe und deren Richtung](Gradients.md) sind ebenfalls im Bereich Darstellung zu sehen.

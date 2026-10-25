@@ -16,6 +16,7 @@ nicht zum Projektziel.
 | [Text und Localization](TextAndLocalization.md) | Fonts, Textmessung, Übersetzungen und Fallbacks |
 | [Controls](Controls.md) | Button, TextField, Slider, Toggle und Dropdown mit Callback-Beispielen |
 | [Texturen](Textures.md) | FileDataID, Ausschnitt, Spiegelung, Tönung und Zeichenebenen |
+| [Farbverläufe](Gradients.md) | Richtungen, Alpha, Bildfilter, Tönung und Entfernen |
 | [ScrollView](ScrollView.md) | Viewport, Inhaltsgröße, Padding und Scrollgrenzen |
 | [Zustand und Lifecycle](StateAndLifecycle.md) | Mount, Update, Unmount und unabhängige UI-Bereiche |
 | [Praxisrezepte](Recipes.md) | vollständige Beispiele für Einstellungen, Listen und Komponentenkombinationen |

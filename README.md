@@ -19,6 +19,7 @@ des aktuell implementierten Stands.
 | [Text und Localization](Docs/TextAndLocalization.md) | Fonts, Übersetzungen und Fallbacks |
 | [Controls](Docs/Controls.md) | Button, TextField, Slider, Toggle und Dropdown |
 | [Texturen](Docs/Textures.md) | Ausschnitt, Spiegelung, Tönung, Layer und Sublevel |
+| [Farbverläufe](Docs/Gradients.md) | horizontale/vertikale Verläufe, Alpha und Bildfilter |
 | [ScrollView](Docs/ScrollView.md) | Inhaltsgröße, Viewport und vertikales Scrollen |
 | [Zustand und Lifecycle](Docs/StateAndLifecycle.md) | explizite Updates, getrennte Mounts, Fokus und Cleanup |
 | [Praxisrezepte](Docs/Recipes.md) | kombinierbare, vollständige Anwendungsbeispiele |
@@ -83,7 +84,7 @@ sh Tests/RunClients.sh
 "${LUA_LANGUAGE_SERVER:-lua-language-server}" --check=. --checklevel=Hint --logpath=/tmp/declarus-luals
 ```
 
-Aktueller automatisierter Stand: **122 Tests pro Metadatenprofil**, sechs Profile;
+Aktueller automatisierter Stand: **131 Tests pro Metadatenprofil**, sechs Profile;
 LuaLS 3.19.2 ohne Diagnosen einschließlich Hint. Die Matrix verwendet gemeinsame
 API-Mocks und keine vollständigen Client-Emulationen. LuaLS-Konfiguration aus
 `.luarc.json` und lokalen VS-Code-Einstellungen gemeinsam betrachten.

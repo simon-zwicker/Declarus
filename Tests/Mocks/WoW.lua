@@ -16,6 +16,7 @@
 ---@field sublevel? number
 ---@field texCoords? number[]
 ---@field vertexColor? number[]
+---@field gradient? DeclarusGradient
 ---@field color number[]?
 ---@field allPoints Frame?
 ---@field SetAllPoints fun(self: DeclarusMockTexture, frame: Frame)
@@ -279,4 +280,14 @@ function TextureMock:SetVertexColor(r, g, b, a)
 end
 function TextureMock:SetDrawLayer(layer, sublevel)
     self.layer, self.sublevel = layer, sublevel or 0
+end
+
+function CreateColor(r, g, b, a)
+    return {r = r, g = g, b = b, a = a or 1, GetRGBA = function(self)
+        return self.r, self.g, self.b, self.a
+    end}
+end
+function TextureMock:SetGradient(orientation, fromColor, toColor)
+    self.gradient = {orientation = orientation,
+        fromColor = {fromColor:GetRGBA()}, toColor = {toColor:GetRGBA()}}
 end
