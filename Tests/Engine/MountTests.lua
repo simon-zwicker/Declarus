@@ -1,7 +1,17 @@
 local UI = _G.Declarus.UI
+---@class DeclarusMockMountHandle: DeclarusMountHandle
+---@field frame DeclarusMockFrame
+---@param view DeclarusView
+---@param parent Frame
+---@return DeclarusMockMountHandle
+local function mount(view, parent)
+    local handle = UI.Mount(view, parent)
+    ---@cast handle DeclarusMockMountHandle
+    return handle
+end
 return {
     TestScrollBounds = function()
-        local handle = UI.Mount(UI.ScrollView(UI.View():size(100, 400)):size(100, 100), UIParent)
+        local handle = mount(UI.ScrollView(UI.View():size(100, 400)):size(100, 100), UIParent)
         local viewport = handle.frame.children[1]
         assert(viewport.scrollChild.height == 400)
         viewport.scripts.OnMouseWheel(viewport, -100)
@@ -12,7 +22,7 @@ return {
     end,
     TestScrollPaddingAndFill = function()
         local content = UI.VStack({UI.View():size(UI.Size.Fill, 40)}):width(UI.Size.Fill)
-        local handle = UI.Mount(UI.ScrollView(content):size(100, 80):padding(10), UIParent)
+        local handle = mount(UI.ScrollView(content):size(100, 80):padding(10), UIParent)
         local viewport = handle.frame.children[1]
         assert(viewport.width == 80 and viewport.height == 60)
         assert(viewport.points[1].x == 10 and viewport.points[1].y == -10)
@@ -22,10 +32,10 @@ return {
         handle:Unmount()
     end,
     TestRepeatedUpdatesReleaseNestedHandlers = function()
-        local handle = UI.Mount(UI.VStack({UI.Toggle(false), UI.TextField("a")}), UIParent)
+        local handle = mount(UI.VStack({UI.Toggle(false), UI.TextField("a")}), UIParent)
         local old = handle.frame
         local toggle, field = old.children[1], old.children[2]
-        local host = old.parent
+        local host = assert(old.parent)
         for i = 1, 20 do handle:Update(UI.Text(tostring(i))) end
         assert(#host.children == 1 and #old.children == 0)
         assert(toggle.scripts.OnClick == nil and field.scripts.OnTextChanged == nil)
@@ -33,9 +43,9 @@ return {
     end,
     TestUpdateAndCleanup = function()
         local calls = 0
-        local handle = UI.Mount(UI.Button("old", function() calls = calls + 1 end), UIParent)
+        local handle = mount(UI.Button("old", function() calls = calls + 1 end), UIParent)
         local old = handle.frame
-        local host = old.parent
+        local host = assert(old.parent)
         handle:Update(UI.Text("new"):fontSize(24))
         assert(old.hidden and old.parent == nil and old.scripts.OnClick == nil)
         assert(#host.children == 1 and handle.frame.fontStrings[1].text == "new")
@@ -47,7 +57,7 @@ return {
     end,
     TestUpdateFromCallback = function()
         local handle
-        handle = UI.Mount(UI.Button("change", function() handle:Update(UI.Text("changed")) end), UIParent)
+        handle = mount(UI.Button("change", function() handle:Update(UI.Text("changed")) end), UIParent)
         handle.frame.scripts.OnClick(handle.frame, "LeftButton")
         assert(handle.frame.fontStrings[1].text == "changed")
         handle:Unmount()

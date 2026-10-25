@@ -1,6 +1,8 @@
 local UI = _G.Declarus.UI
 local function render(view)
-    return UI._Render.Render(view, UI._Arrange.Arrange(view, UI._Measure.Measure(view)), UIParent)
+    local frame = UI._Render.Render(view, UI._Arrange.Arrange(view, UI._Measure.Measure(view)), UIParent)
+    ---@cast frame DeclarusMockFrame
+    return frame
 end
 return {
     TestButton = function()

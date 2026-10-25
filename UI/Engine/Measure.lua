@@ -219,7 +219,7 @@ local function MeasureStack(view, availableSize)
             mainSize = mainSize + measuredChildren[index][mainAxis]
         end
     end
-    
+
     local measuredMain = mainSize + mainPadding
     local measuredCross = crossSize + crossPadding
 
@@ -246,7 +246,7 @@ local function MeasureStack(view, availableSize)
 end
 
 ---@param view DeclarusView
----@param availableSize? DeclarusMeasuredSize
+---@param availableSize? DeclarusSize2D
 ---@return DeclarusMeasuredSize
 function Measure.Measure(view, availableSize)
     if view.kind == "HStack" or view.kind == "VStack" then

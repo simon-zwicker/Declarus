@@ -205,9 +205,6 @@ end
 -- Description: Registers the internal view prototype within DeclarusUI
 -- ============================================================================
 
----@cast View DeclarusViewClass
-
-UI._View = View
 ---Uses a texture file path or file ID, stretched over the view.
 ---@generic T: DeclarusView
 ---@param self T
@@ -218,3 +215,6 @@ function View:texture(source)
     self.properties.texture = source
     return self
 end
+
+---@cast View DeclarusViewClass
+UI._View = View

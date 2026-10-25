@@ -59,6 +59,6 @@ end
 
 return {
     TestRGB = TestRGB,
-    TestRGBA = TestRGB,
+    TestRGBA = TestRGBA,
     TestColorBoundaries = TestColorBoundaries,
 }

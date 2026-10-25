@@ -5,6 +5,7 @@
 - PoisonFlow nicht verändern. Declarus stellt allgemeine UI-Basics bereit.
 - Lua 5.1 / LuaJIT beibehalten; öffentliche APIs mit LuaLS annotieren.
 - Bestehende Fluent-API, Measure/Arrange/Render-Trennung und TOC-Ladereihenfolge wahren.
+- Bei Lua-/Typänderungen auch LuaLS mit `--checklevel=Hint` ausführen (Aufruf siehe README).
 - Pro abgeschlossenem Paket `luajit Tests/Run.lua` ausführen und lokal committen. Neue Verhaltensweisen mit aussagekräftigen Tests absichern.
 - Mocktests ersetzen keinen WoW-Test. Nicht ingame geprüfte Funktionalität ausdrücklich kennzeichnen.
 
@@ -15,6 +16,7 @@
 3. [x] Buttons und Events; TextField, Slider, Toggle, Dropdown.
 4. [x] ScrollView und explizite dynamische Mount-Updates mit Cleanup.
 5. [x] API-Beispiele, Regressionstests und lokale Abschlussprüfung: 103 Tests; TOC vollständig mit Mocks geladen.
-6. [ ] Ingame-Abnahme durch Nutzer; LuaLS-Diagnoselauf bei installiertem Language Server.
+6. [x] LuaLS 3.19.2 über VS-Code-Erweiterung gefunden und ausgeführt: keine Diagnosen einschließlich Hint.
+7. [ ] Ingame-Abnahme durch Nutzer.
 
 Die Reihenfolge ist ein Implementierungsplan. Nicht belegte PoisonFlow-Sonderanforderungen werden nicht erfunden.

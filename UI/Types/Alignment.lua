@@ -27,7 +27,7 @@ local Alignment = {
     -- HStack
     Top = "TOP",
     Bottom = "BOTTOM",
-    
+
     -- All Stacks
     Center = "CENTER",
     Stretch = "STRETCH",

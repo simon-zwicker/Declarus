@@ -11,14 +11,23 @@
 -- Description: Defines mock frames and textures
 -- ============================================================================
 
----@class DeclarusMockTexture
+---@class DeclarusMockTexture: Texture
+---@field layer? string
 ---@field color number[]?
 ---@field allPoints Frame?
 ---@field SetAllPoints fun(self: DeclarusMockTexture, frame: Frame)
 ---@field SetColorTexture fun(self: DeclarusMockTexture, r: number, g: number, b: number, a?: number)
 
----@class DeclarusMockFrame: Frame
----@field parent Frame?
+---@class DeclarusMockFrame: Frame, Button, EditBox, Slider, CheckButton, ScrollFrame
+---@field parent? DeclarusMockFrame
+---@field frameType string
+---@field hidden? boolean
+---@field alpha? number
+---@field autoFocus? boolean
+---@field value? number
+---@field scripts table<string, function>
+---@field scroll? number
+---@field scrollChild? DeclarusMockFrame
 ---@field width number
 ---@field height number
 ---@field points table[]
@@ -30,13 +39,13 @@
 ---@field SetPoint fun(self: DeclarusMockFrame, point: string, relativeTo: Frame, relativePoint: string, x: number, y: number)
 ---@field CreateTexture fun(self: DeclarusMockFrame, name?: string, layer?: string): DeclarusMockTexture
 
----@class DeclarusMockFontString
+---@class DeclarusMockFontString: FontString
 ---@field text string
 ---@field font string
 ---@field fontSize number
 ---@field point? table
 ---@field SetPoint fun(self: DeclarusMockFontString, point: string, relativeTo: Frame, relativePoint: string, x: number, y: number)
----@field SetFont fun(self: DeclarusMockFontString, font: string, size: number)
+---@field SetFont fun(self: DeclarusMockFontString, font: string, size: number, flags?: string)
 ---@field SetText fun(self: DeclarusMockFontString, text: string)
 ---@field GetStringWidth fun(self: DeclarusMockFontString): number
 ---@field GetStringHeight fun(self: DeclarusMockFontString): number
@@ -46,12 +55,15 @@
 -- Description: Defines mock prototypes
 -- ============================================================================
 
+---@class DeclarusMockFrame
 local FrameMock = {}
 FrameMock.__index = FrameMock
 
+---@class DeclarusMockTexture
 local TextureMock = {}
 TextureMock.__index = TextureMock
 
+---@class DeclarusMockFontString
 local FontStringMock = {}
 FontStringMock.__index = FontStringMock
 
@@ -125,7 +137,7 @@ end
 ---@param frameType string
 ---@param name? string
 ---@param parent? Frame
----@return Frame
+---@return DeclarusMockFrame
 function CreateFrame(frameType, name, parent)
     ---@type DeclarusMockFrame
     local frame = setmetatable({
@@ -238,6 +250,7 @@ function FrameMock:GetChildren() return unpack(self.children) end
 function FrameMock:HasScript(event) return self.scripts and self.scripts[event] ~= nil end
 function FrameMock:UnregisterAllEvents() self.events = {} end
 function FrameMock:SetParent(parent)
+    ---@cast parent DeclarusMockFrame?
     if self.parent then
         for i, child in ipairs(self.parent.children) do
             if child == self then table.remove(self.parent.children, i); break end
@@ -246,7 +259,10 @@ function FrameMock:SetParent(parent)
     self.parent = parent
     if parent then table.insert(parent.children, self) end
 end
-function FrameMock:SetScrollChild(child) self.scrollChild = child end
+function FrameMock:SetScrollChild(child)
+    ---@cast child DeclarusMockFrame
+    self.scrollChild = child
+end
 function FrameMock:EnableMouseWheel(value) self.mouseWheel = value end
 function FrameMock:GetVerticalScroll() return self.scroll or 0 end
 function FrameMock:SetVerticalScroll(value) self.scroll = value end

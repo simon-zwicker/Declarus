@@ -60,7 +60,18 @@ noch automatisches Schließen durch Außenklick. Keine geschützten Aktionsbutto
 Vom Repository-Verzeichnis: `luajit Tests/Run.lua`.
 Die WoW-Mocks prüfen Layout, Rendering, Eingaben und Mount-Lebenszyklus.
 LuaLS ist auf Lua 5.1 konfiguriert; öffentliche APIs sind annotiert.
-Ein LuaLS-Diagnoselauf benötigt einen separat installierten Language Server.
+LuaLS kann auch aus einer vorhandenen VS-Code-Lua-Erweiterung gestartet werden.
+Für einen vollständigen Lauf einschließlich Hinweisen vom Repository-Verzeichnis:
+
+```sh
+"${LUA_LANGUAGE_SERVER:-lua-language-server}" --check=. --checklevel=Hint --logpath=/tmp/declarus-luals
+```
+
+Falls das Programm nicht im Suchpfad liegt, `LUA_LANGUAGE_SERVER` auf die ausführbare
+Datei setzen. `Types/WoW.lua` beschreibt den von Declarus verwendeten WoW-API-Ausschnitt
+nur für den Editor; diese Datei gehört nicht in die TOC und wird nicht ausgeführt.
+Mock-spezifische Daten bleiben in den Testtypen. Geprüft mit LuaLS 3.19.2:
+keine Diagnosen bei `--checklevel=Hint`, alle 103 LuaJIT-Tests erfolgreich.
 
 Noch nicht im WoW-Client abgenommen: Darstellung der Controls, Font-Dateien und
 Flags, EditBox-Fokus, Slider-Dragging, Checkbox-Klicks, Dropdown-Ebenen und Scroll-Clipping.

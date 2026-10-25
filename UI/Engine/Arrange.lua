@@ -35,11 +35,10 @@ local Arrange = {}
 -- ============================================================================
 
 ---@param alignment DeclarusAlignment
----@param isHorizontal boolean
 ---@param available number
 ---@param childSize number
 ---@return number
-local function GetAlignmentOffset(alignment, isHorizontal, available, childSize)
+local function GetAlignmentOffset(alignment, available, childSize)
     local remaining = available - childSize
 
     if alignment == UI.Alignment.Center then
@@ -115,12 +114,11 @@ end
 -- Description: Calculates positions recursively.
 -- ============================================================================
 
----@param view DeclarusView
 ---@param measured DeclarusMeasuredSize
 ---@param x number
 ---@param y number
 ---@return DeclarusArrangedSize
-local function ArrangeView(view, measured, x, y)
+local function ArrangeView(measured, x, y)
     return {
         x = x,
         y = y,
@@ -193,7 +191,6 @@ local function ArrangeStack(view, measured, x, y)
 
         local offset = GetAlignmentOffset(
             alignment,
-            isHorizontal,
             availableCrossSize,
             childCrossSize
         )
@@ -239,13 +236,13 @@ function Arrange.Arrange(view, measured, x, y)
     end
 
     if view.kind == "ScrollView" then
-        local result = ArrangeView(view, measured, x, y)
+        local result = ArrangeView(measured, x, y)
         local padding = view.properties.padding or {}
         result.children[1] = Arrange.Arrange(view.children[1], measured.children[1],
             x + (padding.left or 0), y + (padding.top or 0))
         return result
     end
-    return ArrangeView(view, measured, x, y)
+    return ArrangeView(measured, x, y)
 end
 
 -- ============================================================================

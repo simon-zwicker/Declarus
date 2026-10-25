@@ -63,7 +63,7 @@
 -- Description: Defines the DeclarusUI namespace
 -- ============================================================================
 
-local UI = {} 
+local UI = {}
 
 ---@cast UI DeclarusUI
 
