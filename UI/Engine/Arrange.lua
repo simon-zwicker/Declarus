@@ -238,6 +238,13 @@ function Arrange.Arrange(view, measured, x, y)
         return ArrangeStack(view, measured, x, y)
     end
 
+    if view.kind == "ScrollView" then
+        local result = ArrangeView(view, measured, x, y)
+        local padding = view.properties.padding or {}
+        result.children[1] = Arrange.Arrange(view.children[1], measured.children[1],
+            x + (padding.left or 0), y + (padding.top or 0))
+        return result
+    end
     return ArrangeView(view, measured, x, y)
 end
 

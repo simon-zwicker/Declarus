@@ -32,6 +32,7 @@
 ---@field Vertical DeclarusEdge
 
 ---@class DeclarusUI
+---@field ScrollView fun(content: DeclarusView): DeclarusView
 ---@field Button fun(label: string, callback: fun(button: string)): DeclarusControl
 ---@field TextField fun(value: string, callback?: fun(value: string)): DeclarusControl
 ---@field Slider fun(value: number, minimum: number, maximum: number, step?: number, callback?: fun(value: number)): DeclarusControl

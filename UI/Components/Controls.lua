@@ -87,3 +87,11 @@ function UI.Dropdown(options, value, callback)
     view.properties.options, view.properties.value, view.properties.onChange = copy, value, callback
     return view
 end
+
+---A vertically scrollable viewport. Set an explicit viewport size.
+---@param content DeclarusView
+---@return DeclarusView
+function UI.ScrollView(content)
+    assert(type(content) == "table" and content.kind, "ScrollView requires content")
+    return UI._View.New("ScrollView", {content}):size(240, 180)
+end

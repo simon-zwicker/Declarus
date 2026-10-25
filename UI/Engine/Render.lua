@@ -120,6 +120,24 @@ local function RenderView(view, arranged, parent, parentArranged)
     if view.properties.opacity then frame:SetAlpha(view.properties.opacity) end
     if view.properties.visible == false then frame:Hide() end
 
+    if view.kind == "ScrollView" then
+        local padding = view.properties.padding or {}
+        local viewport = CreateFrame("ScrollFrame", nil, frame)
+        local width = math.max(0, arranged.width - (padding.left or 0) - (padding.right or 0))
+        local height = math.max(0, arranged.height - (padding.top or 0) - (padding.bottom or 0))
+        viewport:SetSize(width, height)
+        viewport:SetPoint("TOPLEFT", frame, "TOPLEFT", padding.left or 0, -(padding.top or 0))
+        local childSize = arranged.children[1]
+        local content = RenderView(view.children[1], childSize, viewport, childSize)
+        viewport:SetScrollChild(content)
+        viewport:EnableMouseWheel(true)
+        viewport:SetScript("OnMouseWheel", function(self, delta)
+            local maximum = math.max(0, childSize.height - height)
+            self:SetVerticalScroll(math.max(0, math.min(maximum, self:GetVerticalScroll() - delta * 30)))
+        end)
+        return frame
+    end
+
     for index, child in ipairs(view.children) do
         RenderView(
             child,

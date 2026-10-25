@@ -84,6 +84,7 @@ dofile("UI/Engine/Measure.lua")
 dofile("UI/Engine/Arrange.lua")
 dofile("UI/Engine/ControlRender.lua")
 dofile("UI/Engine/Render.lua")
+dofile("UI/Mount.lua")
 
 -- ============================================================================
 -- Title:       Tests
@@ -126,5 +127,7 @@ TestRunner.RunSuite("Layout/StackTests")
 TestRunner.RunSuite("Engine/BasicsTests")
 
 TestRunner.RunSuite("Engine/ControlTests")
+
+TestRunner.RunSuite("Engine/MountTests")
 
 TestRunner.Summary()

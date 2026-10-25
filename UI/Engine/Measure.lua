@@ -254,6 +254,15 @@ function Measure.Measure(view, availableSize)
         return MeasureStack(view, availableSize)
     end
 
+    if view.kind == "ScrollView" then
+        local size = MeasureView(view, availableSize)
+        local padding = view.properties.padding or {}
+        size.children[1] = Measure.Measure(view.children[1], {
+            width = math.max(0, size.width - (padding.left or 0) - (padding.right or 0)),
+            height = 0,
+        })
+        return size
+    end
     return MeasureView(view, availableSize)
 end
 

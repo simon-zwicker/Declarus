@@ -233,3 +233,20 @@ function FrameMock:SetNormalTexture(value) self.normal = value end
 function FrameMock:SetCheckedTexture(value) self.checkedTexture = value end
 function FrameMock:SetFrameStrata(value) self.strata = value end
 function FrameMock:IsShown() return not self.hidden end
+
+function FrameMock:GetChildren() return unpack(self.children) end
+function FrameMock:HasScript(event) return self.scripts and self.scripts[event] ~= nil end
+function FrameMock:UnregisterAllEvents() self.events = {} end
+function FrameMock:SetParent(parent)
+    if self.parent then
+        for i, child in ipairs(self.parent.children) do
+            if child == self then table.remove(self.parent.children, i); break end
+        end
+    end
+    self.parent = parent
+    if parent then table.insert(parent.children, self) end
+end
+function FrameMock:SetScrollChild(child) self.scrollChild = child end
+function FrameMock:EnableMouseWheel(value) self.mouseWheel = value end
+function FrameMock:GetVerticalScroll() return self.scroll or 0 end
+function FrameMock:SetVerticalScroll(value) self.scroll = value end
