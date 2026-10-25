@@ -48,10 +48,13 @@ local view = UI.VStack({
     UI.Text("My first Declarus UI")
         :fontSize(20)
         :foregroundColor(UI.Color.RGB(90, 195, 240)),
+
     UI.Text("These elements are stacked vertically."),
+
     UI.Button("Hello", function(mouseButton)
         print("Clicked with:", mouseButton)
-    end):width(180),
+    end)
+        :width(180),
 })
     :spacing(10)
     :padding(16)
@@ -103,12 +106,14 @@ that center is:
 
 ```lua
 local UI = Declarus.UI
+
 local region = CreateFrame("Frame", nil, UIParent)
 region:SetSize(320, 100)
 region:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 30, -30)
 
 local handle = UI.Mount(
-    UI.Text("Centered inside my own region"):fontSize(16),
+    UI.Text("Centered inside my own region")
+    :fontSize(16),
     region
 )
 ```

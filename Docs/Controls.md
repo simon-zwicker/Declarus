@@ -22,13 +22,17 @@ below, not a native frame as their first argument.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.Button("Save", function(mouseButton)
     if mouseButton == "RightButton" then
         print("Right click")
     else
         print("Left click")
     end
-end):size(180, 34):padding(UI.Edge.Left, 10):padding(UI.Edge.Top, 8)
+end)
+    :size(180, 34)
+    :padding(UI.Edge.Left, 10)
+    :padding(UI.Edge.Top, 8)
 
 UI.Mount(view, UIParent)
 ```
@@ -47,11 +51,15 @@ yet. A label can be localized with `localize(L)`.
 
 ```lua
 local UI = Declarus.UI
+
 local profileName = "Default"
+
 local field = UI.TextField(profileName, function(value)
     profileName = value
     print("Profile name:", profileName)
-end):width(280):fontSize(18)
+end)
+    :width(280)
+    :fontSize(18)
 
 UI.Mount(field, UIParent)
 ```
@@ -73,11 +81,20 @@ modifiers yet. Input stays a string; convert and validate it in your addon.
 
 ```lua
 local UI = Declarus.UI
+
 local volume = 50
-local slider = UI.Slider(volume, 0, 100, 5, function(value)
-    volume = value
-    print("Volume:", volume)
-end):width(300)
+
+local slider = UI.Slider(
+    volume,
+    0,
+    100,
+    5,
+    function(value)
+        volume = value
+        print("Volume:", volume)
+    end
+)
+    :width(300)
 
 UI.Mount(slider, UIParent)
 ```
@@ -93,9 +110,16 @@ the default step:
 
 ```lua
 local UI = Declarus.UI
-local slider = UI.Slider(5, 0, 10, nil, function(value)
-    print(value)
-end)
+
+local slider = UI.Slider(
+    5,
+    0,
+    10,
+    nil,
+    function(value)
+        print(value)
+    end
+)
 ```
 
 **Result:** A range of 0 to 10 in whole-number steps. A callback in the fourth
@@ -105,9 +129,16 @@ Decimal steps work too:
 
 ```lua
 local UI = Declarus.UI
-local slider = UI.Slider(0.5, 0, 1, 0.1, function(value)
-    print(string.format("Opacity: %.1f", value))
-end)
+
+local slider = UI.Slider(
+    0.5,
+    0,
+    1,
+    0.1,
+    function(value)
+        print(string.format("Opacity: %.1f", value))
+    end
+)
 ```
 
 **Result:** Tenths from 0 to 1. Format the display value deliberately because Lua
@@ -121,14 +152,19 @@ want those.
 
 ```lua
 local UI = Declarus.UI
+
 local enabled = true
+
 local view = UI.HStack({
     UI.Toggle(enabled, function(value)
         enabled = value
         print("Enabled:", enabled)
     end),
+
     UI.Text("Enable feature"),
-}):spacing(10):alignment(UI.Alignment.Center)
+})
+    :spacing(10)
+    :alignment(UI.Alignment.Center)
 
 UI.Mount(view, UIParent)
 ```
@@ -141,11 +177,22 @@ the checkbox.
 
 ```lua
 local UI = Declarus.UI
+
 local selected = "Default"
-local dropdown = UI.Dropdown({"Default", "Raid", "Solo"}, selected, function(value)
-    selected = value
-    print("Profile:", selected)
-end):width(240)
+
+local dropdown = UI.Dropdown(
+    {
+        "Default",
+        "Raid",
+        "Solo"
+    },
+    selected,
+    function(value)
+        selected = value
+        print("Profile:", selected)
+    end
+)
+    :width(240)
 
 UI.Mount(dropdown, UIParent)
 ```
@@ -176,12 +223,19 @@ That does not make other views reactive:
 
 ```lua
 local UI = Declarus.UI
+
 local value = "Before"
+
 local label = UI.Text(value)
+
 local field = UI.TextField(value, function(nextValue)
     value = nextValue
 end)
-local view = UI.VStack({label, field}):spacing(8)
+local view = UI.VStack({
+    label,
+    field
+})
+    :spacing(8)
 ```
 
 **Result:** Typing changes the variable, but the label description still says

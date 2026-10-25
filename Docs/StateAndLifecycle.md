@@ -10,11 +10,15 @@ automatically change those frames.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.Text("Hello")
+
 local handle = UI.Mount(view, UIParent)
 
-view:fontSize(24)
+view
+    :fontSize(24)
 -- The mounted text still uses its original size.
+
 handle:Update(view)
 -- The new tree now uses size 24.
 ```
@@ -43,17 +47,24 @@ tree is replaced.
 
 ```lua
 local UI = Declarus.UI
+
 local count = 0
 local handle
 
 local function buildView()
     return UI.VStack({
-        UI.Text("Clicks: " .. count):fontSize(20),
+        UI.Text("Clicks: " .. count)
+            :fontSize(20),
+
         UI.Button("Increase", function()
             count = count + 1
+
             handle:Update(buildView())
-        end):width(160),
-    }):spacing(10):padding(14)
+        end)
+            :width(160),
+    })
+        :spacing(10)
+        :padding(14)
 end
 
 handle = UI.Mount(buildView(), UIParent)
@@ -73,7 +84,10 @@ Use a separate mount for the part that needs to change:
 
 ```lua
 local UI = Declarus.UI
-local state = {name = "Default"}
+
+local state = {
+    name = "Default"
+}
 
 local container = CreateFrame("Frame", nil, UIParent)
 container:SetSize(400, 160)
@@ -88,10 +102,15 @@ previewRegion:SetSize(360, 40)
 previewRegion:SetPoint("TOPLEFT", container, "TOPLEFT", 20, -90)
 
 local preview = UI.Mount(UI.Text("Profile: " .. state.name), previewRegion)
-local input = UI.Mount(UI.TextField(state.name, function(value)
-    state.name = value
-    preview:Update(UI.Text("Profile: " .. value))
-end):width(300), inputRegion)
+
+local input = UI.Mount(
+    UI.TextField(state.name, function(value)
+        state.name = value
+        preview:Update(UI.Text("Profile: " .. value))
+    end)
+        :width(300),
+    inputRegion
+)
 
 local function closeEditor()
     input:Unmount()
@@ -112,19 +131,30 @@ they do not add frame reuse or make frequent updates free.
 
 ```lua
 local UI = Declarus.UI
-local entries = {"Alpha", "Beta"}
+
+local entries = {
+    "Alpha",
+    "Beta"
+}
+
 local handle
 
 local function buildList()
     local children = {}
+
     for _, entry in ipairs(entries) do
         children[#children + 1] = UI.Text(entry)
     end
+
     children[#children + 1] = UI.Button("Add entry", function()
         entries[#entries + 1] = "Entry " .. (#entries + 1)
+
         handle:Update(buildList())
-    end):width(220)
-    return UI.VStack(children):spacing(8):padding(12)
+    end)
+        :width(220)
+    return UI.VStack(children)
+        :spacing(8)
+        :padding(12)
 end
 
 handle = UI.Mount(buildList(), UIParent)

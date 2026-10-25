@@ -6,6 +6,7 @@
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.View()
     :size(160, 48)
     :backgroundColor(UI.Color.RGB(30, 100, 150))
@@ -23,8 +24,11 @@ Use HStack or VStack to group elements.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.View()
-local sameView = view:width(100):height(40)
+local sameView = view
+    :width(100)
+    :height(40)
 assert(sameView == view)
 ```
 
@@ -38,8 +42,12 @@ Use `width` for one axis, `height` for the other, or `size` for both:
 
 ```lua
 local UI = Declarus.UI
-local view = UI.View():width(100):height(40)
-local anotherView = UI.View():size(100, 40)
+
+local view = UI.View()
+    :width(100)
+    :height(40)
+local anotherView = UI.View()
+    :size(100, 40)
 ```
 
 **Result:** Both descriptions have the same outer size. Values can be numbers,
@@ -53,6 +61,7 @@ room inside; it does not make the outer width larger.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.Text("Space around the text")
     :padding(8)
     :padding(UI.Edge.Left, 12)
@@ -84,6 +93,7 @@ does not replace those native offsets.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.Text("Bright text on a transparent background")
     :padding(10)
     :backgroundColor(UI.Color.RGBA(20, 50, 80, 0.6))
@@ -107,10 +117,16 @@ a transition between two colors. Neither changes the foreground text color.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.VStack({
     UI.Text("This text becomes transparent too."),
-    UI.View():size(100, 20):backgroundColor(UI.Color.RGB(0, 180, 100)),
-}):spacing(8):opacity(0.5)
+
+    UI.View()
+        :size(100, 20)
+        :backgroundColor(UI.Color.RGB(0, 180, 100)),
+})
+    :spacing(8)
+    :opacity(0.5)
 ```
 
 **Result:** The stack and its children are half opaque. Child alpha values apply
@@ -123,11 +139,22 @@ which affects only that drawn region.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.HStack({
-    UI.View():size(40, 40):backgroundColor(UI.Color.RGB(255, 0, 0)),
-    UI.View():size(40, 40):backgroundColor(UI.Color.RGB(0, 255, 0)):visible(false),
-    UI.View():size(40, 40):backgroundColor(UI.Color.RGB(0, 0, 255)),
-}):spacing(10)
+    UI.View()
+        :size(40, 40)
+        :backgroundColor(UI.Color.RGB(255, 0, 0)),
+
+    UI.View()
+        :size(40, 40)
+        :backgroundColor(UI.Color.RGB(0, 255, 0))
+        :visible(false),
+
+    UI.View()
+        :size(40, 40)
+        :backgroundColor(UI.Color.RGB(0, 0, 255)),
+})
+    :spacing(10)
 ```
 
 **Result:** Red and blue remain visible. The hidden green view still takes up 40

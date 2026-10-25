@@ -10,10 +10,14 @@ text or children.
 
 ```lua
 local UI = Declarus.UI
-local view = UI.View():size(320, 60)
-    :gradient("HORIZONTAL",
+
+local view = UI.View()
+    :size(320, 60)
+    :gradient(
+        "HORIZONTAL",
         UI.Color.RGB(30, 100, 200),
-        UI.Color.RGB(100, 220, 160))
+        UI.Color.RGB(100, 220, 160)
+    )
 
 UI.Mount(view, UIParent)
 ```
@@ -26,10 +30,14 @@ not give the view an intrinsic image size.
 
 ```lua
 local UI = Declarus.UI
-local view = UI.View():size(120, 180)
-    :gradient("VERTICAL",
+
+local view = UI.View()
+    :size(120, 180)
+    :gradient(
+        "VERTICAL",
         UI.Color.RGB(240, 100, 50),
-        UI.Color.RGB(70, 100, 220))
+        UI.Color.RGB(70, 100, 220)
+    )
 
 UI.Mount(view, UIParent)
 ```
@@ -49,11 +57,15 @@ radial gradients yet.
 
 ```lua
 local UI = Declarus.UI
-local view = UI.View():size(320, 50)
+
+local view = UI.View()
+    :size(320, 50)
     :backgroundColor(UI.Color.RGB(20, 25, 35))
-    :gradient("HORIZONTAL",
+    :gradient(
+        "HORIZONTAL",
         UI.Color.RGBA(90, 195, 240, 0),
-        UI.Color.RGBA(90, 195, 240, 1))
+        UI.Color.RGBA(90, 195, 240, 1)
+    )
 
 UI.Mount(view, UIParent)
 ```
@@ -67,11 +79,16 @@ whole frame afterward.
 
 ```lua
 local UI = Declarus.UI
-local icon = UI.View():size(64, 64):texture(134400)
+
+local icon = UI.View()
+    :size(64, 64)
+    :texture(134400)
     :texCoords(0.08, 0.92, 0.08, 0.92)
-    :gradient("VERTICAL",
+    :gradient(
+        "VERTICAL",
         UI.Color.RGBA(255, 255, 255, 0),
-        UI.Color.RGB(255, 255, 255))
+        UI.Color.RGB(255, 255, 255)
+    )
 
 UI.Mount(icon, UIParent)
 ```
@@ -87,11 +104,18 @@ surface. Neither operation automatically preserves the image's aspect ratio.
 
 ```lua
 local UI = Declarus.UI
-local view = UI.Button("Save", function() print("Saved") end)
-    :size(220, 40):padding(UI.Edge.Left, 12):padding(UI.Edge.Top, 10)
-    :gradient("HORIZONTAL",
+
+local view = UI.Button("Save", function()
+    print("Saved")
+end)
+    :size(220, 40)
+    :padding(UI.Edge.Left, 12)
+    :padding(UI.Edge.Top, 10)
+    :gradient(
+        "HORIZONTAL",
         UI.Color.RGB(25, 70, 120),
-        UI.Color.RGB(35, 120, 80))
+        UI.Color.RGB(35, 120, 80)
+    )
     :foregroundColor(UI.Color.RGB(255, 255, 255))
 
 UI.Mount(view, UIParent)
@@ -114,11 +138,20 @@ The background color and foreground text color remain independent.
 
 ```lua
 local UI = Declarus.UI
-local view = UI.View():size(160, 40):texture(134400)
-    :gradient("HORIZONTAL", UI.Color.RGB(255, 0, 0), UI.Color.RGB(0, 0, 255))
+
+local view = UI.View()
+    :size(160, 40)
+    :texture(134400)
+    :gradient(
+        "HORIZONTAL",
+        UI.Color.RGB(255, 0, 0),
+        UI.Color.RGB(0, 0, 255)
+    )
 local handle = UI.Mount(view, UIParent)
 
-view:gradient(nil)
+view
+    :gradient(nil)
+
 handle:Update(view)
 ```
 

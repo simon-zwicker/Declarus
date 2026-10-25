@@ -6,6 +6,7 @@
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.Text("Hello Azeroth")
     :fontSize(20)
     :padding(8)
@@ -26,13 +27,18 @@ the same font configuration.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.VStack({
     UI.Text("Client font at 16"),
-    UI.Text("Larger text"):fontSize(24),
+
+    UI.Text("Larger text")
+        :fontSize(24),
+
     UI.Text("Outlined text")
         :font(Declarus.Client.GetDefaultFont(), "OUTLINE")
         :fontSize(18),
-}):spacing(12)
+})
+    :spacing(12)
 ```
 
 **Result:** Three lines using the client font, a larger size and an outlined
@@ -51,6 +57,7 @@ standard dimensions.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.Text("My addon font")
     :font("Interface\\AddOns\\MyAddon\\Media\\MyFont.ttf")
     :fontSize(18)
@@ -65,7 +72,9 @@ fallback.
 
 ```lua
 local UI = Declarus.UI
-local view = UI.Text("This line can be wider than its view."):width(100)
+
+local view = UI.Text("This line can be wider than its view.")
+    :width(100)
 ```
 
 **Result:** The view frame is 100 units wide. The FontString does not get an
@@ -78,6 +87,7 @@ yet. Use shorter lines, more room or deliberately separate text views.
 
 ```lua
 local UI = Declarus.UI
+
 local L = Declarus.Localization.Create("MyAddon.Options")
 
 L:Register("enUS", {
@@ -91,11 +101,22 @@ L:Register("deDE", {
 })
 
 local view = UI.VStack({
-    UI.Text("TITLE"):localize(L):fontSize(22),
-    UI.Text("ENGLISH_ONLY"):localize(L),
-    UI.Text("MISSING_KEY"):localize(L),
-    UI.Button("SAVE", function() print("Save requested") end):localize(L),
-}):spacing(10)
+    UI.Text("TITLE")
+        :localize(L)
+        :fontSize(22),
+
+    UI.Text("ENGLISH_ONLY")
+        :localize(L),
+
+    UI.Text("MISSING_KEY")
+        :localize(L),
+
+    UI.Button("SAVE", function()
+        print("Save requested")
+    end)
+        :localize(L),
+})
+    :spacing(10)
 
 UI.Mount(view, UIParent)
 ```
@@ -127,7 +148,9 @@ values.
 
 ```lua
 local L = Declarus.Localization.Create("MyAddon.Example")
-L:Register("enUS", {TITLE = "Settings"})
+L:Register("enUS", {
+    TITLE = "Settings"
+})
 print(L:Get("TITLE"))
 print(Declarus.Localization.GetActiveLocale())
 ```

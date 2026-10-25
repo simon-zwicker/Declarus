@@ -37,12 +37,19 @@ Run this inside a WoW addon after Declarus has loaded:
 local UI = Declarus.UI
 
 local view = UI.VStack({
-    UI.Text("Hello Declarus"):fontSize(22),
+    UI.Text("Hello Declarus")
+        :fontSize(22),
+
     UI.Text("Text, layout and a button in one description."),
+
     UI.Button("Try it", function(mouseButton)
         print("Clicked:", mouseButton)
-    end):width(180),
-}):spacing(10):padding(16):backgroundColor(UI.Color.RGB(20, 26, 35))
+    end)
+        :width(180),
+})
+    :spacing(10)
+    :padding(16)
+    :backgroundColor(UI.Color.RGB(20, 26, 35))
 
 local handle = UI.Mount(view, UIParent)
 ```

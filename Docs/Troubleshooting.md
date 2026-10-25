@@ -28,7 +28,11 @@ does not automatically receive the screen dimensions.
 
 ```lua
 local UI = Declarus.UI
-local view = UI.View():size(100, 40):backgroundColor(UI.Color.RGB(255, 0, 0))
+
+local view = UI.View()
+    :size(100, 40)
+    :backgroundColor(UI.Color.RGB(255, 0, 0))
+
 UI.Mount(view, UIParent)
 ```
 

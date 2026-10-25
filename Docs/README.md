@@ -35,13 +35,16 @@ Examples use this shortcut:
 
 ```lua
 local UI = Declarus.UI
+
 ```
 
 Calling a constructor only builds a description. To see it, mount it:
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.Text("This is a view description.")
+
 local handle = UI.Mount(view, UIParent)
 ```
 

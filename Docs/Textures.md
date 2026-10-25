@@ -7,7 +7,9 @@ constructor yet; use a normal view with a size and texture.
 
 ```lua
 local UI = Declarus.UI
-local icon = UI.View():size(48, 48)
+
+local icon = UI.View()
+    :size(48, 48)
     :texture(134400)
     :texCoords(0.08, 0.92, 0.08, 0.92)
     :textureTint(UI.Color.RGBA(90, 195, 240, 0.8))
@@ -24,9 +26,13 @@ Texture accepts a file path or a numeric WoW FileDataID:
 
 ```lua
 local UI = Declarus.UI
-local fromPath = UI.View():size(48, 48)
+
+local fromPath = UI.View()
+    :size(48, 48)
     :texture("Interface\\Icons\\INV_Misc_QuestionMark")
-local fromID = UI.View():size(48, 48):texture(134400)
+local fromID = UI.View()
+    :size(48, 48)
+    :texture(134400)
 ```
 
 **Result:** Both descriptions refer to the question-mark image. A numeric ID is a
@@ -44,9 +50,14 @@ The argument order is left, right, top, bottom. Values are normalized from 0 to 
 
 ```lua
 local UI = Declarus.UI
-local cropped = UI.View():size(64, 64):texture(134400)
+
+local cropped = UI.View()
+    :size(64, 64)
+    :texture(134400)
     :texCoords(0.08, 0.92, 0.08, 0.92)
-local mirrored = UI.View():size(64, 64):texture(134400)
+local mirrored = UI.View()
+    :size(64, 64)
+    :texture(134400)
     :texCoords(1, 0, 0, 1)
 ```
 
@@ -61,7 +72,9 @@ or eight-coordinate API yet.
 
 ```lua
 local UI = Declarus.UI
-local view = UI.View():size(120, 40)
+
+local view = UI.View()
+    :size(120, 40)
     :texture("Interface\\Buttons\\WHITE8X8")
     :textureTint(UI.Color.RGB(90, 220, 140))
 ```
@@ -87,7 +100,10 @@ A normal textured button therefore needs no layer override:
 
 ```lua
 local UI = Declarus.UI
-local view = UI.Button("Save", function() print("Saved") end)
+
+local view = UI.Button("Save", function()
+    print("Saved")
+end)
     :texture("Interface\\Buttons\\WHITE8X8")
     :textureTint(UI.Color.RGB(30, 85, 120))
 ```

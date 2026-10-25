@@ -10,14 +10,19 @@ size.
 
 ```lua
 local UI = Declarus.UI
+
 local rows = {}
+
 for index = 1, 20 do
     rows[#rows + 1] = UI.Text("Entry " .. index)
 end
 
 local content = UI.VStack(rows)
-    :spacing(8):padding(12):width(UI.Size.Fill)
-local view = UI.ScrollView(content):size(320, 200)
+    :spacing(8)
+    :padding(12)
+    :width(UI.Size.Fill)
+local view = UI.ScrollView(content)
+    :size(320, 200)
 
 UI.Mount(view, UIParent)
 ```
@@ -34,9 +39,14 @@ vertical Fill target.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.ScrollView(
-    UI.View():size(180, 400):backgroundColor(UI.Color.RGB(90, 195, 240))
-):size(200, 120):padding(10)
+    UI.View()
+        :size(180, 400)
+        :backgroundColor(UI.Color.RGB(90, 195, 240))
+)
+    :size(200, 120)
+    :padding(10)
 ```
 
 **Result:** Outer size is 200 by 120. Padding leaves a viewport of 180 by 100,
@@ -51,9 +61,13 @@ the layout needs.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.ScrollView(
-    UI.View():size(100, 40):backgroundColor(UI.Color.RGB(90, 195, 240))
-):size(100, 100)
+    UI.View()
+        :size(100, 40)
+        :backgroundColor(UI.Color.RGB(90, 195, 240))
+)
+    :size(100, 100)
 ```
 
 **Result:** The content is shorter than the viewport, so the offset stays at zero

@@ -9,10 +9,18 @@ each other, top to bottom. Pass a dense Lua array without nil gaps.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.VStack({
-    UI.View():size(100, 20):backgroundColor(UI.Color.RGB(90, 195, 240)),
-    UI.View():size(60, 30):backgroundColor(UI.Color.RGB(100, 210, 140)),
-}):spacing(8):padding(10)
+    UI.View()
+        :size(100, 20)
+        :backgroundColor(UI.Color.RGB(90, 195, 240)),
+
+    UI.View()
+        :size(60, 30)
+        :backgroundColor(UI.Color.RGB(100, 210, 140)),
+})
+    :spacing(8)
+    :padding(10)
 ```
 
 **Result:** Outer size is 120 by 78. The first child starts at x=10, y=10. The
@@ -38,11 +46,23 @@ uses its children.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.HStack({
-    UI.View():size(80, 30):backgroundColor(UI.Color.RGB(80, 120, 180)),
-    UI.View():size(UI.Size.Fill, 30):backgroundColor(UI.Color.RGB(90, 180, 120)),
-    UI.View():size(UI.Size.Fill, 30):backgroundColor(UI.Color.RGB(190, 120, 80)),
-}):width(400):spacing(10):padding(10)
+    UI.View()
+        :size(80, 30)
+        :backgroundColor(UI.Color.RGB(80, 120, 180)),
+
+    UI.View()
+        :size(UI.Size.Fill, 30)
+        :backgroundColor(UI.Color.RGB(90, 180, 120)),
+
+    UI.View()
+        :size(UI.Size.Fill, 30)
+        :backgroundColor(UI.Color.RGB(190, 120, 80)),
+})
+    :width(400)
+    :spacing(10)
+    :padding(10)
 ```
 
 **Result:** Outer size is 400 by 50. Padding leaves 380 units inside. Subtract the
@@ -79,10 +99,19 @@ axis. There is no space-between or flex-weight setting yet.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.HStack({
-    UI.View():size(40, 20):backgroundColor(UI.Color.RGB(90, 195, 240)),
-    UI.View():size(40, 50):backgroundColor(UI.Color.RGB(100, 210, 140)),
-}):height(70):spacing(10):alignment(UI.Alignment.Center)
+    UI.View()
+        :size(40, 20)
+        :backgroundColor(UI.Color.RGB(90, 195, 240)),
+
+    UI.View()
+        :size(40, 50)
+        :backgroundColor(UI.Color.RGB(100, 210, 140)),
+})
+    :height(70)
+    :spacing(10)
+    :alignment(UI.Alignment.Center)
 ```
 
 **Result:** The first child gets 25 units above it, the second gets 10. Both are
@@ -92,10 +121,15 @@ vertically centered inside the height of 70. Total width is 90.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.VStack({
     UI.Text("Short"),
+
     UI.Text("A longer line"),
-}):width(300):spacing(8):alignment(UI.Alignment.Stretch)
+})
+    :width(300)
+    :spacing(8)
+    :alignment(UI.Alignment.Stretch)
 ```
 
 **Result:** Both child frames stretch to at least the available width of 300.
@@ -113,13 +147,25 @@ when that is the behavior you want.
 
 ```lua
 local UI = Declarus.UI
+
 local view = UI.VStack({
-    UI.Text("Settings"):fontSize(20),
+    UI.Text("Settings")
+        :fontSize(20),
+
     UI.HStack({
-        UI.Text("Profile"):width(100),
-        UI.TextField("Default"):width(UI.Size.Fill),
-    }):width(UI.Size.Fill):spacing(12):alignment(UI.Alignment.Center),
-}):width(420):padding(16):spacing(12)
+        UI.Text("Profile")
+            :width(100),
+
+        UI.TextField("Default")
+            :width(UI.Size.Fill),
+    })
+        :width(UI.Size.Fill)
+        :spacing(12)
+        :alignment(UI.Alignment.Center),
+})
+    :width(420)
+    :padding(16)
+    :spacing(12)
 ```
 
 **Result:** The row sits below the heading. The root's inner width is 388. After
