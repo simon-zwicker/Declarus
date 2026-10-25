@@ -59,6 +59,7 @@ dofile("UI/Engine/LocalizationResolver.lua")
 
 dofile("UI/Components/View.lua")
 dofile("UI/Components/Text.lua")
+dofile("UI/Components/Controls.lua")
 
 -- ============================================================================
 -- Title:       Typography
@@ -81,6 +82,7 @@ dofile("UI/Layout/VStack.lua")
 
 dofile("UI/Engine/Measure.lua")
 dofile("UI/Engine/Arrange.lua")
+dofile("UI/Engine/ControlRender.lua")
 dofile("UI/Engine/Render.lua")
 
 -- ============================================================================
@@ -122,5 +124,7 @@ TestRunner.RunSuite("Layout/StackTests")
 -- ============================================================================
 
 TestRunner.RunSuite("Engine/BasicsTests")
+
+TestRunner.RunSuite("Engine/ControlTests")
 
 TestRunner.Summary()

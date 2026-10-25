@@ -12,7 +12,7 @@
 
 1. [x] Checkout inspizieren; Basis: 87 erfolgreiche Tests. Vorhandene .DS_Store-Änderungen nicht übernehmen.
 2. [x] Gemeinsamer FontResolver, Text-Padding, Font-Modifier und Texturen.
-3. [ ] Buttons und Events; TextField, Slider, Toggle, Dropdown.
+3. [x] Buttons und Events; TextField, Slider, Toggle, Dropdown.
 4. [ ] ScrollView und explizite dynamische Mount-Updates mit Cleanup.
 5. [ ] API-Beispiele, Regressionstests, lokale Abschlussprüfung; Ingame-Abnahme durch Nutzer.
 

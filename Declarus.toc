@@ -19,12 +19,14 @@ UI\Engine\LocalizationResolver.lua
 
 UI\Components\Text.lua
 UI\Components\View.lua
+UI\Components\Controls.lua
 
 UI\Typography\FontResolver.lua
 UI\Typography\TextMeasure.lua
 
 UI\Engine\Measure.lua
 UI\Engine\Arrange.lua
+UI\Engine\ControlRender.lua
 UI\Engine\Render.lua
 UI\Mount.lua
 

@@ -32,6 +32,12 @@
 ---@field Vertical DeclarusEdge
 
 ---@class DeclarusUI
+---@field Button fun(label: string, callback: fun(button: string)): DeclarusControl
+---@field TextField fun(value: string, callback?: fun(value: string)): DeclarusControl
+---@field Slider fun(value: number, minimum: number, maximum: number, step?: number, callback?: fun(value: number)): DeclarusControl
+---@field Toggle fun(value: boolean, callback?: fun(value: boolean)): DeclarusControl
+---@field Dropdown fun(options: string[], value: string, callback?: fun(value: string)): DeclarusControl
+---@field _ControlRender DeclarusControlRenderer
 ---@field Alignment DeclarusAlignmentValues
 ---@field Size DeclarusSizeValues
 ---@field Edge DeclarusEdgeValues

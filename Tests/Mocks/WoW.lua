@@ -206,3 +206,30 @@ function FrameMock:SetAlpha(alpha) self.alpha = alpha end
 function FrameMock:Hide() self.hidden = true end
 function FrameMock:Show() self.hidden = false end
 function FontStringMock:SetTextColor(...) self.color = {...} end
+
+function FrameMock:SetScript(event, callback)
+    self.scripts = self.scripts or {}
+    self.scripts[event] = callback
+end
+function FrameMock:RegisterForClicks(...) self.clicks = {...} end
+function FrameMock:SetAutoFocus(value) self.autoFocus = value end
+function FrameMock:SetMultiLine(value) self.multiLine = value end
+function FrameMock:SetFont(...) self.font = {...} end
+function FrameMock:SetTextInsets(...) self.insets = {...} end
+function FrameMock:SetText(value) self.text = value end
+function FrameMock:GetText() return self.text end
+function FrameMock:ClearFocus() self.focus = false end
+function FrameMock:SetOrientation(value) self.orientation = value end
+function FrameMock:SetMinMaxValues(a, b) self.minimum, self.maximum = a, b end
+function FrameMock:SetValueStep(value) self.step = value end
+function FrameMock:SetThumbTexture(value) self.thumb = value end
+function FrameMock:SetValue(value)
+    self.value = value
+    if self.scripts and self.scripts.OnValueChanged then self.scripts.OnValueChanged(self, value) end
+end
+function FrameMock:SetChecked(value) self.checked = value end
+function FrameMock:GetChecked() return self.checked end
+function FrameMock:SetNormalTexture(value) self.normal = value end
+function FrameMock:SetCheckedTexture(value) self.checkedTexture = value end
+function FrameMock:SetFrameStrata(value) self.strata = value end
+function FrameMock:IsShown() return not self.hidden end

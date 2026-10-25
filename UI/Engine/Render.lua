@@ -85,7 +85,7 @@ end
 ---@param parentArranged? DeclarusArrangedSize
 ---@return Frame
 local function RenderView(view, arranged, parent, parentArranged)
-    local frame = CreateFrame("Frame", nil, parent)
+    local frame = CreateFrame(UI._ControlRender.FrameType(view), nil, parent)
 
     local relativeX = arranged.x
     local relativeY = arranged.y
@@ -105,11 +105,12 @@ local function RenderView(view, arranged, parent, parentArranged)
         -relativeY
     )
 
-    if view.kind == "Text" then
+    if view.kind == "Text" or view.kind == "Button" then
         ---@cast view DeclarusTextView
         RenderText(frame, view)
     end
 
+    UI._ControlRender.Apply(frame, view)
     ApplyBackground(frame, view)
     if view.properties.texture then
         local texture = frame:CreateTexture(nil, "ARTWORK")
