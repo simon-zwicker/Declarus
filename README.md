@@ -67,6 +67,11 @@ Für einen vollständigen Lauf einschließlich Hinweisen vom Repository-Verzeich
 "${LUA_LANGUAGE_SERVER:-lua-language-server}" --check=. --checklevel=Hint --logpath=/tmp/declarus-luals
 ```
 
+Die gemeinsame Konfiguration liegt in `.luarc.json`. Lua-5.1-Standardbibliotheken
+bleiben für Laufzeitcode und LuaJIT-Tests verfügbar. `.vscode/settings.json` enthält
+keine abweichenden Bibliotheksdefinitionen; eine zusätzliche WoW-Erweiterung ist
+für den dokumentierten Typumfang nicht erforderlich.
+
 Falls das Programm nicht im Suchpfad liegt, `LUA_LANGUAGE_SERVER` auf die ausführbare
 Datei setzen. `Types/WoW.lua` beschreibt den von Declarus verwendeten WoW-API-Ausschnitt
 nur für den Editor; diese Datei gehört nicht in die TOC und wird nicht ausgeführt.

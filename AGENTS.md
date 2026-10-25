@@ -5,6 +5,7 @@
 - PoisonFlow nicht verändern. Declarus stellt allgemeine UI-Basics bereit.
 - Lua 5.1 / LuaJIT beibehalten; öffentliche APIs mit LuaLS annotieren.
 - Bestehende Fluent-API, Measure/Arrange/Render-Trennung und TOC-Ladereihenfolge wahren.
+- LuaLS-Konfiguration in `.luarc.json` halten; lokale `.vscode/settings.json` bei der Prüfung mitberücksichtigen. Standardbibliotheken nicht pauschal deaktivieren.
 - Bei Lua-/Typänderungen auch LuaLS mit `--checklevel=Hint` ausführen (Aufruf siehe README).
 - Pro abgeschlossenem Paket `luajit Tests/Run.lua` ausführen und lokal committen. Neue Verhaltensweisen mit aussagekräftigen Tests absichern.
 - Mocktests ersetzen keinen WoW-Test. Nicht ingame geprüfte Funktionalität ausdrücklich kennzeichnen.
