@@ -75,3 +75,19 @@ UIParent = nil
 ---@param parent? Frame
 ---@return Frame
 function CreateFrame(frameType, name, parent) end
+
+---@type string?
+STANDARD_TEXT_FONT = nil
+---@type number?
+WOW_PROJECT_ID = nil
+
+---@return string version
+---@return string build
+---@return string date
+---@return number interface
+function GetBuildInfo() end
+
+---@type table<string, fun(message: string)>
+SlashCmdList = {}
+---@type string
+SLASH_DECLARUS1 = "/declarus"

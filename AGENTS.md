@@ -2,6 +2,8 @@
 
 - Dieser lokale Checkout ist Source of Truth. Vor Änderungen Git-Status prüfen und fremde Änderungen schützen. Nur eigene Dateien explizit stagen.
 - Niemals push, fetch, pull oder andere Remote-Git-Aktionen ausführen.
+- Ausschließlich aktuelle offizielle Blizzard-Clients unterstützen, einschließlich Forever. Keine Privatserver und keine historischen Original-Clients.
+- Client-Unterschiede zentral in `Core/Client.lua` behandeln. Gemeinsame APIs bevorzugen; Client-Kennung ist kein Beweis für verfügbare Fähigkeiten.
 - PoisonFlow nicht verändern. Declarus stellt allgemeine UI-Basics bereit.
 - Lua 5.1 / LuaJIT beibehalten; öffentliche APIs mit LuaLS annotieren.
 - Bestehende Fluent-API, Measure/Arrange/Render-Trennung und TOC-Ladereihenfolge wahren.

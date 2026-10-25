@@ -9,7 +9,7 @@ local FontResolver = {}
 ---@return number size
 ---@return string flags
 function FontResolver.Resolve(properties)
-    return properties.font or "Fonts\\FRIZQT__.TTF", properties.fontSize or 16, properties.fontFlags or ""
+    return properties.font or _G.Declarus.Client.GetDefaultFont(), properties.fontSize or 16, properties.fontFlags or ""
 end
 
 UI._FontResolver = FontResolver

@@ -12,6 +12,7 @@
 -- ============================================================================
 
 ---@class Declarus
+---@field Client DeclarusClient
 ---@field UI DeclarusUI
 ---@field Localization DeclarusLocalizationManager
 

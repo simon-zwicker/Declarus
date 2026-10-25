@@ -17,12 +17,14 @@
 -- ============================================================================
 
 dofile("Tests/Mocks/WoW.lua")
+dofile("Tests/Mocks/Client.lua")
 
 -- ============================================================================
 -- Title:       Core
 -- ============================================================================
 
 dofile("Core/Init.lua")
+dofile("Core/Client.lua")
 dofile("Core/Localization.lua")
 
 -- ============================================================================
@@ -95,6 +97,7 @@ local TestRunner = dofile("Tests/TestRunner.lua")
 
 -- Core
 TestRunner.RunSuite("Core/LocalizationTests")
+TestRunner.RunSuite("Core/ClientTests")
 
 -- Types
 TestRunner.RunSuite("Types/ViewTests")
