@@ -1,162 +1,203 @@
-# Öffentliche API-Referenz
+# API reference
 
-[Dokumentationsübersicht](README.md)
+[Docs](README.md)
 
-`?` markiert optionale Argumente. Methoden auf Views werden mit `:` aufgerufen,
-Fabriken und Namespace-Funktionen mit `.`. Modifier verändern das vorhandene
-Objekt und geben es für weitere Verkettung zurück.
+Use a dot for factories and namespace functions, and a colon for view methods.
+A question mark in the signatures below marks an optional argument. Modifier
+methods change the same view object and return it for chaining.
 
 ## Namespaces
 
-| Namespace | Zweck |
+| Namespace | Purpose |
 | --- | --- |
-| `Declarus.UI` | Komponenten, Modifier-Basen, Konstanten und Mount |
-| `Declarus.Localization` | Übersetzungsinstanzen und aktive Sprache |
-| `Declarus.Client` | Client-Metadaten und Standardschrift |
+| `Declarus.UI` | Components, constants, colors and mounting |
+| `Declarus.Localization` | Translation instances and locale lookup |
+| `Declarus.Client` | Client details and the default font |
 
-## Komponenten
+## Constructors
 
-| Signatur | Rückgabe | Bedeutung / Default |
+```text
+UI.View()
+UI.Text(value)
+UI.HStack(children)
+UI.VStack(children)
+UI.Button(label, onClick)
+UI.TextField(value, onChange?)
+UI.Slider(value, minimum, maximum, step?, onChange?)
+UI.Toggle(value, onChange?)
+UI.Dropdown(options, value, onChange?)
+UI.ScrollView(content)
+```
+
+| Constructor | Input | Result and defaults |
 | --- | --- | --- |
-| `UI.View()` | View | leere Fläche, keine intrinsische Bildgröße |
-| `UI.Text(value: string)` | TextView | Text mit intrinsischen Schriftmaßen |
-| `UI.HStack(children: View[])` | Stack | horizontale Kinderfolge |
-| `UI.VStack(children: View[])` | Stack | vertikale Kinderfolge |
-| `UI.Button(label: string, onClick: function)` | Control | 120 × 28, Callback mit Mausbutton |
-| `UI.TextField(value: string, onChange?: function)` | Control | 180 × 28, Callback mit neuem String |
-| `UI.Slider(value: number, min: number, max: number, step?: number, onChange?: function)` | Control | 180 × 20, Step 1, horizontal |
-| `UI.Toggle(value: boolean, onChange?: function)` | Control | 26 × 26, Checkbox, Callback boolean |
-| `UI.Dropdown(options: string[], value: string, onChange?: function)` | Control | 180 × 28, String-Liste und ausgewählter String |
-| `UI.ScrollView(content: View)` | View | 240 × 180, ein Inhaltsbaum, vertikales Mausrad |
+| View | No arguments | Plain view with no intrinsic image size |
+| Text | String | Text view measured using its font |
+| HStack | Dense list of views | Children arranged horizontally |
+| VStack | Dense list of views | Children arranged vertically |
+| Button | String label and callback | 120 by 28; callback receives the mouse button |
+| TextField | String and optional callback | 180 by 28; callback receives new text |
+| Slider | Numbers for value/range, optional step/callback | 180 by 20; horizontal; step defaults to 1 |
+| Toggle | Boolean and optional callback | 26 by 26; callback receives a boolean |
+| Dropdown | Dense string list, selected string, optional callback | 180 by 28; callback receives the selected string |
+| ScrollView | One content view | Viewport defaults to 240 by 180 |
 
-Für Defaults, Validierung und native Besonderheiten siehe [Controls](Controls.md)
-und [ScrollView](ScrollView.md). `UI.Image`, `UI.Textfield` und `UI.Textarea` sind
-keine vorhandenen Konstruktoren; korrekt sind `UI.View():texture(...)` und
-`UI.TextField(...)` mit großem F.
+The Slider callback is always argument five. Use nil for argument four to keep
+the default step. See [Controls](Controls.md) for validation and behavior.
 
-## Gemeinsame Modifier für alle Views
+There is no UI.Image constructor; use a View with a texture. The input control is
+spelled `UI.TextField`, with a capital F. There is no Textarea constructor yet.
 
-| Signatur | Wirkung |
-| --- | --- |
-| `:width(value: number|Size)` | Außenbreite |
-| `:height(value: number|Size)` | Außenhöhe |
-| `:size(width: number|Size, height: number|Size)` | beide Außenmaße |
-| `:padding(value: number)` | kumulativer Abstand auf allen Seiten |
-| `:padding(edge: Edge, value: number)` | kumulativer Abstand auf gewählten Seiten |
-| `:backgroundColor(color: Color)` | eigene BACKGROUND-Fläche |
-| `:foregroundColor(color: Color)` | derzeit Text-/Button-Beschriftung |
-| `:opacity(value: number)` | natives Frame-Alpha, regulär 0–1 |
-| `:visible(value: boolean)` | Frame ein-/ausblenden, Layout bleibt |
-| `:gradient(orientation?: GradientOrientation, fromColor?: Color, toColor?: Color)` | zwei Endpunkte, HORIZONTAL/VERTICAL; nil entfernt den Verlauf |
-| `:texture(source: string|number)` | Datei-/FileDataID-Textur über die Elementfläche |
-| `:texCoords(left: number, right: number, top: number, bottom: number)` | vier UV-Werte 0–1, umgekehrte Seiten spiegeln |
-| `:textureTint(color: Color)` | kopierte normalisierte RGB-/RGBA-Tönung der Textur |
-| `:textureLayer(layer: DrawLayer, sublevel?: number)` | Standard BORDER/0; Sublevel -8 bis 7 |
+## Common view modifiers
 
-Ohne Appearance-Modifier ist eine normale leere View transparent. Controls
-konfigurieren einen eigenen dunklen Hintergrund. TexCoords, Tint und Layer sind
-wirkungslos, solange weder eine eigene Textur noch ein Gradient gesetzt ist; sie bleiben aber als
-Eigenschaften gespeichert.
+These methods are available on every component:
 
-## TextView-Modifier
-
-Diese Methoden stehen auf Text und den Controls zur Verfügung:
-
-| Signatur | Default | sichtbare Verwendung |
+| Method | Arguments | Effect |
 | --- | --- | --- |
-| `:font(path: string, flags?: string)` | Client-Schrift, leere Flags | Text, Button, TextField, Dropdown |
-| `:fontSize(size: number)` | 16 | dieselben textzeichnenden Komponenten |
-| `:localize(localization: Localization)` | keine Übersetzung | Text und Button-Key-Auflösung |
+| `:width(value)` | Number or UI.Size constant | Set outer width |
+| `:height(value)` | Number or UI.Size constant | Set outer height |
+| `:size(width, height)` | Two numbers or UI.Size constants | Set both dimensions |
+| `:padding(value)` | Number | Add padding on all sides |
+| `:padding(edge, value)` | UI.Edge constant and number | Add padding on selected sides |
+| `:backgroundColor(color)` | Normalized color table | Draw a BACKGROUND surface |
+| `:foregroundColor(color)` | Normalized color table | Color Text and custom Button labels |
+| `:opacity(value)` | Number, normally 0 to 1 | Set native frame alpha |
+| `:visible(value)` | Boolean | Show or hide without changing layout space |
+| `:texture(source)` | File path or numeric FileDataID | Stretch an image over the element |
+| `:texCoords(left, right, top, bottom)` | Four numbers from 0 to 1 | Crop or mirror the image |
+| `:textureTint(color)` | Normalized RGB/RGBA table | Multiply the image colors |
+| `:textureLayer(layer, sublevel?)` | Layer string and optional integer | Default BORDER/0; sublevel range -8 to 7 |
+| `:gradient(orientation, fromColor, toColor)` | Orientation string and two color tables | Color or fade the image between two endpoints |
+| `:gradient(nil)` | Nil, with no colors | Remove the gradient |
 
-Methodenverfügbarkeit ist nicht identisch mit Rendering-Unterstützung jedes
-Control-Werts. Slider/Toggle zeichnen keine Textlabels. Dropdown-Strings und
-TextField-Werte werden nicht automatisch lokalisiert.
+Calling gradient without arguments also removes it. Horizontal runs left to
+right; vertical runs bottom to top. See [Gradients](Gradients.md).
 
-## Stack-Modifier
+TexCoords, tint and layer are stored even if no image is set. They affect drawing
+when the view has an explicit texture or a generated gradient surface.
+A plain View starts transparent; controls configure their own dark backgrounds.
 
-| Signatur | Default | Wirkung |
+## TextView modifiers
+
+```text
+:font(path, flags?)
+:fontSize(size)
+:localize(localization)
+```
+
+| Method | Default | Where it is rendered |
 | --- | --- | --- |
-| `:spacing(value: number)` | 0 | Abstand zwischen Kindern |
-| `:alignment(value: Alignment)` | HStack Top, VStack Left | Querachsen-Ausrichtung |
+| Font | Client font and empty flags | Text, Button, TextField, Dropdown |
+| Font size | 16 | Components that draw text |
+| Localization | None | Text and Button translation keys |
 
-Die Fabriken HStack/VStack und die Modifier `width`, `height`, `padding` usw.
-sind kombinierbar. Feste Kind-Maße haben Vorrang vor Stretch.
+Slider and Toggle inherit these methods but do not create text labels.
+TextField values and Dropdown strings are not automatically localized.
+Font size must be positive and font path must be a non-empty string.
 
-## Konstanten und Farbwerte
+## Stack modifiers
 
-| Gruppe | Werte |
+| Method | Default | Effect |
+| --- | --- | --- |
+| `:spacing(value)` | 0 | Space between children |
+| `:alignment(value)` | HStack Top; VStack Left | Cross-axis alignment |
+
+Stacks also support the common view modifiers. Fixed numeric cross-axis sizes
+on children take priority over Stretch.
+
+## Constants
+
+| Group | Values |
 | --- | --- |
-| `UI.Size` | `Wrap`, `Fill` |
-| `UI.Edge` | `All`, `Horizontal`, `Vertical`, `Top`, `Bottom`, `Left`, `Right` |
-| `UI.Alignment` | `Top`, `Bottom`, `Left`, `Right`, `Center`, `Stretch` |
-| GradientOrientation-Strings | `"HORIZONTAL"`, `"VERTICAL"` |
-| DrawLayer-Strings | `"BACKGROUND"`, `"BORDER"`, `"ARTWORK"`, `"OVERLAY"`, `"HIGHLIGHT"` |
+| `UI.Size` | Wrap, Fill |
+| `UI.Edge` | All, Horizontal, Vertical, Top, Bottom, Left, Right |
+| `UI.Alignment` | Top, Bottom, Left, Right, Center, Stretch |
+| Texture layer strings | BACKGROUND, BORDER, ARTWORK, OVERLAY, HIGHLIGHT |
+| Gradient orientation strings | HORIZONTAL, VERTICAL |
 
-Alignment-Kombinationen sind auf die jeweilige Stack-Querachse beschränkt.
-Größen, Edges und Alignments bevorzugt über die Konstanten referenzieren statt
-entsprechende Rohstrings selbst zu schreiben.
+Use UI constants for sizes, edges and alignment. Texture layers and gradient
+orientations are uppercase strings. Alignment values must match the stack's cross
+axis, as described in [Layout](Layout.md).
 
-`UI.Color.RGB(red, green, blue)` und
-`UI.Color.RGBA(red, green, blue, alpha)` geben `{r/255, g/255, b/255, a}` zurück.
-Bei RGB ist Alpha 1. Beispiel: `UI.Color.RGBA(255, 128, 0, 0.5)` ergibt intern
-Rot 1, Grün 128/255, Blau 0 und Alpha 0.5.
+## Colors
 
-## Mount und Handle
+```text
+UI.Color.RGB(red, green, blue)
+UI.Color.RGBA(red, green, blue, alpha)
+```
 
-| Aufruf / Feld | Rückgabe / Wirkung |
-| --- | --- |
-| `UI.Mount(view: View, parent: Frame)` | MountHandle; im Parent zentriert |
-| `handle.frame` | aktuell gerenderter Wurzel-Frame |
-| `handle:Update(view: View)` | ersetzt und vermisst den Baum dieses Mounts |
-| `handle:Unmount()` | entfernt den aktiven Mount; mehrfach erlaubt |
+RGB channels use 0 to 255. Alpha uses 0 to 1 and defaults to 1 in RGB. The result
+is a normalized array of red, green, blue and alpha values.
 
-Update nach Unmount ist unzulässig. Weder Update noch Unmount liefern einen
-neuen Handle als verkettbaren Rückgabewert. Beim Ersetzen gehen Fokus und
-Scrollposition im ersetzten Baum verloren. Details: [Lifecycle](StateAndLifecycle.md).
+For example, RGBA(255, 128, 0, 0.5) produces red 1, green 128/255, blue 0 and
+alpha 0.5. The color factories themselves do not clamp invalid inputs.
+
+## Mount and handle
+
+```text
+UI.Mount(view, parent)
+handle:Update(view)
+handle:Unmount()
+```
+
+Mount returns a handle and centers its content in the parent frame.
+`handle.frame` is its currently rendered root frame. Update replaces that tree
+and returns no new handle. Unmount cleans up the active tree and may be called
+more than once. Update after Unmount is rejected.
+
+See [State and lifecycle](StateAndLifecycle.md) for focus, scroll state and frame
+allocation behavior.
 
 ## Localization
 
-| Aufruf | Rückgabe / Wirkung |
-| --- | --- |
-| `Declarus.Localization.Create(namespace: string)` | neue oder bestehende Instanz für denselben Namen |
-| `Declarus.Localization.GetActiveLocale()` | `GetLocale()` oder `"enUS"` als Fallback |
-| `L:Register(locale: string, translations: table<string, string>)` | ergänzt/überschreibt Übersetzungen dieser Sprache |
-| `L:Get(key: string)` | aktive Sprache → enUS → Key |
+```text
+Declarus.Localization.Create(namespace)
+Declarus.Localization.GetActiveLocale()
+L:Register(locale, translations)
+L:Get(key)
+```
 
-Die Instanz besitzt außerdem `namespace` und `translations`. Anwendungscode sollte
-Registrierung und Auflösung bevorzugt über die Methoden durchführen.
+Create returns the same instance for the same non-empty namespace string.
+GetActiveLocale returns the client locale, or enUS if unavailable. Register merges
+a locale's string translations. Get resolves current locale, then enUS, then the
+original key. Register does not return a chainable localization object.
 
-## Client
+The instance also stores namespace and translations. Prefer its methods over
+directly editing those tables.
 
-`Declarus.Client.GetInfo()` liefert eine Tabelle:
+## Client information
 
-| Feld | Typ | Bedeutung |
+```text
+Declarus.Client.GetInfo()
+Declarus.Client.GetDefaultFont()
+```
+
+| GetInfo field | Type | Meaning |
 | --- | --- | --- |
-| `flavor` | string | erkannter Client-Zweig oder `"Unknown"` |
-| `version` | string | Client-Version aus GetBuildInfo |
-| `build` | string | Build-Kennung |
-| `interface` | number | Interface-Kennung |
-| `projectID` | number oder nil | vorhandenes WOW_PROJECT_ID |
+| flavor | String | Recognized client family or Unknown |
+| version | String | Version returned by GetBuildInfo |
+| build | String | Client build |
+| interface | Number | Interface version |
+| projectID | Number or nil | WOW_PROJECT_ID when available |
 
-`Declarus.Client.GetDefaultFont()` liefert `STANDARD_TEXT_FONT` oder die feste
-FRIZQT-Fallback-Datei. Client-Identität ist Diagnose, keine Zusicherung einer
-verfügbaren API oder abgeschlossenen Ingame-Abnahme.
+GetDefaultFont returns STANDARD_TEXT_FONT or the FRIZQT fallback file. Client
+identity is diagnostic information, not a guarantee that a particular API exists
+or an in-game test has passed.
 
-## Playground-Befehle
+## Playground commands
 
-| Befehl | Wirkung |
+| Command | Effect |
 | --- | --- |
-| `/declarus` / `/declarus demo` | Playground öffnen/ersetzen |
-| `/declarus info` | Client-Diagnose ausgeben |
-| `/declarus reset` | Demo-Zustand zurücksetzen |
-| `/declarus hide` | aktive Playground-Mounts schließen |
+| `/declarus` or `/declarus demo` | Open or replace the playground |
+| `/declarus info` | Print client details |
+| `/declarus reset` | Reset the demo values |
+| `/declarus hide` | Close the active playground |
 
-## Interne Schnittstellen
+## Internal APIs
 
-Mit `_` beginnende UI-Felder sind Implementierungsdetails:
-`_View`, `_TextView`, `_Stack`, `_Measure`, `_Arrange`, `_Render`, `_ControlRender`,
-`_LocalizationResolver`, `_FontResolver`, `_TextMeasure`. Auch
-`Declarus.Client._ApplyGradient` ist eine interne native Übergabe, kein
-Anwendungs-Modifier.
-Diese Dokumentation empfiehlt sie nicht als Integrations-API. Tests greifen
-bewusst darauf zu. Eigenen Anwendungscode auf die öffentlichen Funktionen stützen.
+Names beginning with an underscore are implementation details. This includes
+UI._View, _TextView, _Stack, _Measure, _Arrange, _Render, _ControlRender,
+_LocalizationResolver, _FontResolver and _TextMeasure, plus
+Declarus.Client._ApplyGradient.
+
+Tests use these deliberately. Application examples should use the public API.

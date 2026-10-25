@@ -1,82 +1,83 @@
 # Declarus
 
-Deklarative UI-Library für aktuelle offizielle World-of-Warcraft-Clients.
-Lua 5.1 / LuaJIT, gemeinsame View-API und LuaLS-Typannotationen.
-Keine externen Laufzeit-Abhängigkeiten. Keine Unterstützung für Privatserver oder
-historische Original-Clients.
+A declarative UI library for current official World of Warcraft clients.
+Build your UI with Lua objects, then mount it into a WoW frame.
 
-## Dokumentation
+The library stays compatible with Lua 5.1 and LuaJIT. It includes LuaLS annotations
+and has no external runtime dependencies. We target official Blizzard clients.
+We do not build for private servers or old original clients.
 
-Der zentrale Einstieg ist **[Docs/README.md](Docs/README.md)**. Die Dokumentation
-beschreibt Verwendung, Parameter, Defaults, erwartete Ergebnisse und die Grenzen
-des aktuell implementierten Stands.
+## Start here
 
-| Einstieg | Thema |
+The full documentation starts at [Docs/README.md](Docs/README.md).
+
+| Guide | What it covers |
 | --- | --- |
-| [Schnellstart](Docs/GettingStarted.md) | bereitstellen, einbinden, mounten, aktualisieren und schließen |
-| [Views und Modifier](Docs/ViewsAndModifiers.md) | Größe, Padding, Farben, Sichtbarkeit und gemeinsame Eigenschaften |
-| [Layout](Docs/Layout.md) | Stacks, Wrap/Fill, Alignment und berechnete Größen |
-| [Text und Localization](Docs/TextAndLocalization.md) | Fonts, Übersetzungen und Fallbacks |
-| [Controls](Docs/Controls.md) | Button, TextField, Slider, Toggle und Dropdown |
-| [Texturen](Docs/Textures.md) | Ausschnitt, Spiegelung, Tönung, Layer und Sublevel |
-| [Farbverläufe](Docs/Gradients.md) | horizontale/vertikale Verläufe, Alpha und Bildfilter |
-| [ScrollView](Docs/ScrollView.md) | Inhaltsgröße, Viewport und vertikales Scrollen |
-| [Zustand und Lifecycle](Docs/StateAndLifecycle.md) | explizite Updates, getrennte Mounts, Fokus und Cleanup |
-| [Praxisrezepte](Docs/Recipes.md) | kombinierbare, vollständige Anwendungsbeispiele |
-| [API-Referenz](Docs/API.md) | sämtliche öffentlichen Signaturen und Konstanten |
-| [Fehlersuche](Docs/Troubleshooting.md) | typische Symptome und passende Lösungen |
-| [Entwicklung und Tests](Docs/Development.md) | Architektur, TOC, LuaJIT und LuaLS |
-| [Playground](Docs/Playground.md) | vollständige interaktive Demo |
-| [Client-Kompatibilität](Docs/ClientCompatibility.md) | Zielmatrix und tatsächlicher Prüfstand |
+| [Getting started](Docs/GettingStarted.md) | Installation, first UI, updates and cleanup |
+| [Views and modifiers](Docs/ViewsAndModifiers.md) | Size, padding, colors, opacity and visibility |
+| [Layout](Docs/Layout.md) | Stacks, spacing, Wrap, Fill and alignment |
+| [Text and localization](Docs/TextAndLocalization.md) | Fonts, translation keys and fallbacks |
+| [Controls](Docs/Controls.md) | Buttons, text fields, sliders, toggles and dropdowns |
+| [Textures](Docs/Textures.md) | Image sources, cropping, tint and layers |
+| [Gradients](Docs/Gradients.md) | Horizontal and vertical gradients, including alpha |
+| [ScrollView](Docs/ScrollView.md) | Viewports, content size and scrolling |
+| [State and lifecycle](Docs/StateAndLifecycle.md) | Mount, Update, Unmount and separate UI regions |
+| [Recipes](Docs/Recipes.md) | Complete examples you can build on |
+| [API reference](Docs/API.md) | Public functions, modifiers and defaults |
+| [Troubleshooting](Docs/Troubleshooting.md) | What to check when something behaves differently |
+| [Development](Docs/Development.md) | Load order, architecture, tests and LuaLS |
+| [Playground](Docs/Playground.md) | Try every implemented feature in the client |
+| [Client compatibility](Docs/ClientCompatibility.md) | Target clients and what has actually been tested |
 
-## Erstes Beispiel
+## First example
 
-Der Code läuft in einem WoW-Addon, nachdem Declarus geladen wurde:
+Run this inside a WoW addon after Declarus has loaded:
 
 ```lua
 local UI = Declarus.UI
 
 local view = UI.VStack({
-    UI.Text("Hallo Declarus"):fontSize(22),
-    UI.Text("Text, Layout und Button in einer Beschreibung."),
-    UI.Button("Ausprobieren", function(mouseButton)
-        print("Declarus:", mouseButton)
+    UI.Text("Hello Declarus"):fontSize(22),
+    UI.Text("Text, layout and a button in one description."),
+    UI.Button("Try it", function(mouseButton)
+        print("Clicked:", mouseButton)
     end):width(180),
 }):spacing(10):padding(16):backgroundColor(UI.Color.RGB(20, 26, 35))
 
 local handle = UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Ein zentrierter Bereich mit zwei Textzeilen und einem Button.
-Die View wird zunächst als Lua-Beschreibung erstellt und erst durch Mount sichtbar.
-Den Handle für spätere `handle:Update(view)`- und `handle:Unmount()`-Aufrufe behalten.
-Declarus aktualisiert geänderte Lua-Variablen nicht automatisch.
+**Result:** A centered panel with two text lines and a button. Clicking the button
+prints the mouse button to chat. Keep the handle if you want to update or close
+this UI later.
 
-## Playground
+## Try the playground
 
-- `/declarus`: die sechs Bereiche Übersicht, Layouts, Typografie, Darstellung,
-  Controls und Updates öffnen.
-- `/declarus info`: Client, Version, Build, Interface und Sprache ausgeben.
-- `/declarus reset`: Demo-Zustand zurücksetzen.
-- `/declarus hide`: alle aktiven Playground-Mounts schließen.
+Use `/declarus` to open it. The six pages cover layout, typography, appearance,
+controls and updates. Gradients are on the Appearance page, labelled `Darstellung`
+in the current playground UI.
 
-Eine separate Vorschau und Ereignisanzeige reagieren auf Eingaben, ohne die
-aktive Seite zu ersetzen. Beim Addon-Start öffnet sich keine Demo automatisch.
+`/declarus info` prints client details. `/declarus reset` resets the demo values.
+`/declarus hide` closes the playground. Nothing opens automatically when the addon
+loads.
 
-## Aktueller Stand
+## Current limits
 
-Der gemeinsame Code zielt auf Retail, Forever und die aktuellen offiziellen
-Classic-Zweige einschließlich regionalem Titan Reforged. Der Nutzer hat einen
-funktionierenden Classic-Aufbau zurückgemeldet. Eine vollständige Ingame-Abnahme
-aller Beispiele je Client ist damit nicht abgeschlossen; Forever bleibt ohne
-echten Test unbestätigt.
+Updates replace the whole subtree of a mount. Focus and scroll position inside
+that subtree are reset. Frames are not pooled yet, so this is intended for
+occasional UI changes rather than per-frame updates.
 
-Updates ersetzen den ganzen Teilbaum eines Mounts und erhalten darin keinen
-Fokus oder Scrollzustand. Frames werden noch nicht gepoolt. Automatischer Text-
-umbruch, proportionaler Bildzuschnitt, horizontales Scrollen, sichtbare Scrollbars,
-Dropdown-Tastaturnavigation und geschützte Aktionsbuttons sind nicht implementiert.
+Text wrapping, automatic proportional image cropping, horizontal scrolling,
+visible scrollbars, dropdown keyboard navigation and protected action buttons
+are not implemented. Each guide explains the relevant limits where you use them.
 
-## Prüfung
+The playground has been reported working on Classic. That is useful feedback,
+but it is not a complete test of every feature on every client. Forever still
+needs an actual in-game test.
+
+## Checks
+
+Run these from the repository directory:
 
 ```sh
 luajit Tests/Run.lua
@@ -84,10 +85,9 @@ sh Tests/RunClients.sh
 "${LUA_LANGUAGE_SERVER:-lua-language-server}" --check=. --checklevel=Hint --logpath=/tmp/declarus-luals
 ```
 
-Aktueller automatisierter Stand: **131 Tests pro Metadatenprofil**, sechs Profile;
-LuaLS 3.19.2 ohne Diagnosen einschließlich Hint. Die Matrix verwendet gemeinsame
-API-Mocks und keine vollständigen Client-Emulationen. LuaLS-Konfiguration aus
-`.luarc.json` und lokalen VS-Code-Einstellungen gemeinsam betrachten.
+The current suite has 132 tests per client metadata profile. The matrix runs six
+profiles using the same API mocks. It does not emulate six actual clients.
+LuaLS 3.19.2 passes without diagnostics, including hints.
 
-Projektregeln und Roadmap: [AGENTS.md](AGENTS.md). PoisonFlow wird in diesem
-Repository-Auftrag nicht verändert; alle Commits bleiben lokal.
+Project rules are in [AGENTS.md](AGENTS.md). Keep commits local. Do not change
+PoisonFlow as part of this library work.

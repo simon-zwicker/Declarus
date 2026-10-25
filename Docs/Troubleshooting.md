@@ -1,33 +1,30 @@
-# Fehlersuche
+# Troubleshooting
 
-[Übersicht](README.md) · [Entwicklung und Tests](Development.md)
+[Docs](README.md) · [Development](Development.md)
 
-## Declarus fehlt im Addon-Menü
+## Declarus is missing from the addon list
 
-Prüfen, ob der richtige Client-Ordner verwendet wird und ob
-`Interface/AddOns/Declarus/Declarus.toc` tatsächlich existiert. Bei Symlinks muss
-das Ziel erreichbar sein. Auf versehentliche doppelte Ordner und abweichende
-Schreibweise achten. Nach neu bereitgestellten Addons gegebenenfalls den Client
-neu starten.
+Check the client directory and the path
+`Interface/AddOns/Declarus/Declarus.toc`. A symlink must resolve to an existing
+checkout. Check for an extra nested directory or a different folder name.
+A newly added addon may need a client restart before it appears.
 
-Eine Interface-Kennung in der TOC muss zu dem aktuellen Client passen. Bei einem
-neuen Patch den tatsächlichen Interface-Wert überprüfen und die deklarierte
-Zielmatrix pflegen; eine Kennung zu ändern ersetzt keine API-/Ingame-Prüfung.
+The TOC interface metadata must cover the current client. Update it when Blizzard
+changes the target build, but do not treat a metadata change as an API test.
 
-## `Declarus` oder `Declarus.UI` ist nil
+## Declarus or Declarus.UI is nil
 
-Declarus wurde noch nicht geladen oder die Dateien stehen in falscher Reihenfolge.
-Im verwendenden Addon eine Abhängigkeit auf Declarus setzen und den Code erst
-nach dem Laden ausführen. Die Bibliothek nicht zusätzlich in zufälliger Reihenfolge
-manuell laden. In Lua-Tests zuerst WoW-Mocks und dann die echte TOC laden, wie es
-`Tests/Run.lua` bereits macht.
+The library has not loaded yet, or files were loaded out of order. Declare the
+Declarus dependency in the consuming addon and run your code afterward. Do not
+load library files in an arbitrary order.
 
-## Eine View ist unsichtbar
+For local tests, use the mocks and production TOC as Tests/Run.lua does.
 
-`UI.View()` ist zunächst leer. Größe und Farbe oder Textur setzen. Bei `Fill`
-prüfen, ob es auf dieser Achse überhaupt bekannten Platz gibt. Ein Fill-Root unter
-UIParent übernimmt nicht automatisch die Bildschirmmaße. Auch `visible(false)`,
-Opacity 0, transparente Farben und ungültige Texturdateien kontrollieren.
+## A view is invisible
+
+A plain View starts empty. Give it a size and a background or texture. If using
+Fill, check whether that axis has a known size to fill. A Fill root under UIParent
+does not automatically receive the screen dimensions.
 
 ```lua
 local UI = Declarus.UI
@@ -35,108 +32,112 @@ local view = UI.View():size(100, 40):backgroundColor(UI.Color.RGB(255, 0, 0))
 UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Eine einfache rote Referenzfläche. Ist diese sichtbar, anschließend
-Textur, Padding und weitere Eigenschaften schrittweise ergänzen.
+**Result:** A simple red reference surface. If this appears, add the other
+settings one at a time. Also check visibility, opacity, color alpha and the image
+source.
 
-## Padding scheint die falsche Größe zu haben
+## Padding looks wrong
 
-Wiederholte Padding-Aufrufe addieren sich. Feste Breite/Höhe sind Außenmaße, nicht
-reine Inhaltsmaße. Bei einer fixen 100 breiten View mit links/rechts 10 bleiben
-innen 80. Bei nativen Controls gelten außerdem deren eigene Text-Inset-Details.
+Padding calls add up. Fixed sizes are outer sizes: 100 wide with 10 padding on
+each side leaves 80 inside. Native controls also have their own text offsets;
+common padding does not replace every native inset.
 
-## Unsichtbares Kind hinterlässt eine Lücke
+## A hidden child leaves a gap
 
-Das ist das Verhalten von `visible(false)`. Die Messung berücksichtigt dieses
-Kind weiterhin. Für kollabierenden Platz das Kind beim Baumaufbau auslassen und
-den Mount aktualisieren. Beispiel: [optionale Zeilen](Recipes.md).
+That is what visible(false) does. The child still participates in measurement.
+Leave it out of the next tree to remove its space. See [Recipes](Recipes.md).
 
-## Stretch ändert das Kind nicht
+## Stretch does not change the child
 
-Eine explizite numerische Quergröße am Kind hat Vorrang. Ein bereits größeres
-intrinsisches Kind wird außerdem nicht automatisch verkleinert. Zum Beobachten
-von Stretch mit intrinsischen Kindergrößen beginnen und eine bekannte Quergröße
-am Stack setzen. Alignment betrifft nicht die Hauptachsen-Verteilung.
+A fixed numeric cross-axis size wins. Stretch also does not squeeze an already
+larger child. Use intrinsic child sizes and a known cross-axis size on the stack
+when testing it. Alignment does not distribute the main-axis space.
 
-## Text ragt über den Rahmen oder Button hinaus
+## Text extends outside its view or button
 
-Feste Textbreite erzeugt derzeit keinen Umbruch oder keine Ellipse. Button-
-Standardmaße wachsen bei größerem Font nicht automatisch mit. Breite/Höhe anpassen,
-kürzere Texte verwenden oder mehrere Text-Views bewusst aufteilen. Bei eigenen
-Fonts prüfen, ob die Datei im jeweiligen Client existiert und der Font die Sprache
-unterstützt. Der Client-Fallback hilft nicht automatisch bei einem ungültigen
-explizit gesetzten Fontpfad.
+Width does not currently enable text wrapping or an ellipsis. Increasing a font
+does not enlarge a Button's fixed dimensions. Give it more room or use shorter
+text. Check that custom fonts exist in the client and support the language.
+An invalid explicit font path is not automatically replaced by the default font.
 
-## Texturtönung verändert das Bild anders als erwartet
+## The tint does not look like the selected color
 
-Tint multipliziert Bildfarben. Ein schwarzer Bildteil wird durch einen roten Tint
-nicht rot; eine weiße Textur ist für einfarbige Symbole/Flächen geeignet. Für die
-Originalfarben Weiß als Tint verwenden. `foregroundColor` ist kein Textur-Tint.
-Koordinatenwerte zwischen 0 und 1 verwenden; vertauschte Seiten spiegeln das Bild.
+Tint multiplies the existing image colors. Black stays black. A white texture is
+useful when you want the selected color directly. Use white tint to preserve the
+original image. Foreground color is not an image tint.
 
-## Eine Textur verdeckt Schrift oder Control-Grafik
+TexCoords must be between 0 and 1. Reversing two edges mirrors the image.
 
-Ohne Layer-Override liegt die View-Textur in BORDER; Text-/Button-Beschriftung in
-OVERLAY. Ein explizites OVERLAY/HIGHLIGHT oder ein hoher Sublevel kann diese
-Reihenfolge bewusst übersteuern. Zum Eingrenzen `:textureLayer("BORDER", 0)`
-verwenden. Layer innerhalb eines Frames sind nicht dasselbe wie FrameStrata
-zwischen unterschiedlichen Frames.
+## A texture covers the label
 
-## Eingaben ändern ein Label nicht
+The default texture layer is BORDER and custom labels use OVERLAY. An explicit
+high layer or sublevel can change that order. Try textureLayer with BORDER and
+sublevel 0 to isolate the issue.
 
-Eine Lua-Variable ist keine reaktive Bindung. Den betroffenen Mount explizit mit
-einer neuen View aktualisieren. Ist ein Control im selben Mount, kann dadurch
-Fokus verloren gehen: Vorschau und Eingaben in getrennte Mounts legen.
+Draw layers within a frame are different from FrameStrata between frames.
 
-## TextField verliert bei jedem Zeichen den Fokus
+## A vertical gradient seems reversed
 
-Meist wird der Mount des gesamten Formulars aus seinem eigenen onChange ersetzt.
-Nur einen anderen, kleinen Vorschau-Mount aktualisieren. Der Playground zeigt
-bereits dieses Muster. Eine automatische Fokuswiederherstellung gibt es noch nicht.
+VERTICAL starts at the bottom and ends at the top. Swap the endpoint colors for
+the opposite direction. An image with dark pixels also stays dark under a color
+filter; test the gradient on a plain view first.
 
-## Slider-Callback sitzt am falschen Parameter
+If the gradient is transparent, a separate background may still be visible behind
+it. Use [Gradients](Gradients.md) to check which region each alpha value affects.
 
-Die Signatur lautet `UI.Slider(value, min, max, step, callback)`. Für den Standard-
-Step den vierten Parameter als `nil` übergeben. Der Slider liefert gerundete Werte;
-kleine Änderungen innerhalb desselben Schritts ergeben nicht jedes Mal onChange.
+## Input changes a variable but not a label
 
-## Dropdown öffnet sich, ist aber abgeschnitten
+Lua variables are not reactive bindings. Update the mount that owns the label.
+If that mount also contains the input, consider splitting the preview into its
+own mount to avoid rebuilding the control.
 
-Das Menü bleibt in seiner nativen Elternhierarchie. In einer ScrollView kann der
-Viewport clippen. Das Control nach oben scrollen oder ausreichend Platz unter dem
-Dropdown lassen. Eine andere Breite des Auslösers passt aktuell die feste Menü-
-Breite von 180 nicht automatisch an. Schließen per Auswahl oder erneutem Klick.
+## The TextField loses focus on every keypress
 
-## ScrollView scrollt nicht
+The callback is probably replacing the whole form. Update only a separate preview
+mount instead. The playground already uses this pattern. There is no automatic
+focus restoration yet.
 
-Ist die Inhaltshöhe kleiner/gleich der inneren Viewporthöhe, ist der maximale
-Offset 0. Dem Inhalt eine intrinsische oder explizite Höhe geben und nicht einfach
-vertikales Fill setzen. Mausrad-Eingaben über dem Scrollbereich testen. Derzeit
-gibt es weder eine sichtbare Scrollbar noch horizontales Scrollen.
+## The Slider callback is in the wrong slot
 
-## Update nach dem Schließen schlägt fehl
+The signature is value, minimum, maximum, step, callback. Pass nil as the fourth
+argument to use the default step. The callback receives rounded values, so small
+movements within the same step do not each trigger a new change.
 
-Ein unmountetes Handle kann nicht aktualisiert werden. Das aufrufende Addon muss
-seine Referenz als geschlossen behandeln und beim Öffnen neu mounten. Laufende
-Timer/Callbacks außerhalb von Declarus selbst beenden oder gegen das geschlossene
-UI absichern.
+## The Dropdown menu is clipped
 
-## VS Code meldet viele unbekannte Lua-Globals
+The menu stays in the control's native parent hierarchy. A ScrollView can clip it.
+Scroll the trigger upward or leave space below it. Changing trigger width does not
+change the current fixed menu width of 180.
 
-Die gemeinsame `.luarc.json` und lokale `.vscode/settings.json` vergleichen.
-Standardbibliotheken wie basic/math/string/table dürfen hier nicht pauschal
-deaktiviert sein; die Tests benötigen zusätzlich io/os. Keine nicht installierte
-externe WoW-Typbibliothek voraussetzen. Declarus enthält den verwendeten
-API-Ausschnitt in `Types/WoW.lua`. Diese Datei wird von LuaLS gelesen, nicht von der TOC.
+Close it by selecting an option or clicking the trigger again. Outside-click and
+keyboard handling are not implemented yet.
 
-[Entwicklung und Tests](Development.md) enthält den reproduzierbaren LuaLS-Aufruf.
-Die Diagnosekonfiguration des Editors mitprüfen; ein isolierter CLI-Lauf kann
-sonst andere Ergebnisse als VS Code liefern.
+## ScrollView does not scroll
 
-## Fehlerbericht für einen Client
+If content is no taller than the inner viewport, the maximum offset is zero.
+Give content an intrinsic or explicit height rather than vertical Fill. Use the
+wheel over the viewport. Horizontal scrolling and a visible scrollbar are not
+implemented.
 
-Für eine konkrete Fehlersuche helfen die Ausgabe von `/declarus info`, der
-vollständige Lua-Fehler, die aktive Playground-Seite und die auslösende Aktion.
-Zusätzlich nennen, ob das Problem bei einem UI-Reload, beim Öffnen oder erst nach
-einem Update auftritt. Erfolgreiche Mocktests sind kein Ersatz für diese Client-
-Beobachtung. Ein auf Classic funktionierender Aufbau garantiert nicht dieselbe
-Darstellung auf Forever.
+## Update fails after closing
+
+An unmounted handle cannot be updated. Track the open/closed state in your addon
+and create a new mount when reopening. Cancel or guard external timers and
+callbacks that could still try to use the old handle.
+
+## VS Code reports hundreds of unknown globals
+
+Compare .luarc.json with the local .vscode/settings.json. Do not disable the Lua
+basic, math, string and table libraries here. Tests also need io and os.
+Do not point the workspace at an extension library that is not installed.
+
+Types/WoW.lua supplies the API subset used by Declarus. LuaLS reads it; the TOC
+must not execute it. See [Development](Development.md) for the check command.
+A CLI run with different settings can disagree with the editor, so check both.
+
+## Report a client issue
+
+Include the output of `/declarus info`, the full Lua error, the playground page
+and the action that caused it. Say whether it happened on load, on open or after
+an update. Passing mocks does not replace that client observation, and a working
+Classic test does not prove the same behavior on Forever.

@@ -1,46 +1,45 @@
-# Zustand, Updates und Lifecycle
+# State and lifecycle
 
-[Übersicht](README.md) · [Controls](Controls.md) · [Praxisrezepte](Recipes.md)
+[Docs](README.md) · [Controls](Controls.md) · [Recipes](Recipes.md)
 
-## Beschreibungen und native Frames trennen
+## A description is not a live binding
 
-Die View-Objekte enthalten `kind`, `properties` und `children`. Ein Konstruktor
-baut zunächst nur eine Beschreibung. Beim Mounten folgen Messung, Anordnung und
-Erzeugung nativer Frames. Eine danach veränderte Beschreibung ist nicht von selbst
-mit ihren Frames synchronisiert.
+A view stores its kind, properties and children. Mount measures that description,
+arranges it and creates native frames. Changing the description later does not
+automatically change those frames.
 
 ```lua
 local UI = Declarus.UI
-local view = UI.Text("Hallo")
+local view = UI.Text("Hello")
 local handle = UI.Mount(view, UIParent)
 
 view:fontSize(24)
--- Bisher sichtbar: weiterhin die ursprüngliche Schriftgröße.
+-- The mounted text still uses its original size.
 handle:Update(view)
--- Jetzt sichtbar: 24.
+-- The new tree now uses size 24.
 ```
 
-**Ergebnis:** Erst das explizite Update erzeugt die neue Darstellung.
-Für komplexere Zustände ist eine Funktion, die aus Lua-Daten einen frischen Baum
-baut, meist übersichtlicher als viele direkte Eigenschaftsänderungen.
+**Result:** Only the explicit update changes what you see. For a UI with several
+values, a buildView function that reads your state is usually easier to follow
+than changing many properties individually.
 
-## MountHandle
+## Keep the mount handle
 
-| Mitglied | Verwendung |
+| Member | Purpose |
 | --- | --- |
-| `handle.frame` | aktuell gerenderter Wurzel-Frame des Mounts |
-| `handle:Update(view)` | denselben Mount mit einer neuen Beschreibung darstellen |
-| `handle:Unmount()` | Mount ausblenden und aufräumen |
+| `handle.frame` | The currently rendered root frame |
+| `handle:Update(view)` | Measure and replace this mount's tree |
+| `handle:Unmount()` | Hide and clean up this mount |
 
-`UI.Mount(view, parent)` braucht beide Argumente. Der interne Host wird im Eltern-
-Frame zentriert; seine Größe folgt der gemessenen Wurzel. Die Elterngröße ist
-aktuell keine automatische Fill-Vorgabe für die Wurzel.
+Mount requires a view and a parent frame. Its internal host is centered in that
+parent and sized to the measured root. The parent dimensions are not automatically
+passed into root measurement as a Fill constraint.
 
-`handle.frame` wird bei Updates ersetzt. Einen alten Frame-Verweis deshalb nicht
-als dauerhafte Referenz auf ein weiterhin aktives Element behandeln. Direkte
-manuelle Änderungen an Frames können durch das nächste Update verloren gehen.
+The frame reference changes on Update. Do not keep an old root frame and expect
+it to remain active. Native changes you make manually can also be lost when the
+tree is replaced.
 
-## Vollständiges Zähler-Beispiel
+## A complete counter
 
 ```lua
 local UI = Declarus.UI
@@ -49,8 +48,8 @@ local handle
 
 local function buildView()
     return UI.VStack({
-        UI.Text("Klicks: " .. count):fontSize(20),
-        UI.Button("Erhöhen", function()
+        UI.Text("Clicks: " .. count):fontSize(20),
+        UI.Button("Increase", function()
             count = count + 1
             handle:Update(buildView())
         end):width(160),
@@ -60,23 +59,21 @@ end
 handle = UI.Mount(buildView(), UIParent)
 ```
 
-**Ergebnis:** Der Text startet bei 0 und steigt bei jedem Klick. Der Callback kann
-diesen Mount ersetzen, obwohl er aus einem Button des bisherigen Baums aufgerufen
-wurde. Die Lua-Variable `count` lebt außerhalb des gerenderten Baums weiter.
+**Result:** The text starts at zero and increases on each click. A callback can
+replace the mount that contains its own button. The count survives because it is
+stored in a Lua variable outside the rendered tree.
 
-## Fokus und Scrollposition
+## Keep input and preview separate
 
-Ein Update ersetzt den gesamten Baum **dieses Mounts**, nicht nur geänderte
-Eigenschaften. Das ist für gelegentliche Einstellungsänderungen geeignet.
-Ein TextField oder eine ScrollView darin werden dabei neu erstellt und verlieren
-Fokus bzw. Scrollposition. Jeden Tastendruck durch ein Update des gesamten
-Formulars zu behandeln, ist daher meist ungeeignet.
+Update replaces the whole subtree of that mount. A TextField inside it loses
+focus, and a ScrollView loses its offset. Rebuilding the entire form on every
+keypress is therefore usually the wrong place to update.
 
-Eine praktikable Lösung sind getrennte Mounts für Eingaben und Vorschau:
+Use a separate mount for the part that needs to change:
 
 ```lua
 local UI = Declarus.UI
-local state = {name = "Standard"}
+local state = {name = "Default"}
 
 local container = CreateFrame("Frame", nil, UIParent)
 container:SetSize(400, 160)
@@ -90,10 +87,10 @@ local previewRegion = CreateFrame("Frame", nil, container)
 previewRegion:SetSize(360, 40)
 previewRegion:SetPoint("TOPLEFT", container, "TOPLEFT", 20, -90)
 
-local preview = UI.Mount(UI.Text("Profil: " .. state.name), previewRegion)
+local preview = UI.Mount(UI.Text("Profile: " .. state.name), previewRegion)
 local input = UI.Mount(UI.TextField(state.name, function(value)
     state.name = value
-    preview:Update(UI.Text("Profil: " .. value))
+    preview:Update(UI.Text("Profile: " .. value))
 end):width(300), inputRegion)
 
 local function closeEditor()
@@ -104,16 +101,14 @@ local function closeEditor()
 end
 ```
 
-**Ergebnis:** Tippen verändert die Vorschau, aber der Eingabe-Mount bleibt
-unverändert. Sein Fokus bleibt erhalten. Die nativen Elternbereiche definieren
-hier lediglich die Platzierung; alle sichtbaren Inhalte erzeugt Declarus.
-Beim Schließen des eigenen Fensters `closeEditor()` aufrufen.
+**Result:** Typing updates the preview while the input mount stays intact and
+keeps focus. The manually created regions only provide positions; Declarus draws
+the visible content. Call closeEditor when your window closes.
 
-Auch dieses Muster erzeugt bei jeder Vorschauänderung neue Frames. Es zeigt
-gezielte Updates, aber noch keine Wiederverwendung oder auf hohe Frequenzen
-optimierte Reconciliation.
+This still creates new preview frames. Separate mounts control what is replaced;
+they do not add frame reuse or make frequent updates free.
 
-## Dynamische Kinder
+## Change the children
 
 ```lua
 local UI = Declarus.UI
@@ -125,8 +120,8 @@ local function buildList()
     for _, entry in ipairs(entries) do
         children[#children + 1] = UI.Text(entry)
     end
-    children[#children + 1] = UI.Button("Eintrag hinzufügen", function()
-        entries[#entries + 1] = "Eintrag " .. (#entries + 1)
+    children[#children + 1] = UI.Button("Add entry", function()
+        entries[#entries + 1] = "Entry " .. (#entries + 1)
         handle:Update(buildList())
     end):width(220)
     return UI.VStack(children):spacing(8):padding(12)
@@ -135,30 +130,26 @@ end
 handle = UI.Mount(buildList(), UIParent)
 ```
 
-**Ergebnis:** Der Button ergänzt einen weiteren Text. Anzahl, Höhe und Positionen
-werden neu berechnet. Die Liste verwendet dichte Lua-Arrays; entfernte Elemente
-mit `table.remove` bzw. durch eine neu aufgebaute Liste behandeln.
-Es gibt noch keine Key-/Diff-/Observable-/Binding-API.
+**Result:** Each click adds another row. The new list is measured and arranged
+again. Keep arrays dense; use table.remove or rebuild the array when removing
+items. There is no keyed diff, observable state or binding API yet.
 
-## Unmount und Wiederöffnen
+## Close and reopen
 
-`Unmount()` versteckt die gerenderten Frames, entfernt die von Declarus
-installierten Event-Scripts, meldet deren Frame-Events ab und löst die Eltern-
-beziehungen. Manuell zusätzliche Scripts oder andere Ressourcen außerhalb des
-Declarus-Lifecycles bleiben Verantwortung des aufrufenden Addons.
+Unmount hides the frames, removes library-installed scripts, unregisters their
+frame events and detaches their parent links. Extra resources or scripts managed
+outside Declarus remain your addon's responsibility.
 
-Mehrfaches Unmount ist erlaubt; Update nach Unmount wird abgewiesen. Erneutes
-Öffnen erfolgt mit `UI.Mount(...)`, nicht durch Wiederbeleben des alten Handles.
-Das gilt auch dann, wenn `handle.frame` noch einen alten Frame-Verweis enthält.
+Calling Unmount twice is allowed. Calling Update after Unmount is rejected.
+Create a new mount when reopening. An old handle can still contain its retired
+frame reference; that does not make the handle reusable.
 
-WoW-Frames werden durch diesen Vorgang nicht zerstört. Häufige Updates erzeugen
-weitere native Objekte. Es gibt noch keinen Frame-Pool. Keine pro-Frame- oder
-Kampf-Ticker-Updates auf diesem Muster aufbauen; zuerst eine passende
-Wiederverwendungsstrategie implementieren.
+WoW frames cannot be destroyed by this cleanup. There is no frame pool yet, and
+repeated updates allocate additional native objects. Do not use this lifecycle as
+a per-frame or combat ticker without first adding a suitable reuse strategy.
 
-## Dauerhafter Zustand
+## Save your own application state
 
-Die Library verändert keine SavedVariables und bietet keine Profilverwaltung.
-In den Beispielen bleibt Zustand nur in Lua-Variablen bis zum UI-Reload erhalten.
-Persistenz, Validierung und anwendungsbezogene Seiteneffekte gehören zum
-verwendenden Addon. Controls melden Werte; sie speichern sie nicht selbst dauerhaft.
+Declarus does not manage SavedVariables, profiles or persistent settings. State
+in these examples lasts until the UI reloads. Validation, persistence and
+application-specific side effects belong to the addon using the controls.

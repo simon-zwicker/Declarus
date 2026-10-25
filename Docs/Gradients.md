@@ -1,13 +1,12 @@
-# Farbverläufe
+# Gradients
 
-[Dokumentationsübersicht](README.md) · [API-Referenz](API.md) · [Texturen](Textures.md)
+[Docs](README.md) · [Textures](Textures.md) · [API reference](API.md)
 
-`:gradient(orientation, fromColor, toColor)` ist ein gemeinsamer View-Modifier.
-Er färbt die eigene Bildfläche des Elements, nicht seine Beschriftung oder seine
-Kinder. Ohne explizite Textur erzeugt der Renderer eine weiße Farbfläche, auf der
-der Verlauf sichtbar wird. Mit `:texture(...)` wirkt er als Farbfilter auf das Bild.
+Use gradient when a surface needs two colors or an image needs a fade. The modifier
+is available on every view and control. It colors the element's own image, not its
+text or children.
 
-## Horizontal: links nach rechts
+## A horizontal gradient
 
 ```lua
 local UI = Declarus.UI
@@ -19,12 +18,11 @@ local view = UI.View():size(320, 60)
 UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Eine 320 × 60 große Fläche verläuft von Blau links nach Grün rechts.
-Der Gradient erzeugt keine intrinsische Größe; Größe explizit angeben oder durch
-das Layout bestimmen lassen. Layer und Sublevel entsprechen der eigenen View-
-Textur: standardmäßig BORDER/0, optional über `textureLayer` konfigurierbar.
+**Result:** Blue on the left, green on the right. Without an explicit texture,
+Declarus creates a white surface for the gradient. Set a size; the gradient does
+not give the view an intrinsic image size.
 
-## Vertikal: unten nach oben
+## Vertical means bottom to top
 
 ```lua
 local UI = Declarus.UI
@@ -36,12 +34,18 @@ local view = UI.View():size(120, 180)
 UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Orange liegt **unten**, Blau **oben**. Die erste Farbe ist bei der
-nativen vertikalen WoW-Orientierung die untere Farbe. Für die Gegenrichtung die
-Farben vertauschen. Erlaubt sind ausschließlich HORIZONTAL und VERTICAL, keine
-Winkel oder diagonalen Verläufe.
+**Result:** Orange at the bottom and blue at the top. This follows WoW's native
+gradient direction. Swap the two colors if you want the reverse.
 
-## Alpha-Verlauf
+| Orientation | First color | Second color |
+| --- | --- | --- |
+| HORIZONTAL | Left | Right |
+| VERTICAL | Bottom | Top |
+
+Only these two orientations are supported. There are no arbitrary angles or
+radial gradients yet.
+
+## Fade alpha too
 
 ```lua
 local UI = Declarus.UI
@@ -54,12 +58,12 @@ local view = UI.View():size(320, 50)
 UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Links ist die Gradient-Fläche transparent und der separate dunkle
-Hintergrund bleibt sichtbar. Nach rechts wird der hellblaue Verlauf vollständig
-deckend. Alpha wirkt hier nur auf die Gradient-Textur. `opacity` auf der View
-würde zusätzlich den gesamten Frame einschließlich Text und Kindern beeinflussen.
+**Result:** The gradient starts transparent on the left and becomes solid blue
+on the right. The separate dark background remains visible through the transparent
+part. This alpha only affects the gradient texture. View opacity affects the
+whole frame afterward.
 
-## Ein Bild ausblenden oder färben
+## Apply it to an icon
 
 ```lua
 local UI = Declarus.UI
@@ -72,20 +76,18 @@ local icon = UI.View():size(64, 64):texture(134400)
 UI.Mount(icon, UIParent)
 ```
 
-**Ergebnis:** Das beschnittene Fragezeichen-Icon ist unten transparent und oben
-sichtbar. Weiß erhält die RGB-Bildfarben, der Alpha-Unterschied erzeugt den Fade.
-Bei farbigen Endpunkten werden die Bildfarben mit dem Verlauf multipliziert;
-schwarze Bildteile werden nicht automatisch hell eingefärbt.
+**Result:** The cropped icon fades from transparent at the bottom to visible at
+the top. White preserves the image's RGB colors; the alpha difference creates
+the fade. Colored endpoints multiply the image colors instead.
 
-TexCoords und Gradient sind unabhängig: Die Koordinaten wählen den Bildausschnitt;
-der Gradient färbt die resultierende Fläche. Keine automatische Änderung des
-Seitenverhältnisses oder der Elementgröße.
+TexCoords pick the part of the image to show. Gradient colors the resulting
+surface. Neither operation automatically preserves the image's aspect ratio.
 
-## Button mit lesbarer Beschriftung
+## Use it on a button
 
 ```lua
 local UI = Declarus.UI
-local view = UI.Button("Speichern", function() print("Gespeichert") end)
+local view = UI.Button("Save", function() print("Saved") end)
     :size(220, 40):padding(UI.Edge.Left, 12):padding(UI.Edge.Top, 10)
     :gradient("HORIZONTAL",
         UI.Color.RGB(25, 70, 120),
@@ -95,24 +97,20 @@ local view = UI.Button("Speichern", function() print("Gespeichert") end)
 UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Blau-grüner Button mit weißer Beschriftung. Der Gradient liegt im
-BORDER-Layer, der Text in OVERLAY. Der voreingestellte dunkle Control-Hintergrund
-bleibt separat vorhanden. Dass ein Control den Modifier erbt, bedeutet nicht,
-dass seine nativen Grafiken wie Checkbox-Haken ebenfalls einen Verlauf erhalten.
+**Result:** A blue-to-green button with a white label. The gradient defaults to
+BORDER, while the label uses OVERLAY. Native graphics such as a checkbox mark do
+not inherit the gradient just because the control has the modifier.
 
-## Mit Texturtönung kombinieren
+## Combine gradient and tint
 
-Sind `gradient` und `textureTint` gesetzt, multipliziert Declarus die Tönung in
-**beide Endpunktfarben einschließlich Alpha** hinein. Die Setter überschreiben
-sich nicht gegenseitig. Die Reihenfolge dieser Modifier spielt daher keine Rolle.
-Ein Gradient-Endpunkt mit Alpha 0.4 und ein Tint mit Alpha 0.5 ergeben an diesem
-Ende Alpha 0.2; eine View-Opacity wirkt anschließend zusätzlich.
+If textureTint is set, Declarus multiplies it into both gradient endpoints,
+including alpha. The order of those modifiers does not change the result.
 
-Der Verlauf hat Vorrang als Farbfeld gegenüber der einfachen nativen Vertex-
-Tönung; die gespeicherten ursprünglichen Farbtabellen werden dabei nicht verändert.
-Eine separat gesetzte `backgroundColor` und die Textfarbe bleiben unabhängig.
+For example, endpoint alpha 0.4 combined with tint alpha 0.5 gives alpha 0.2.
+View opacity applies afterward. The original color tables are not modified.
+The background color and foreground text color remain independent.
 
-## Entfernen und aktualisieren
+## Remove the gradient
 
 ```lua
 local UI = Declarus.UI
@@ -124,32 +122,32 @@ view:gradient(nil)
 handle:Update(view)
 ```
 
-**Ergebnis:** Nach dem Update bleibt das Icon erhalten, aber sein Gradient ist
-entfernt. Eine vorhandene Texturtönung bleibt ebenfalls erhalten. Ohne Bildquelle
-und ohne Gradient entfällt die automatisch erzeugte weiße Fläche; eine separate
-Hintergrundfarbe bleibt bestehen. Wie alle Modifier aktualisiert auch `gradient`
-einen bestehenden Mount erst durch einen expliziten Update-Aufruf.
+**Result:** The icon stays, but the gradient is removed after the update. A
+configured texture tint also stays. If there was no explicit image, removing the
+gradient removes the generated white surface. A separate background remains.
 
-## Validierung und Grenzen
+Calling `gradient()` also clears it. Do not pass colors when clearing. As with
+other modifiers, changing a view description does not refresh an existing mount
+until you update that mount.
 
-Farben sind normalisierte RGB-/RGBA-Tabellen, wie sie `UI.Color.RGB/RGBA` liefern.
-Alle Kanäle müssen endlich und im Bereich 0–1 sein. Ein fehlendes Alpha wird 1.
-Farben werden beim Setzen kopiert. Ungültige Orientierung, fehlende Farben und
-ungültige Kanäle werden abgewiesen, ohne einen bestehenden Verlauf zu ersetzen.
-`gradient(nil)` bzw. `gradient()` entfernt den Verlauf; dabei keine Farben mitgeben.
+## Validation and limits
 
-Es gibt genau zwei Endpunkte. Mehrere Farbstopps, radiale Verläufe, Animationen
-und Verläufe auf Schrift sind noch nicht implementiert.
+Both colors must be normalized RGB/RGBA tables with finite channels from 0 to 1.
+UI.Color.RGB and RGBA create that format. Missing alpha defaults to 1. The modifier
+copies both colors. An invalid orientation, missing color or invalid channel is
+rejected without replacing the existing gradient.
 
-Die native Übergabe an `Texture:SetGradient` mit durch `CreateColor` erzeugten
-Farben liegt zentral in `Core/Client.lua`. Es gibt keine Privatserver-/Original-
-Client-Fallbacks. Wenn die benötigte API fehlt, wird ein klarer Fehler ausgelöst;
-der Verlauf wird nicht stillschweigend als einfarbige Fläche dargestellt.
+There are two endpoints. Multiple stops, radial gradients, animation and gradients
+on text are not implemented.
 
-`/declarus` → Darstellung zeigt die Beispiele. Der Matrixlauf mit Mocks prüft
-API-Nutzung, Farben, Alpha, Tönung und Lifecycle; visuelle Richtung und Darstellung
-bleiben auf den jeweiligen offiziellen Clients zu prüfen. Forever bleibt ohne
-Ingame-Test unbestätigt.
+The native call goes through Core/Client.lua and uses Texture:SetGradient with
+CreateColor objects. We do not add old-client or private-server fallbacks. If the
+required API is missing, the call reports a clear error rather than quietly
+drawing a solid color.
 
-Die verwendeten nativen Farbobjekte entsprechen
-[Blizzards ColorMixin/CreateColor](https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXMLBase/Color.lua).
+In the playground, open Appearance (`Darstellung`). The gradient section shows
+both directions, alpha, icon fades, buttons, tint multiplication and an interactive
+example you can switch off or change direction. Visual results still need an
+actual client test; Forever remains unconfirmed in game.
+
+Native color objects follow [Blizzard's CreateColor / ColorMixin](https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXMLBase/Color.lua).

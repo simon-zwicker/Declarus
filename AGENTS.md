@@ -1,43 +1,43 @@
-# Declarus – verbindliche Projektregeln
+# Declarus project rules
 
-- Dieser lokale Checkout ist Source of Truth. Vor Änderungen Git-Status prüfen und fremde Änderungen schützen. Nur eigene Dateien explizit stagen.
-- Niemals push, fetch, pull oder andere Remote-Git-Aktionen ausführen.
-- Ausschließlich aktuelle offizielle Blizzard-Clients unterstützen, einschließlich Forever. Keine Privatserver und keine historischen Original-Clients.
-- Client-Unterschiede zentral in `Core/Client.lua` behandeln. Gemeinsame APIs bevorzugen; Client-Kennung ist kein Beweis für verfügbare Fähigkeiten.
-- PoisonFlow nicht verändern. Declarus stellt allgemeine UI-Basics bereit.
-- Lua 5.1 / LuaJIT beibehalten; öffentliche APIs mit LuaLS annotieren.
-- Bestehende Fluent-API, Measure/Arrange/Render-Trennung und TOC-Ladereihenfolge wahren.
-- LuaLS-Konfiguration in `.luarc.json` halten; lokale `.vscode/settings.json` bei der Prüfung mitberücksichtigen. Standardbibliotheken nicht pauschal deaktivieren.
-- Bei Lua-/Typänderungen auch LuaLS mit `--checklevel=Hint` ausführen (Aufruf siehe README).
-- Pro abgeschlossenem Paket `luajit Tests/Run.lua` ausführen und lokal committen. Neue Verhaltensweisen mit aussagekräftigen Tests absichern.
-- Mocktests ersetzen keinen WoW-Test. Nicht ingame geprüfte Funktionalität ausdrücklich kennzeichnen.
+- This local checkout is the source of truth. Check Git status before changing anything and protect existing work. Stage only your own files or changes explicitly.
+- Never push, fetch, pull or run any other remote Git action.
+- Support current official Blizzard clients only, including Forever. Do not add private-server or historical original-client support.
+- Keep client differences in `Core/Client.lua`. Prefer shared APIs; client identity alone does not prove an API is available.
+- Do not change PoisonFlow. Declarus provides general UI basics.
+- Preserve Lua 5.1/LuaJIT compatibility and LuaLS annotations on public APIs.
+- Keep the fluent API, Measure/Arrange/Render separation and TOC load order.
+- Keep shared LuaLS settings in `.luarc.json`. Check local `.vscode/settings.json` too. Do not globally disable the standard libraries.
+- Run LuaLS with `--checklevel=Hint` after Lua/type changes; see README for the command.
+- Run `luajit Tests/Run.lua` for each completed package and commit it locally. Cover new behavior with meaningful tests.
+- Mock tests do not replace an actual WoW test. Clearly mark features that have not been checked in game.
 
-## Roadmap
+## Original basics roadmap
 
-1. [x] Checkout inspizieren; Basis: 87 erfolgreiche Tests. Vorhandene .DS_Store-Änderungen nicht übernehmen.
-2. [x] Gemeinsamer FontResolver, Text-Padding, Font-Modifier und Texturen.
-3. [x] Buttons und Events; TextField, Slider, Toggle, Dropdown.
-4. [x] ScrollView und explizite dynamische Mount-Updates mit Cleanup.
-5. [x] API-Beispiele, Regressionstests und lokale Abschlussprüfung: 103 Tests; TOC vollständig mit Mocks geladen.
-6. [x] LuaLS 3.19.2 über VS-Code-Erweiterung gefunden und ausgeführt: keine Diagnosen einschließlich Hint.
-7. [ ] Ingame-Abnahme durch Nutzer.
+1. [x] Inspect checkout; initial baseline was 87 passing tests. Leave existing .DS_Store changes out of commits.
+2. [x] Shared FontResolver, text padding, font modifiers and textures.
+3. [x] Buttons/events, TextField, Slider, Toggle and Dropdown.
+4. [x] ScrollView and explicit mount updates with cleanup.
+5. [x] API examples and initial local regression pass: 103 tests, production TOC loaded through mocks.
+6. [x] Locate and run LuaLS 3.19.2 from the VS Code extension; no diagnostics including hints.
+7. [ ] Full in-game acceptance pass.
 
-Die Reihenfolge ist ein Implementierungsplan. Nicht belegte PoisonFlow-Sonderanforderungen werden nicht erfunden.
+The order above records the implementation plan. Do not invent unverified
+PoisonFlow-specific requirements.
 
+## Client work
 
-## Client-Roadmap
+- [x] Shared TOC for current official target clients and central diagnostics.
+- [x] Client default font shared by measurement and rendering.
+- [x] Opt-in playground and matrix run using the production TOC order.
+- [ ] Full Retail and available Classic in-game acceptance pass.
+- [ ] Forever acceptance pass when the official client can be tested.
+- Matrix, limits and sources: `Docs/ClientCompatibility.md`.
 
-- [x] Gemeinsame TOC für aktuelle offizielle Client-Ziele und zentrale Diagnose.
-- [x] Client-Standardschrift gemeinsam für Messung und Rendering.
-- [x] Opt-in-Demo `/declarus` und Matrixlauf mit echter TOC-Ladereihenfolge.
-- [ ] Ingame-Abnahme auf Retail und verfügbarem Classic-Client durch Nutzer.
-- [ ] Forever-Abnahme, sobald ein Test im offiziellen Client möglich ist.
-- Prüfmatrix, Einschränkungen und Quellen: `Docs/ClientCompatibility.md`.
+## Playground and docs
 
-
-## Playground
-
-- [x] Sechs Bereiche decken die bisherige UI-API ab; Beschreibung in `Docs/Playground.md`.
-- [x] Separate Vorschau-/Status-Mounts bewahren Seitenfokus und Scrollposition bei Eingaben.
-- [x] Navigation, Events, Alignment, dynamische Kinder, Unicode und Cleanup durch Tests geprueft.
-- [ ] Visuelle Ingame-Abnahme auf den verfuegbaren offiziellen Clients.
+- [x] Six playground pages cover the implemented UI API.
+- [x] Separate preview/status mounts preserve page input focus and scroll during input changes.
+- [x] Tests cover navigation, events, alignment, dynamic children, Unicode and cleanup.
+- [x] Texture modifiers and gradients have examples and documentation.
+- [ ] Full visual acceptance pass on the available official clients.

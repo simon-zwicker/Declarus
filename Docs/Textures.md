@@ -1,98 +1,118 @@
-# Texturen und Modifier
+# Textures
 
-[Dokumentationsübersicht](README.md) · [API-Referenz](API.md)
+[Docs](README.md) · [Gradients](Gradients.md) · [API reference](API.md)
 
-Alle Views, Texte, Stacks und Controls erben die Textur-Modifier. Sie beeinflussen
-ausschliesslich die eigene Textur des Elements, nicht seine Kinder, sein Padding,
-seine intrinsische Groesse, die Textfarbe oder die Hintergrundfarbe.
+Every view and control can have its own texture. There is no separate Image
+constructor yet; use a normal view with a size and texture.
 
 ```lua
 local UI = Declarus.UI
-local icon = UI.View()
-    :size(48, 48)
+local icon = UI.View():size(48, 48)
     :texture(134400)
     :texCoords(0.08, 0.92, 0.08, 0.92)
     :textureTint(UI.Color.RGBA(90, 195, 240, 0.8))
-    :textureLayer("ARTWORK", 0)
+
+UI.Mount(icon, UIParent)
 ```
 
-## Quelle und Groesse
+**Result:** A 48 by 48 question-mark icon with its edge cropped, a blue tint and
+80% texture alpha.
 
-`:texture(pathOrFileID)` akzeptiert einen WoW-Dateipfad oder eine numerische
-FileDataID. Die Textur fuellt die gesamte Elementflaeche, inklusive Padding.
-Eine Groesse explizit setzen bzw. aus dem Layout beziehen; die Bilddatei bestimmt
-keine intrinsische Groesse. Beim Wechsel der Quelle bleiben die konfigurierten
-TexCoords, Tint und Layer dieses View-Objekts erhalten. Die Modifier koennen vor
-oder nach `:texture(...)` gesetzt werden.
+## Source and size
 
-## Ausschnitt und Spiegelung
-
-`:texCoords(left, right, top, bottom)` akzeptiert vier endliche Werte von 0 bis 1.
-Die Reihenfolge entspricht WoWs vierteiliger `SetTexCoord`-Variante. Ohne Modifier
-wird die volle Textur verwendet. `(0, 1, 0, 1)` setzt den vollen Ausschnitt explizit.
-
-- `(0.08, 0.92, 0.08, 0.92)` schneidet den aeusseren Rand ab.
-- `(1, 0, 0, 1)` spiegelt horizontal, `(0, 1, 1, 0)` vertikal.
-
-Der gewaehlte Ausschnitt wird weiterhin auf die Elementflaeche gestreckt.
-Automatische Seitenverhaeltnis-Anpassung, Cover-/Contain-Modi und die achtteilige
-Koordinatenvariante sind nicht Bestandteil dieses Pakets.
-
-## Toenen
-
-`:textureTint(UI.Color.RGB(...))` bzw. `RGBA(...)` multipliziert die Bildkanaele
-mit der Farbe. Weiss `(255, 255, 255)` erhaelt das Bild; weisse Bildteile nehmen
-die Tönung an, schwarze bleiben schwarz. Alpha wirkt nur auf die Textur, zusaetzlich
-zu einer moeglichen View-/Eltern-Opacity. Die Farbe wird beim Setzen kopiert.
-
-Der Modifier erwartet wie die anderen Farb-Modifier normalisierte Farbtabellen;
-`UI.Color.RGB/RGBA` erzeugt diese aus den bekannten 0–255-RGB-Werten. Ein fehlender
-Alpha-Kanal wird als 1 behandelt. Um die Toenung zurueckzusetzen, Weiss verwenden.
-Text-/Foreground- und Hintergrundfarbe bleiben unabhaengig.
-
-## Zeichenreihenfolge
-
-Der sichere Standard innerhalb des eigenen Frames ist:
-
-1. `backgroundColor`: BACKGROUND.
-2. `texture`: BORDER, Sublevel 0.
-3. Text-/Button-Beschriftung: OVERLAY.
-
-Damit liegt eine normale Button-Textur hinter der Beschriftung. Zuvor nutzten
-sowohl Textur als auch Text ARTWORK; diese uneindeutige Reihenfolge wurde ersetzt.
-Native Control-Grafiken wie Checkbox-Haken und Slider-Thumb werden nicht umgestaltet.
-
-`:textureLayer(layer, sublevel)` erlaubt BACKGROUND, BORDER, ARTWORK, OVERLAY und
-HIGHLIGHT. Der Sublevel ist eine ganze Zahl von -8 bis 7, Standard 0. Ein hoeherer
-Sublevel liegt innerhalb desselben Layers weiter vorne. Ein explizit hoher Layer
-kann absichtlich die Beschriftung oder native Control-Grafiken ueberdecken;
-HIGHLIGHT folgt ausserdem WoWs Highlight-Verhalten des jeweiligen Frame-Typs.
-Layer ordnen Regionen innerhalb eines Frames, nicht beliebige andere Frames
-oder deren FrameStrata. Fuer einen normalen texturierten Button ist kein Override
-noetig:
+Texture accepts a file path or a numeric WoW FileDataID:
 
 ```lua
-UI.Button("Speichern", function() print("Gespeichert") end)
+local UI = Declarus.UI
+local fromPath = UI.View():size(48, 48)
+    :texture("Interface\\Icons\\INV_Misc_QuestionMark")
+local fromID = UI.View():size(48, 48):texture(134400)
+```
+
+**Result:** Both descriptions refer to the question-mark image. A numeric ID is a
+file identifier, not a color or a coordinate.
+
+The texture stretches across the whole view, including padding. It does not
+supply an intrinsic size. Set a size or let the layout assign one.
+
+Changing the source preserves that view's configured coordinates, tint, gradient
+and layer. Those modifiers can be set before or after the source.
+
+## Crop or mirror with TexCoords
+
+The argument order is left, right, top, bottom. Values are normalized from 0 to 1.
+
+```lua
+local UI = Declarus.UI
+local cropped = UI.View():size(64, 64):texture(134400)
+    :texCoords(0.08, 0.92, 0.08, 0.92)
+local mirrored = UI.View():size(64, 64):texture(134400)
+    :texCoords(1, 0, 0, 1)
+```
+
+**Result:** The first icon loses its outer edge. The second is mirrored
+horizontally. Reversing top and bottom mirrors vertically.
+
+Use `(0, 1, 0, 1)` for the whole image. The selected part still stretches to the
+view's dimensions. There is no automatic proportional crop, cover/contain mode
+or eight-coordinate API yet.
+
+## Tint only the image
+
+```lua
+local UI = Declarus.UI
+local view = UI.View():size(120, 40)
+    :texture("Interface\\Buttons\\WHITE8X8")
+    :textureTint(UI.Color.RGB(90, 220, 140))
+```
+
+**Result:** A green surface. Tint multiplies the image channels: white parts take
+the selected color, while black stays black. Tinting an already colored icon can
+produce a different result from tinting a white symbol.
+
+Use RGB or RGBA from UI.Color. The modifier expects normalized color tables and
+copies them when set. Missing alpha defaults to 1. White tint restores the image's
+original colors. Tint alpha affects only the image; view opacity applies on top.
+Text color and background color stay independent.
+
+## Keep the label in front
+
+The default order inside a frame is:
+
+1. Background color in BACKGROUND.
+2. The view's texture or gradient in BORDER at sublevel 0.
+3. Text and custom Button labels in OVERLAY.
+
+A normal textured button therefore needs no layer override:
+
+```lua
+local UI = Declarus.UI
+local view = UI.Button("Save", function() print("Saved") end)
     :texture("Interface\\Buttons\\WHITE8X8")
     :textureTint(UI.Color.RGB(30, 85, 120))
 ```
 
-## Farbverläufe
+**Result:** A blue button surface behind its readable label.
 
-`:gradient(...)` kann eine Textur zusätzlich mit zwei Endpunktfarben und Alpha
-filtern. `textureTint` wird in beide Endpunkte multipliziert. Ohne Bildquelle
-entsteht eine weiße Fläche als Gradient-Basis. Richtung, Beispiele und Entfernen
-sind unter [Farbverläufe](Gradients.md) dokumentiert.
+Use `textureLayer(layer, sublevel)` when you deliberately need a different draw
+order. Layers are BACKGROUND, BORDER, ARTWORK, OVERLAY and HIGHLIGHT. Sublevel is
+an integer from -8 to 7 and defaults to 0. Higher sublevels draw later inside the
+same layer.
 
-## Playground und Pruefung
+An explicit high layer can cover text or native control graphics. HIGHLIGHT also
+follows WoW's highlight behavior for the frame type. Layers order regions inside
+a frame; they do not control arbitrary other frames or their FrameStrata.
 
-`/declarus` > Darstellung zeigt Original/Ausschnitt/Spiegelung, RGB-/RGBA-Tint,
-texturierte Buttons und explizite Layer/Sublevel. Automatische Tests pruefen alle
-View-Typen, Validierung, Unabhaengigkeit von Text-/Hintergrundfarbe und das
-Zuruecksetzen beim Ersetzen eines Mount-Teilbaums. Visuelle Darstellung und
-native Control-Layer muessen weiterhin im jeweiligen offiziellen Client geprueft
-werden.
+## Add a gradient
 
-Verwendete gemeinsame WoW-APIs:
-[SetTexCoord](https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/SimpleTextureBaseAPIDocumentation.lua),
-[SetVertexColor und SetDrawLayer](https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/SimpleRegionAPIDocumentation.lua).
+[Gradients](Gradients.md) can color or fade the same texture between two endpoints.
+When tint and gradient are both present, Declarus multiplies the tint into both
+endpoint colors. Neither setter silently erases the other.
+
+The Appearance page in `/declarus` shows sources, cropping, mirroring, tint,
+layers, gradients and textured buttons. The rendering tests check the configured
+API calls. The final appearance still needs checking in the actual client.
+
+Native APIs used here:
+[SetTexCoord](https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/SimpleTextureBaseAPIDocumentation.lua)
+and [SetVertexColor / SetDrawLayer](https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/SimpleRegionAPIDocumentation.lua).

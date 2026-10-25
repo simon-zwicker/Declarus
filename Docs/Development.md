@@ -1,116 +1,118 @@
-# Entwicklung und Tests
+# Development
 
-[Übersicht](README.md) · [Client-Kompatibilität](ClientCompatibility.md)
+[Docs](README.md) · [Client compatibility](ClientCompatibility.md)
 
-## Verbindliche Regeln
+## Working rules
 
-[AGENTS.md](../AGENTS.md) enthält die Projektregeln. Insbesondere: bestehende
-Änderungen schützen, nur eigene Änderungen explizit stagen, Lua 5.1/LuaJIT und
-LuaLS-Annotationen beibehalten, PoisonFlow nicht verändern und abgeschlossene
-Pakete lokal committen. Keine Remote-Git-Aktionen, insbesondere kein Push,
-Fetch oder Pull. Unterstützungsziel sind ausschließlich aktuelle offizielle
-Blizzard-Clients, keine Privatserver oder historischen Original-Clients.
+The rules are in [AGENTS.md](../AGENTS.md). Protect existing changes, stage only
+your work and commit completed packages locally. Do not push, fetch, pull or run
+other remote Git actions. Do not change PoisonFlow as part of the library work.
 
-## Dateistruktur und Zuständigkeiten
+Keep Lua 5.1/LuaJIT compatibility, LuaLS annotations and the separation between
+measurement, arrangement and rendering. We target current official Blizzard
+clients, not private servers or historical original clients.
 
-| Bereich | Aufgabe |
+## Where things live
+
+| Path | Responsibility |
 | --- | --- |
-| `Core/Init.lua` | globaler Declarus-Namespace |
-| `Core/Client.lua` | Diagnose und gemeinsame Client-Grenze |
-| `Core/Localization.lua` | Übersetzungsinstanzen und Fallbacks |
-| `UI/Types/` | Color, Size, Edge, Alignment |
-| `UI/Core/` | View- und TextView-Prototypen, gemeinsame Modifier |
-| `UI/Components/` | öffentliche Konstruktoren für Views/Text/Controls |
-| `UI/Layout/` | Stack-Prototyp und HStack/VStack |
-| `UI/Typography/` | FontResolver und intrinsische Textmessung |
-| `UI/Engine/` | Localization-Auflösung, Measure, Arrange, Render und native Controls |
-| `UI/Mount.lua` | öffentlicher Mount-Lifecycle |
-| `Debug/Playground.lua` | optionaler gemeinsamer Ingame-Playground |
-| `Types/WoW.lua` | Editor-Metadaten für den verwendeten WoW-API-Ausschnitt |
-| `Tests/` | Runner, Mock-Umgebung und Verhaltensprüfungen |
-| `Docs/` | Verwendung, Referenz und überprüfbare Beispiele |
+| Core/Init.lua | Global Declarus namespace |
+| Core/Client.lua | Client details and native compatibility boundary |
+| Core/Localization.lua | Translation instances and resolution |
+| UI/Types | Colors, sizes, edges and alignment constants |
+| UI/Core | Shared View/TextView prototypes and modifiers |
+| UI/Components | Public component constructors |
+| UI/Layout | Stack implementation and factories |
+| UI/Typography | Font resolution and intrinsic text measurement |
+| UI/Engine | Measurement, arrangement and native rendering |
+| UI/Mount.lua | Public mount lifecycle |
+| Debug/Playground.lua | Optional in-game feature showcase |
+| Types/WoW.lua | Editor-only native API declarations |
+| Tests | Mocks, runner and behavior checks |
+| Docs | Usage guides, reference and examples |
 
-## Datenfluss
+## The flow
 
 ```text
-Lua-Anwendungszustand
-        ↓ eigene buildView()-Funktion
-View-Beschreibung mit properties und children
-        ↓ Measure: Breite/Höhe der Elemente und Kinder
-        ↓ Arrange: Positionen, Spacing, Padding, Alignment
-        ↓ Render: native WoW-Frames und Control-Handler
-MountHandle
-        ↓ Update(view) oder Unmount()
+Application state
+    -> your buildView function
+    -> view description with properties and children
+    -> Measure: sizes
+    -> Arrange: positions
+    -> Render: native frames and handlers
+    -> mount handle
+    -> Update or Unmount
 ```
 
-Measure/Arrange/Render getrennt halten. Ein neuer Modifier braucht bei Bedarf
-eine Eigenschaft/Annotation, einen Renderer-Verbrauch und einen aussagekräftigen
-Test. Eine Eigenschaft nur an der View zu speichern macht sie noch nicht sichtbar.
+Storing a new property is only the first part of a modifier. Add its type,
+consume it in the relevant engine step and test the behavior it is supposed to
+produce. Keep measured dimensions separate from native drawing concerns.
 
-## TOC als Ladereihenfolge
+## The TOC is the load order
 
-`Declarus.toc` ist die gemeinsame Produktions-Dateiliste. Neue Laufzeitdateien
-müssen dort an der richtigen Stelle stehen. `Tests/Run.lua` lädt dieselbe TOC statt
-einer manuell duplizierten Liste. Editor-Dateien wie `Types/WoW.lua` gehören nicht
-in die TOC; sonst würden die Metadaten globale Client-Funktionen überschreiben.
+Declarus.toc is the production file list. Add new runtime files in the correct
+place. Tests/Run.lua loads that same list rather than maintaining another copy.
 
-Der Playground wird beim Laden registriert, aber erst durch `/declarus` geöffnet.
-Neue Module sollen beim Laden ebenfalls keine ungefragten Demo-Fenster erzeugen.
+Do not put Types/WoW.lua into the TOC. It contains editor declarations that would
+overwrite native globals if executed. The playground registers its command on
+load but does not open a window until requested.
 
-## LuaJIT-Suite
+## Run the tests
 
-Vom Repository-Verzeichnis:
+From the repository directory:
 
 ```sh
 luajit Tests/Run.lua
 sh Tests/RunClients.sh
 ```
 
-**Ergebnis:** Der erste Aufruf führt alle Suiten aus. Der zweite startet dieselbe
-Suite in separaten LuaJIT-Prozessen mit sechs Client-Metadatenprofilen. Stand dieser
-Dokumentation: 131 erfolgreiche Tests pro Profil, keine Fehler.
+**Result:** The first command runs the full suite. The second runs it in separate
+LuaJIT processes for six client metadata profiles. The current suite has 132 tests
+per profile.
 
-Die Profile variieren Kennungen/Metadaten. Sie emulieren keine echten Clients
-und belegen keine vollständige Gleichheit ihrer nativen APIs oder Darstellung.
-Client-Textmaße werden im Mock vereinfacht nachgebildet; auf exakte echte
-Schriftbreiten deshalb nicht aus Mock-Ergebnissen schließen.
+These profiles vary client identity, not the entire native implementation. They
+are not six real client emulators. The mock also uses simplified font measurement,
+so do not use its text widths as exact in-game measurements.
 
-## LuaLS
+## Run LuaLS
 
 ```sh
 "${LUA_LANGUAGE_SERVER:-lua-language-server}" --check=. --checklevel=Hint --logpath=/tmp/declarus-luals
 ```
 
-**Ergebnis:** Vollständige Diagnose einschließlich Hinweisen. Liegt der Server
-nicht im Suchpfad, `LUA_LANGUAGE_SERVER` auf die ausführbare Datei setzen. Auf dem
-Entwicklungs-Mac ist er unter anderem in der installierten VS-Code-Lua-Erweiterung
-vorhanden; der konkrete Erweiterungspfad ist versionsabhängig und gehört nicht
-fest in den Projektcode.
+**Result:** Diagnostics for the whole project, including hints. If the executable
+is not on PATH, set LUA_LANGUAGE_SERVER to its location. An installed VS Code Lua
+extension can contain it, but that extension path is version-dependent and should
+not be hardcoded into the library.
 
-Die Konfiguration liegt in `.luarc.json`. `.vscode/settings.json` bei Abweichungen
-mitprüfen. Die Standardbibliotheken bleiben aktiviert. `Types/WoW.lua` beschreibt
-nur den verwendeten API-Umfang; bei neuen nativen Aufrufen die Typdefinitionen
-gezielt ergänzen. Mock-spezifische Felder gehören in die Mocktypen und nicht in
-die Produktions-Frame-Typen. Warnungen nicht pauschal abschalten, um einen grünen
-Lauf zu erreichen.
+Use .luarc.json as the shared configuration and check local VS Code settings
+when the results differ. Keep standard libraries enabled. Add new native API
+signatures to Types/WoW.lua as needed. Mock-only fields belong to mock types.
+Fix the types rather than globally suppressing diagnostics.
 
-## Lua-5.1-Verträglichkeit
+## Stay compatible with Lua 5.1
 
-Keine neuere Lua-Syntax oder ausschließlich in späteren Lua-Versionen vorhandene
-Standardfunktionen als Laufzeitvoraussetzung einführen. Beispiele sind `goto`,
-Integer-Division mit `//` oder ein unbedingtes `table.unpack`. Der vorhandene Code
-benutzt unter anderem das Lua-5.1-`unpack`. Client-spezifische Erweiterungen nur
-nach belegter Verfügbarkeit und mit passender zentraler Behandlung einsetzen.
+Do not depend on newer syntax or standard functions without a supported approach.
+Examples are goto, integer division using two slashes, or an unconditional call
+to table.unpack. The existing code uses Lua 5.1's unpack. Client extensions need
+verified availability and handling at the central boundary where appropriate.
 
-## Was Ingame geprüft werden muss
+## Check the Markdown too
 
-Darstellung und native Eingabe bleiben reale Client-Aufgaben: Fonts und Sprachen,
-Textur-Layer, Alpha, Checkbox-Klicks, Slider-Dragging, Dropdown-Menüs, Clipping,
-Fokus, UI-Skalierung und wiederholtes Öffnen/Schließen. Der Nutzer hat einen
-funktionierenden Classic-Aufbau zurückgemeldet; eine detaillierte Abnahme aller
-aktuellen Beispiele auf jedem Zielclient ist damit nicht abgeschlossen.
+Keep code examples outside tables. Table cells can contain short inline method
+names, but avoid unescaped pipe characters in type descriptions. They are column
+separators in GFM even when placed inside backticks.
 
-Die [Prüfmatrix](ClientCompatibility.md) trennt Zielmetadaten, automatisierte
-Prüfung und echte Ingame-Abnahme. Forever bleibt bis zu einem tatsächlichen Test
-im offiziellen Client unbestätigt. Keine Aussage „auf allen Clients getestet“ aus
-einem erfolgreichen Matrixlauf ableiten.
+Validate the rendered table structure, local links and executable examples after
+changing the guides. Document the actual implementation, including its current
+limits, rather than an API we plan to add later.
+
+## What still needs the actual client
+
+Fonts, languages, alpha, gradients, draw layers, checkbox input, Slider dragging,
+Dropdown clipping, focus, UI scale and repeated open/close behavior need in-game
+checks. The Classic feedback is useful but does not cover every current example.
+
+Use the [client matrix](ClientCompatibility.md) to separate target metadata,
+automated checks and actual in-game testing. Forever remains unconfirmed until
+we can run that client.

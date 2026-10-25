@@ -1,8 +1,8 @@
-# Views und gemeinsame Modifier
+# Views and modifiers
 
-[Übersicht](README.md) · [Layout](Layout.md) · [Texturen](Textures.md)
+[Docs](README.md) · [Layout](Layout.md) · [Textures](Textures.md)
 
-## View als einfache Fläche
+## A plain view
 
 ```lua
 local UI = Declarus.UI
@@ -13,11 +13,13 @@ local view = UI.View()
 UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Eine zentrierte blaue Fläche mit 160 × 48 UI-Einheiten.
-Eine leere View hat ohne Größe und ohne Padding keine intrinsische Ausdehnung.
-`UI.View()` akzeptiert öffentlich keine Kinder; für Gruppen HStack/VStack verwenden.
+**Result:** A centered blue surface, 160 by 48 UI units.
 
-## Fluent-API und Objektidentität
+A plain view has no image size or children to measure. Without size or padding,
+it has no intrinsic area. `UI.View()` does not accept a public children argument.
+Use HStack or VStack to group elements.
+
+## Chaining changes the same object
 
 ```lua
 local UI = Declarus.UI
@@ -26,105 +28,98 @@ local sameView = view:width(100):height(40)
 assert(sameView == view)
 ```
 
-**Ergebnis:** Beide Variablen zeigen auf dieselbe Beschreibung. Modifier erzeugen
-keine unabhängigen Kopien. Für zwei unabhängige Elemente zwei Konstruktoraufrufe
-verwenden. Nach dem Mounten ist die Beschreibung kein automatisch gebundenes UI.
+**Result:** Both variables refer to the same description. Build a new view when
+you need an independent element. Changing a description after mounting it does
+not update its frames until you call `handle:Update(...)`.
 
-## Größe
+## Size
 
-| Modifier | Bedeutung |
-| --- | --- |
-| `:width(value)` | nur Breite konfigurieren |
-| `:height(value)` | nur Höhe konfigurieren |
-| `:size(width, height)` | Breite und Höhe konfigurieren |
-
-Erlaubte Größenwerte sind Zahlen, `UI.Size.Wrap` und `UI.Size.Fill`. Zahlen geben
-UI-Einheiten an, deren sichtbare Pixelgröße von WoWs UI-Skalierung abhängt.
-Die Details zu bekannten und unbekannten Platzangeboten stehen unter [Layout](Layout.md).
-
-Explizite Zahlen sind **Außenmaße einschließlich Padding**. Padding vergrößert eine
-fest auf 100 gesetzte Breite nicht auf 120, sondern reduziert den inneren Platz.
-Bei intrinsischer Größe wird Padding dagegen zur Inhaltsgröße addiert.
-
-## Padding und Edges
+Use `width` for one axis, `height` for the other, or `size` for both:
 
 ```lua
 local UI = Declarus.UI
-local view = UI.Text("Abstand zum Rand")
+local view = UI.View():width(100):height(40)
+local anotherView = UI.View():size(100, 40)
+```
+
+**Result:** Both descriptions have the same outer size. Values can be numbers,
+`UI.Size.Wrap` or `UI.Size.Fill`. See [Layout](Layout.md) for how space is assigned.
+
+Numbers are UI units. Their physical pixel size depends on WoW's UI scale.
+A fixed size includes padding. Adding padding to a fixed width of 100 leaves less
+room inside; it does not make the outer width larger.
+
+## Padding adds up
+
+```lua
+local UI = Declarus.UI
+local view = UI.Text("Space around the text")
     :padding(8)
     :padding(UI.Edge.Left, 12)
     :backgroundColor(UI.Color.RGB(30, 45, 65))
 ```
 
-**Ergebnis:** Der Text hat links 20, rechts 8, oben 8 und unten 8 Einheiten Abstand.
-Padding ist **kumulativ**. Wiederholtes `:padding(8)` addiert nochmals 8 pro Seite.
-Anders als bei Padding überschreibt ein zweiter `:width(...)` den ersten Wert.
+**Result:** Padding is 20 on the left and 8 on the other three sides. The second
+call adds to the first one. Calling `padding(8)` twice gives 16 on each side.
 
-| Edge | Betroffene Seiten |
+| Edge | Sides affected |
 | --- | --- |
-| `UI.Edge.All` | links, rechts, oben, unten |
-| `UI.Edge.Horizontal` | links und rechts |
-| `UI.Edge.Vertical` | oben und unten |
-| `UI.Edge.Left` / `Right` | einzelne horizontale Seite |
-| `UI.Edge.Top` / `Bottom` | einzelne vertikale Seite |
+| `UI.Edge.All` | All four sides |
+| `UI.Edge.Horizontal` | Left and right |
+| `UI.Edge.Vertical` | Top and bottom |
+| `UI.Edge.Left` | Left only |
+| `UI.Edge.Right` | Right only |
+| `UI.Edge.Top` | Top only |
+| `UI.Edge.Bottom` | Bottom only |
 
-`:padding(8)` ist die Kurzform von `:padding(UI.Edge.All, 8)`.
-Es gibt aktuell keinen öffentlichen Padding-Reset-Modifier. Für einen frischen
-Ausgangszustand eine neue View bauen.
+`padding(8)` is the short form of `padding(UI.Edge.All, 8)`. There is no padding
+reset method yet. Build a fresh view if you need a fresh starting point.
 
-Padding wirkt auf Stack-Anordnung und Text-/Button-Beschriftung. Native Controls
-haben zusätzlich eigene Details: Das TextField verwendet derzeit feste TextInsets
-von 4/4/2/2; ein Dropdown-Label einen linken Offset von 4. Gemeinsames Padding ist
-kein universeller Innenabstand für jede native Control-Grafik.
+Padding affects layout and the custom Text/Button labels. Native controls also
+have their own offsets: TextField uses fixed text insets of 4 left/right and 2
+top/bottom. The Dropdown label starts 4 units from its left edge. Common padding
+does not replace those native offsets.
 
-## Farben
+## Background and text colors
 
 ```lua
 local UI = Declarus.UI
-local background = UI.Color.RGBA(20, 50, 80, 0.6)
-local foreground = UI.Color.RGB(240, 245, 250)
-
-local view = UI.Text("Heller Text auf transparentem Blau")
+local view = UI.Text("Bright text on a transparent background")
     :padding(10)
-    :backgroundColor(background)
-    :foregroundColor(foreground)
+    :backgroundColor(UI.Color.RGBA(20, 50, 80, 0.6))
+    :foregroundColor(UI.Color.RGB(240, 245, 250))
 ```
 
-**Ergebnis:** Der Hintergrund ist zu 60 % deckend; der Text bleibt voll deckend.
-`RGB` nimmt drei Kanalwerte von 0–255 und setzt Alpha auf 1. `RGBA` nimmt zusätzlich
-Alpha von 0–1. Beide liefern intern normalisierte Farbtabellen. Die Fabriken
-begrenzen falsche Eingaben nicht automatisch; gültige Werte selbst übergeben.
+**Result:** The background is 60% opaque. The text stays fully opaque.
 
-`backgroundColor` erstellt eine eigene BACKGROUND-Textur auf dem Frame.
-`foregroundColor` wird derzeit bei `UI.Text` und der von Declarus gezeichneten
-Button-Beschriftung angewendet. Eine Farbe auf dem Stack wird nicht automatisch
-zur Textfarbe seiner Kinder. Native EditBox-/Dropdown-Texte werden durch diesen
-Modifier aktuell nicht eingefärbt. Texturtönung hat einen separaten Modifier.
+`RGB` takes channels from 0 to 255 and adds alpha 1. `RGBA` also takes alpha from
+0 to 1. The factories return normalized color tables. They do not clamp invalid
+input, so pass values in the expected ranges.
 
-## Farbverläufe
+`backgroundColor` draws a BACKGROUND texture. `foregroundColor` currently colors
+Text and the custom Button label. It does not set a text style for every child of
+a stack, or recolor the native TextField and Dropdown labels.
 
-`:gradient("HORIZONTAL", fromColor, toColor)` färbt die eigene Bildfläche von
-links nach rechts; VERTICAL von unten nach oben. Ohne Bildquelle wird eine weiße
-Fläche für den Verlauf erzeugt. Alpha und `textureTint` sind kombinierbar, Text
-und Kinder werden nicht mitgefärbt. `:gradient(nil)` entfernt ihn. Beispiele und
-erwartete Ergebnisse stehen unter [Farbverläufe](Gradients.md).
+Use [textureTint](Textures.md) to color an image and [gradient](Gradients.md) for
+a transition between two colors. Neither changes the foreground text color.
 
-## Opacity
+## Opacity affects the whole frame
 
 ```lua
 local UI = Declarus.UI
 local view = UI.VStack({
-    UI.Text("Auch dieser Text wird transparenter."),
+    UI.Text("This text becomes transparent too."),
     UI.View():size(100, 20):backgroundColor(UI.Color.RGB(0, 180, 100)),
 }):spacing(8):opacity(0.5)
 ```
 
-**Ergebnis:** Der Stack-Frame ist halbtransparent. Durch WoWs Frame-Hierarchie
-betrifft das auch seine Kinder. Eigene Alpha-Werte der Kinder wirken zusätzlich.
-Das unterscheidet `opacity` von einer RGBA-Hintergrundfarbe, die nur den Hintergrund
-betrifft. Für `opacity` selbst Werte von 0–1 verwenden.
+**Result:** The stack and its children are half opaque. Child alpha values apply
+on top of the parent's alpha. Use values from 0 to 1.
 
-## Sichtbarkeit
+That is different from setting alpha on a background color or a texture tint,
+which affects only that drawn region.
+
+## Visibility keeps the layout space
 
 ```lua
 local UI = Declarus.UI
@@ -135,25 +130,25 @@ local view = UI.HStack({
 }):spacing(10)
 ```
 
-**Ergebnis:** Rot und Blau sind sichtbar. In der Mitte bleiben 40 Einheiten
-reserviert, obwohl Grün unsichtbar ist. Die Gesamtbreite bleibt 140.
-Soll der Platz entfallen, das betreffende Kind beim nächsten Baumaufbau weglassen.
+**Result:** Red and blue remain visible. The hidden green view still takes up 40
+units in the middle. Total width stays 140.
 
-`visible(false)` blendet den Frame aus. `opacity(0)` macht ihn transparent,
-beendet aber nicht grundsätzlich seine mögliche Mausinteraktion.
+To remove that gap, leave the child out when building the next tree. Setting
+`opacity(0)` is also different from hiding: a transparent frame can still receive
+mouse input.
 
-## Was wird geerbt?
+## What carries over to children?
 
-Alle Komponenten erben die gemeinsamen Modifier als Methoden. Das ist von
-**Wertvererbung** zu unterscheiden:
+All components inherit the modifier methods. Their property values are not all
+inherited by their children.
 
-| Eigenschaft eines Eltern-Stacks | Wirkung auf Kinder |
+| Parent setting | Effect on children |
 | --- | --- |
-| Padding/Spacing/Alignment | beeinflusst die Anordnung |
-| Opacity | wirkt über die native Frame-Hierarchie zusätzlich auf Kinder |
-| Visible false | versteckt auch die Darstellung seiner Kinder |
-| BackgroundColor/Texture | zeichnet auf dem Eltern-Frame; kopiert keine Kind-Eigenschaften |
-| ForegroundColor | wird nicht als Textstil an Kinder weitergereicht |
+| Padding, spacing, alignment | Changes their arrangement |
+| Opacity | Native parent alpha also affects their appearance |
+| Hidden parent | Hides their appearance with the parent |
+| Background, texture, gradient | Draws on the parent; does not copy styles into children |
+| Foreground color | Does not become a shared child text color |
 
-Für wiederkehrende Gestaltung eigene Lua-Funktionen bauen, die die gewünschten
-Modifier auf jedes erzeugte Element anwenden. Ein Beispiel steht in [Praxisrezepte](Recipes.md).
+For repeated styling, use a Lua helper that builds and styles each element.
+[Recipes](Recipes.md) shows a simple card helper.

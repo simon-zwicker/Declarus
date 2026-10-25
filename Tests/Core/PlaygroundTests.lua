@@ -178,6 +178,23 @@ return {
         assert(findText(root, "ARTWORK-Button geklickt."))
         SlashCmdList.DECLARUS("hide")
     end,
+    TestGradientPreviewControls = function()
+        local root = open("Darstellung")
+        local scroll = assert(find(root, function(frame) return frame:GetObjectType() == "ScrollFrame" end))
+        scroll:SetVerticalScroll(120)
+        local function previewBar()
+            return assert(findText(root, "Live-Vorschau | Standard | aktiv")).parent.children[3].children[1]
+        end
+        assert(#previewBar().textures == 1)
+        click(root, "Verlauf an/aus")
+        assert(previewBar().textures[2].gradient.orientation == "HORIZONTAL")
+        click(root, "Richtung wechseln")
+        assert(previewBar().textures[2].gradient.orientation == "VERTICAL")
+        click(root, "Verlauf an/aus")
+        assert(#previewBar().textures == 1 and not previewBar().textures[1].gradient)
+        assert(scroll.parent and scroll.scroll == 120)
+        SlashCmdList.DECLARUS("hide")
+    end,
     TestDemoLifecycle = function()
         SlashCmdList.DECLARUS("hide")
         local before = #parent().children

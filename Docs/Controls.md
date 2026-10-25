@@ -1,79 +1,73 @@
-# Controls und Events
+# Controls
 
-[Übersicht](README.md) · [Zustand und Lifecycle](StateAndLifecycle.md)
+[Docs](README.md) · [State and lifecycle](StateAndLifecycle.md)
 
-Alle Controls erben die gemeinsamen View-Modifier und die TextView-Methoden.
-Die Konstruktoren setzen feste Standardmaße; eine größere Schrift ändert diese
-Maße nicht automatisch. Ein dunkler Hintergrund ist voreingestellt und kann mit
-`backgroundColor` überschrieben werden.
+Controls inherit the common view modifiers. They start with fixed sizes and a
+dark background. Change those when the design needs more room or a different
+style. Increasing the font size does not automatically increase the control size.
 
-| Konstruktor | Standardgröße | Callback |
+| Control | Default size | Callback value |
 | --- | --- | --- |
-| `UI.Button(label, onClick)` | 120 × 28 | `onClick(mouseButton)` |
-| `UI.TextField(value, onChange?)` | 180 × 28 | `onChange(string)` |
-| `UI.Slider(value, min, max, step?, onChange?)` | 180 × 20 | `onChange(number)` |
-| `UI.Toggle(value, onChange?)` | 26 × 26 | `onChange(boolean)` |
-| `UI.Dropdown(options, value, onChange?)` | 180 × 28 | `onChange(string)` |
+| Button | 120 by 28 | Mouse button string |
+| TextField | 180 by 28 | New text string |
+| Slider | 180 by 20 | Rounded number |
+| Toggle | 26 by 26 | Boolean |
+| Dropdown | 180 by 28 | Selected option string |
 
-Callbacks erhalten den hier genannten Wert, **keinen nativen Frame** als erstes
-Argument. Es gibt bisher keinen öffentlichen `:onChange(...)`-, `:onClick(...)`-
-oder allgemeinen Event-Modifier; Handler werden im Konstruktor angegeben.
+Pass callbacks to the constructor. There are no public onClick/onChange modifier
+methods or generic event modifiers yet. Callbacks receive the value described
+below, not a native frame as their first argument.
 
 ## Button
 
 ```lua
 local UI = Declarus.UI
-local view = UI.Button("Speichern", function(mouseButton)
+local view = UI.Button("Save", function(mouseButton)
     if mouseButton == "RightButton" then
-        print("Rechtsklick")
+        print("Right click")
     else
-        print("Linksklick")
+        print("Left click")
     end
-end)
-    :size(180, 34)
-    :padding(UI.Edge.Left, 10)
-    :padding(UI.Edge.Top, 8)
-    :fontSize(16)
+end):size(180, 34):padding(UI.Edge.Left, 10):padding(UI.Edge.Top, 8)
 
 UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Ein 180 × 34 großer Button mit versetzter Beschriftung. Linke und
-rechte Maustaste werden beim Loslassen registriert; der entsprechende Text
-erscheint im Chat. Label muss ein String und der Callback eine Funktion sein.
+**Result:** A 180 by 34 button with an inset label. Left and right mouse releases
+trigger the callback and print their respective messages.
 
-Die Beschriftung liegt im OVERLAY-Layer; eine normale View-Textur im BORDER-Layer
-bleibt dahinter. Eigene Hover-, Pressed-, Disabled- oder Focus-Stile gibt es noch
-nicht als Declarus-API. Ein unsichtbarer Button behält seinen Layoutplatz.
+The label must be a string and the callback must be a function. Text and Button
+labels render in OVERLAY. The default texture or gradient layer is BORDER, so
+normal button artwork stays behind the text.
+
+Hover, pressed, disabled and focus styles are not exposed as Declarus modifiers
+yet. A label can be localized with `localize(L)`.
 
 ## TextField
 
 ```lua
 local UI = Declarus.UI
-local profileName = "Standard"
-
+local profileName = "Default"
 local field = UI.TextField(profileName, function(value)
     profileName = value
-    print("Neuer Profilname:", profileName)
+    print("Profile name:", profileName)
 end):width(280):fontSize(18)
 
 UI.Mount(field, UIParent)
 ```
 
-**Ergebnis:** Ein einzeiliges Eingabefeld mit „Standard“. Benutzereingaben ändern
-`profileName` und werden ausgegeben. Auch ein leerer String ist ein gültiger Wert.
-Automatischer Fokus ist aus. Enter und Escape geben den Fokus frei.
+**Result:** A single-line field starting with Default. User input updates the Lua
+variable and prints the new text. Empty text is a valid value.
 
-Escape stellt den alten Text nicht wieder her; Enter ist kein separater Save-
-Callback. Beide führen derzeit nur `ClearFocus()` aus. Es gibt noch keine
-Placeholder-, Passwort-, Zahlenmodus-, MaxLength- oder Validierungs-Modifier.
+Autofocus is off. Enter and Escape both release focus. Escape does not restore
+the previous value, and Enter is not a separate save event.
 
-Das Control meldet `OnTextChanged` nur, wenn WoW die Änderung als Benutzereingabe
-kennzeichnet. Initialisierung und rein programmatisches `SetText` lösen keinen
-Declarus-onChange aus. Der Renderer verwendet feste TextInsets: links/rechts 4,
-oben/unten 2. Werte sind Strings, keine automatischen Zahlenkonvertierungen.
+Only native text-change events marked as user input trigger onChange. Creating
+the field or calling native SetText programmatically does not trigger this
+Declarus callback. Fixed text insets are 4 left/right and 2 top/bottom.
 
-Für ein Label daneben HStack verwenden; für ein Label darüber VStack.
+There are no placeholder, password, numeric-input, maximum-length or validation
+modifiers yet. Input stays a string; convert and validate it in your addon.
 
 ## Slider
 
@@ -82,19 +76,20 @@ local UI = Declarus.UI
 local volume = 50
 local slider = UI.Slider(volume, 0, 100, 5, function(value)
     volume = value
-    print("Lautstärke:", volume)
+    print("Volume:", volume)
 end):width(300)
 
 UI.Mount(slider, UIParent)
 ```
 
-**Ergebnis:** Ein horizontaler Slider von 0 bis 100. Werte werden relativ zum
-Minimum auf Fünferschritte gerundet. Bei einem gemeldeten Wert 53 wird zum Beispiel
-55 übernommen. Der Callback erhält die gerundete, begrenzte Zahl.
+**Result:** A horizontal slider from 0 to 100. Values round to steps of 5 relative
+to the minimum. A reported value of 53 becomes 55 before the callback receives it.
 
-`max` muss größer als `min` sein, der Anfangswert muss innerhalb des Bereichs
-liegen und `step` muss positiv sein. Ohne Step wird 1 verwendet. Wenn ein Callback
-angegeben wird, ohne einen Step festzulegen, den vierten Parameter als `nil` angeben:
+The maximum must be greater than the minimum, the starting value must be inside
+the range, and the step must be positive. Step defaults to 1.
+
+The callback is the fifth argument. Use nil for the fourth argument if you want
+the default step:
 
 ```lua
 local UI = Declarus.UI
@@ -103,23 +98,24 @@ local slider = UI.Slider(5, 0, 10, nil, function(value)
 end)
 ```
 
-**Ergebnis:** Bereich 0–10 mit Schrittweite 1. Der Callback steht immer an fünfter
-Stelle; eine Funktion als vierter Parameter ist keine alternative Signatur.
+**Result:** A range of 0 to 10 in whole-number steps. A callback in the fourth
+position is not an alternate signature.
 
-Dezimalwerte sind möglich:
+Decimal steps work too:
 
 ```lua
 local UI = Declarus.UI
 local slider = UI.Slider(0.5, 0, 1, 0.1, function(value)
-    print(string.format("Deckkraft: %.1f", value))
+    print(string.format("Opacity: %.1f", value))
 end)
 ```
 
-**Ergebnis:** Ein Slider für Zehntelschritte zwischen 0 und 1. Wie bei Lua-
-Gleitkommazahlen üblich, für die sichtbare Ausgabe gezielt formatieren. Nach dem
-Runden werden Werte auf min/max begrenzt; bei nicht passend teilbarem Bereich kann
-die Begrenzung den Endwert beeinflussen. Der Slider zeichnet selbst keine
-Min-/Max-Texte und kein Zahlenlabel; solche Labels separat anordnen.
+**Result:** Tenths from 0 to 1. Format the display value deliberately because Lua
+uses floating-point numbers. Values are clamped to the range after rounding. If
+the range is not evenly divisible by the step, that clamp can affect an endpoint.
+
+A Slider does not create min/max labels or a number display. Add Text views if you
+want those.
 
 ## Toggle
 
@@ -129,57 +125,58 @@ local enabled = true
 local view = UI.HStack({
     UI.Toggle(enabled, function(value)
         enabled = value
-        print("Aktiv:", enabled)
+        print("Enabled:", enabled)
     end),
-    UI.Text("Funktion aktivieren"),
+    UI.Text("Enable feature"),
 }):spacing(10):alignment(UI.Alignment.Center)
 
 UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Eine zunächst angehakte Checkbox neben einem Text. Der Callback
-liefert `true` oder `false`, keinen String und keinen Zahlenwert. Der Toggle hat
-kein eingebautes Label; im Beispiel ist der Text ein separates Element. Der Text
-selbst schaltet die Checkbox beim Anklicken nicht automatisch um.
+**Result:** A checked checkbox beside a text label. The callback receives true or
+false. The text is a separate view and clicking it does not automatically toggle
+the checkbox.
 
 ## Dropdown
 
 ```lua
 local UI = Declarus.UI
-local selected = "Standard"
-local dropdown = UI.Dropdown({"Standard", "Raid", "Solo"}, selected, function(value)
+local selected = "Default"
+local dropdown = UI.Dropdown({"Default", "Raid", "Solo"}, selected, function(value)
     selected = value
-    print("Profil:", selected)
+    print("Profile:", selected)
 end):width(240)
 
 UI.Mount(dropdown, UIParent)
 ```
 
-**Ergebnis:** Der Auslöser zeigt „Standard v“. Ein Klick öffnet eine Liste; die
-Auswahl von „Raid“ setzt Label und Wert auf „Raid“ und schließt die Liste.
-Ein erneuter Klick auf den Auslöser schließt sie ebenfalls.
+**Result:** The trigger shows `Default v`. Clicking it opens the list. Selecting
+Raid updates the label and value, then closes the list. Clicking the trigger again
+also closes it.
 
-Optionen müssen eine nichtleere, zusammenhängende Liste aus Strings sein. Der
-Anfangswert muss in dieser Liste vorkommen. Die Liste wird beim Erzeugen kopiert.
-Labels und Werte sind derzeit identisch; es gibt keine separaten IDs, Icons,
-Gruppen, Mehrfachauswahl, Suche oder deaktivierten Einträge.
+Options must be a non-empty dense list of strings. The initial value must occur
+in that list. The constructor copies the options. Labels and values are currently
+the same string; there are no separate IDs, icons, groups, search fields, disabled
+options or multiple selection.
 
-Die Menüzeilen sind aktuell 180 breit und 28 hoch. Eine andere Breite des
-Auslösers skaliert die Menübreite nicht automatisch mit. Das Menü wird unter dem
-Control geöffnet. Bei einer ScrollView kann es am Viewport-Rand abgeschnitten
-werden; den Auslöser dann weiter nach oben scrollen. Außenklick und Escape sind
-noch keine implementierten Schließmechanismen; Tastaturnavigation fehlt ebenfalls.
+Menu rows are currently 180 units wide and 28 high. Changing the trigger width
+does not resize those rows. The menu opens below the trigger and can be clipped
+inside a ScrollView. Scroll the trigger farther up or leave room below it.
 
-## Gemeinsames Verhalten der Änderungs-Callbacks
+Keyboard navigation, Escape handling and closing on an outside click are not
+implemented.
 
-Bei TextField, Slider, Toggle und Dropdown wird der interne
-`view.properties.value` vor dem Callback aktualisiert. Derselbe Wert löst keinen
-weiteren onChange aus. Die Initialisierung löst ebenfalls keinen Änderungs-Callback
-aus. Das gilt nicht als allgemeine automatische Zustandsbindung an andere Views.
+## What onChange does and does not do
+
+TextField, Slider, Toggle and Dropdown update their description's value before
+calling onChange. Initial setup does not fire it. Repeating the same value does
+not fire it again either.
+
+That does not make other views reactive:
 
 ```lua
 local UI = Declarus.UI
-local value = "Vorher"
+local value = "Before"
 local label = UI.Text(value)
 local field = UI.TextField(value, function(nextValue)
     value = nextValue
@@ -187,6 +184,7 @@ end)
 local view = UI.VStack({label, field}):spacing(8)
 ```
 
-**Ergebnis:** Beim Tippen ändert sich die Variable `value`, aber `label` bleibt
-„Vorher“. Für die Änderung der Anzeige ein explizites Mount-Update verwenden.
-Wie das ohne Fokusverlust funktioniert, zeigt [Zustand und Lifecycle](StateAndLifecycle.md).
+**Result:** Typing changes the variable, but the label description still says
+Before. Update the label's mount explicitly when you want the display to change.
+[State and lifecycle](StateAndLifecycle.md) shows how to do this without rebuilding
+the input field on every keypress.

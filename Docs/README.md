@@ -1,59 +1,66 @@
-# Declarus – Dokumentation
+# Declarus documentation
 
-Declarus beschreibt WoW-Oberflächen als Lua-Objekte und erzeugt daraus native
-Frames. Diese Dokumentation beschreibt den **implementierten Stand**, einschließlich
-seiner Grenzen. Alle Beispiele sind für Lua 5.1 und aktuelle offizielle
-Blizzard-Clients gedacht. Privatserver und historische Original-Clients gehören
-nicht zum Projektziel.
+This is the guide to what Declarus can do right now. Each topic shows how to use
+the API, what you get from it and where the current limits are.
 
-## Einstieg und Lesereihenfolge
+We use one codebase for current official Blizzard clients. No private servers and
+no old original clients.
 
-| Dokument | Inhalt |
+## Pick a topic
+
+| Guide | Use it for |
 | --- | --- |
-| [Schnellstart](GettingStarted.md) | Installation, Einbindung, erstes sichtbares UI und erwartetes Ergebnis |
-| [Views und Modifier](ViewsAndModifiers.md) | gemeinsame Eigenschaften, Farben, Padding, Sichtbarkeit und Vererbung |
-| [Layout](Layout.md) | HStack/VStack, Wrap/Fill, Größenberechnung, Alignment und konkrete Maße |
-| [Text und Localization](TextAndLocalization.md) | Fonts, Textmessung, Übersetzungen und Fallbacks |
-| [Controls](Controls.md) | Button, TextField, Slider, Toggle und Dropdown mit Callback-Beispielen |
-| [Texturen](Textures.md) | FileDataID, Ausschnitt, Spiegelung, Tönung und Zeichenebenen |
-| [Farbverläufe](Gradients.md) | Richtungen, Alpha, Bildfilter, Tönung und Entfernen |
-| [ScrollView](ScrollView.md) | Viewport, Inhaltsgröße, Padding und Scrollgrenzen |
-| [Zustand und Lifecycle](StateAndLifecycle.md) | Mount, Update, Unmount und unabhängige UI-Bereiche |
-| [Praxisrezepte](Recipes.md) | vollständige Beispiele für Einstellungen, Listen und Komponentenkombinationen |
-| [API-Referenz](API.md) | öffentliche Funktionen, Signaturen, Defaults und Konstanten |
-| [Fehlersuche](Troubleshooting.md) | Symptome, Ursachen und passende Korrekturen |
-| [Entwicklung und Tests](Development.md) | TOC, Architektur, Tests, LuaLS und Beitragsregeln |
-| [Playground](Playground.md) | alle Beispielseiten und deren Bedienung im Client |
-| [Client-Kompatibilität](ClientCompatibility.md) | Zielmatrix, Quellen und Stand der Ingame-Abnahme |
+| [Getting started](GettingStarted.md) | Loading Declarus and building your first UI |
+| [Views and modifiers](ViewsAndModifiers.md) | Common styling and sizing options |
+| [Layout](Layout.md) | Arranging elements and understanding their sizes |
+| [Text and localization](TextAndLocalization.md) | Fonts, text measurement and translations |
+| [Controls](Controls.md) | User input and callbacks |
+| [Textures](Textures.md) | Icons, image cropping, tint and draw order |
+| [Gradients](Gradients.md) | Color transitions on surfaces and images |
+| [ScrollView](ScrollView.md) | Content that needs more vertical space |
+| [State and lifecycle](StateAndLifecycle.md) | Updating and closing a UI correctly |
+| [Recipes](Recipes.md) | Putting the pieces together |
+| [API reference](API.md) | Looking up a function or modifier |
+| [Troubleshooting](Troubleshooting.md) | Finding the cause of a problem |
+| [Development](Development.md) | Working on the library |
+| [Playground](Playground.md) | Testing the features in game |
+| [Client compatibility](ClientCompatibility.md) | Checking the supported targets and test status |
 
-## Beispiele lesen
+## How to read the examples
 
-Die Lua-Beispiele laufen **innerhalb eines geladenen WoW-Addons**, nachdem Declarus
-geladen wurde. Sie sind keine eigenständigen Programme für den normalen Lua-
-Interpreter. `UIParent` und `CreateFrame` stammen aus WoW. Beispiele ohne eigenes
-`local UI` setzen diese lokale Abkürzung voraus:
+Lua examples run inside a WoW addon after Declarus has loaded. They are not plain
+Lua programs you can run without WoW or the project's mocks.
+
+Examples use this shortcut:
 
 ```lua
 local UI = Declarus.UI
 ```
 
-Ein Beispiel, das nur `local view = ...` erzeugt, beschreibt zunächst ein UI.
-Sichtbar wird es durch `UI.Mount(view, UIParent)`. Mehrere Beispiele auf einer Seite
-sind unabhängig, sofern sie nicht ausdrücklich als Fortsetzung bezeichnet werden.
+Calling a constructor only builds a description. To see it, mount it:
 
-**Ergebnis** beschreibt das aus dem Code erwartete Verhalten. Exakte Textmaße
-hängen von Client-Schrift und Sprache ab. Zahlenbeispiele mit rein geometrischen
-Views sind dagegen unabhängig von der Schrift. Eine Beschreibung hier ist keine
-Zertifizierung der Darstellung auf jedem Client.
+```lua
+local UI = Declarus.UI
+local view = UI.Text("This is a view description.")
+local handle = UI.Mount(view, UIParent)
+```
 
-## Wichtige Grundregeln
+**Result:** The text appears centered on UIParent. The handle belongs to that
+mounted UI and can update or remove it later.
 
-- Konstruktoren wie `UI.Text(...)` erstellen Beschreibungen, noch keine Frames.
-- Modifier geben dasselbe Objekt zurück und verändern dessen Eigenschaften.
-- Mount-Updates sind explizit. Eine geänderte Lua-Variable aktualisiert kein UI.
-- Texte und Bilder bestimmen keine automatische Zeilenumbruch-/Cover-Logik.
-- Stacks ordnen Kinder an; `UI.View()` ist kein frei verwendbarer Kinder-Container.
-- Sichtbarkeit entfernt keinen Layoutplatz. Strukturänderungen benötigen einen neuen Baum.
-- Die Library speichert Einstellungen nicht selbst dauerhaft.
+Examples on the same page are independent unless a paragraph explicitly says
+that the next block continues the previous one. A block that only creates a view
+is showing its configuration; it does not display anything until mounted.
 
-Für den praktischen Rundgang: `/declarus` öffnen und die sechs Bereiche ausprobieren.
+The **Result** below an example describes the expected behavior. Exact text sizes
+depend on the client font and language. Geometry examples using plain views can
+give exact dimensions.
+
+## The main rules
+
+Modifiers change the same view object and return it for chaining. They do not
+create copies. Changes are not automatically pushed to an existing mount.
+
+Use stacks for children, a ScrollView for vertical overflow, and explicit mount
+updates when the data changes. Keep application state outside the rendered tree.
+Declarus does not save settings for you.

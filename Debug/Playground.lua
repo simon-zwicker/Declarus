@@ -17,11 +17,14 @@ local activePage = 1
 ---@field clicks number
 ---@field showSample boolean
 ---@field items number
+---@field gradientEnabled boolean
+---@field gradientVertical boolean
 
 ---@return DeclarusPlaygroundState
 local function initialState()
     return {text = "Declarus", amount = 50, fraction = 0.5, enabled = true,
-        profile = "Standard", clicks = 0, showSample = true, items = 3}
+        profile = "Standard", clicks = 0, showSample = true, items = 3,
+        gradientEnabled = false, gradientVertical = false}
 end
 local state = initialState()
 -- Keep UTF-8 characters intact when shortening user-entered preview/status text.
@@ -103,6 +106,10 @@ end
 -- This separate mount updates without replacing the controls or their scroll frame.
 local function refreshPreview()
     local barWidth = state.amount * 3
+    local bar = UI.View():size(barWidth, 8):backgroundColor(accent):opacity(state.fraction):visible(state.enabled)
+    if state.gradientEnabled then
+        bar:gradient(state.gradientVertical and "VERTICAL" or "HORIZONTAL", C.RGB(30, 100, 200), C.RGB(100, 220, 160))
+    end
     mountRegion("preview", UI.VStack({
         text("Live-Vorschau | " .. state.profile .. " | " .. (state.enabled and "aktiv" or "inaktiv"), 14):foregroundColor(accent),
         UI.HStack({
@@ -110,7 +117,7 @@ local function refreshPreview()
             text(string.format("Wert: %d | Dezimal: %.1f", state.amount, state.fraction), 14),
         }):spacing(12):alignment(UI.Alignment.Center),
         UI.HStack({
-            UI.View():size(barWidth, 8):backgroundColor(accent):opacity(state.fraction):visible(state.enabled),
+            bar,
             UI.View():size(300 - barWidth, 8):backgroundColor(C.RGB(50, 60, 75)),
         }):width(300),
     }):spacing(7):padding(10):width(820):backgroundColor(C.RGB(17, 23, 32)))
@@ -321,6 +328,19 @@ local function appearance()
             UI.View():size(420, 30):gradient("HORIZONTAL", C.RGB(255, 255, 255), C.RGB(80, 160, 255))
                 :textureTint(C.RGBA(100, 220, 160, 0.7)),
             text("Texturtint und Gradient werden multipliziert; Schrift bleibt unabhaengig."),
+            UI.HStack({
+                button("Verlauf an/aus", function()
+                    state.gradientEnabled = not state.gradientEnabled
+                    refreshPreview()
+                    log("Vorschau-Gradient: " .. (state.gradientEnabled and "an" or "aus"))
+                end, 190),
+                button("Richtung wechseln", function()
+                    state.gradientVertical = not state.gradientVertical
+                    refreshPreview()
+                    log("Vorschau-Richtung: " .. (state.gradientVertical and "VERTICAL" or "HORIZONTAL"))
+                end, 210),
+            }):spacing(14),
+            text("Die Schalter aendern nur den festen Vorschau-Balken unten."),
         }),
         card("RGB / RGBA / Opacity", {
             UI.HStack({

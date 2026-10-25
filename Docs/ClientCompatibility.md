@@ -1,110 +1,91 @@
-# Offizielle WoW-Clients
+# Client compatibility
 
-Declarus zielt ausschließlich auf aktuelle offizielle Blizzard-Clients. Keine
-Privatserver, keine historischen Original-Clients. Classic Era, Hardcore und
-saisonale Regeln eines Clients benötigen keine separaten UI-Renderer.
+[Docs](README.md) · [API reference](API.md) · [Playground](Playground.md)
 
-## Gemeinsame Implementierung
+We target current official Blizzard clients only. No private servers and no
+historical original clients. Different rulesets on the same Classic client do
+not need separate UI renderers just because the game rules differ.
 
-Alle Ziele laden dieselbe `Declarus.toc` mit mehreren Interface-Kennungen und
-dieselben Lua-Dateien. Keine clientabhängigen Blizzard-Templates, Mixins, Settings-
-oder Dropdown-Frameworks sind für die vorhandenen Basics erforderlich. Die
-primitiven Frame-, Texture-, FontString-, EditBox-, Slider-, CheckButton- und
-ScrollFrame-APIs bilden den gemeinsamen UI-Unterbau.
+## One codebase
 
-`Declarus.Client.GetInfo()` liefert `flavor`, `version`, `build`, `interface` und
-optional `projectID`. Die Kennung dient der Diagnose, nicht zur Auswahl eines
-vermuteten API-Umfangs. Forever wird über seine Interface-Familie getrennt von
-Retail erkannt, unabhängig davon, welchen Projektwert eine Beta meldet. Unbekannte
-Kennungen werden als `Unknown` berichtet, nicht stillschweigend als Retail.
+All targets use the same Declarus.toc and Lua files. The current basic components
+use native frames, textures, FontStrings, EditBoxes, Sliders, CheckButtons and
+ScrollFrames without depending on client-specific control templates or settings
+frameworks.
 
-`Core/Client.lua` ist die zentrale Grenze für nachgewiesene Client-Unterschiede.
-Die Standardschrift kommt aus `STANDARD_TEXT_FONT`, damit auch andere Text-Lokalisierungen
-die Client-Schrift erhalten. Explizites `:font(...)` hat Vorrang. Messung und
-Rendering verwenden denselben Resolver. In einer Umgebung ohne Client-Schrift
-bleibt FRIZQT der Fallback. Es werden keine Privatserver-Fallbacks eingeführt.
+Client differences belong in Core/Client.lua. GetInfo reports the client identity;
+it is not used to assume an API exists. Forever is recognized by its interface
+family independently of the project ID reported by a particular beta. Unknown
+families report Unknown instead of being silently called Retail.
 
-## Ziel- und Prüfmatrix
+The default font comes from STANDARD_TEXT_FONT so client languages get the
+appropriate font. An explicit font wins. Native gradient colors are also passed
+through this central boundary.
 
-Stand: 25. Oktober 2026. Interface-Metadaten sind Patch-abhängig und müssen bei
-Blizzard-Updates überprüft werden. Ein TOC-Eintrag ist keine Ingame-Zertifizierung.
+## Targets and test status
 
-| Ziel | Interface in TOC | Automatisierte Prüfung | Ingame-Abnahme |
+This is the TOC snapshot used by the project as of October 25, 2026. Interface
+numbers change with patches. A TOC entry makes a build eligible to load; it does
+not prove that our UI has passed an in-game test there.
+
+| Target | TOC interface | Automated check | Full in-game pass |
 | --- | --- | --- | --- |
-| Retail | 120105, 120100 | gemeinsame Suite + Metadatenprofil | offen, durch Nutzer testbar |
-| Forever | 16001 | gemeinsame Suite + Metadatenprofil | offen, aktuell nicht testbar |
-| Classic Era / entsprechende Regeln | 11509 | gemeinsame Suite + Metadatenprofil | offen |
-| Burning Crusade Classic | 20506 | gemeinsame Suite + Metadatenprofil | offen |
-| Mists Classic | 50504 | gemeinsame Suite + Metadatenprofil | offen |
-| Titan Reforged, offizieller regionaler Client | 38002 | gemeinsame Suite + Metadatenprofil | offen |
+| Retail | 120105, 120100 | Shared suite and metadata profile | Pending |
+| Forever | 16001 | Shared suite and metadata profile | Pending; not currently available for testing |
+| Classic Era and its rulesets | 11509 | Shared suite and metadata profile | Pending |
+| Burning Crusade Classic | 20506 | Shared suite and metadata profile | Pending |
+| Mists Classic | 50504 | Shared suite and metadata profile | Pending |
+| Titan Reforged, official regional client | 38002 | Shared suite and metadata profile | Pending |
 
-Alte Wrath-/Cataclysm-Classic-Versionen werden nicht vorsorglich als zusätzliche
-Ziele aufgenommen. Ein neu angebotener offizieller Client wird anhand seiner
-realen API und Interface-Kennung ergänzt.
+The playground has been reported working on Classic. We have not recorded a
+complete pass of every later example with a specific build, locale and UI scale.
+That is why the full-pass column is still pending.
 
-Die Fixtures verwenden dieselben API-Mocks. Sie prüfen die gemeinsame Ladereihenfolge,
-Client-Kennungen, Schriftauflösung, Controls und Lifecycle, emulieren aber keine
-sechs echten Clients. Retail-/Classic-Tests ersetzen den Forever-Test nicht.
+Old Wrath/Cataclysm Classic builds are not added just in case. When another
+official client becomes a target, check its actual interface and API first.
 
-## Automatisiert prüfen
+## What the matrix checks
 
 ```sh
 luajit Tests/Run.lua
 sh Tests/RunClients.sh
 ```
 
-Der Matrixlauf startet die komplette Suite für jedes Profil in einem separaten
-LuaJIT-Prozess. Tests laden die echte TOC statt einer zweiten manuellen Dateiliste.
-Nach dem Laden ist nur der interne Mess-Frame vorhanden; es öffnet sich keine Demo.
-Zusätzlich LuaLS wie in README beschrieben ausführen, inklusive VS-Code-Konfiguration.
+Each profile runs the full suite in a separate LuaJIT process. Tests use the real
+TOC load order, then check identity, fonts, layout, controls and lifecycle. Loading
+the library creates its internal measurement frame but does not mount the demo.
 
-## Auf Retail und Classic prüfen
+The profiles use the same native API mocks. They are not six client emulators.
+Passing Retail or Classic checks does not replace a Forever test. The same applies
+to new features such as gradients.
 
-Denselben Declarus-Ordner in `Interface/AddOns/Declarus` des jeweiligen Clients
-bereitstellen. Declarus benötigt für die Standalone-Demo keine anderen Addons.
-PoisonFlow ist hierfür nicht erforderlich und wurde nicht verändert.
+## In-game walkthrough
 
-1. Declarus im Addon-Menü aktivieren und einloggen: kein automatisch geöffnetes UI.
-2. `/declarus info` ausführen. Client, Patch, Build, Interface und Sprache notieren.
-3. `/declarus` oeffnet den umfangreichen Playground. Den vollstaendigen Ablauf
-   und alle API-Beispiele beschreibt [Playground.md](Playground.md).
-4. In allen sechs Bereichen Schrift, Texturen, Padding, Farben und Layout pruefen.
-5. Unter Controls TextField, beide Slider, Toggle, Dropdown und Links-/Rechtsklick
-   testen. Die feste Vorschau und Ereignisanzeige muessen sofort reagieren, waehrend
-   TextField-Fokus und Seiten-Scrollposition bestehen bleiben.
-6. Jede Seite bis zu beiden Scrollgrenzen pruefen. Unter Updates Kinder hinzufuegen
-   und entfernen sowie die Vorschau gezielt neu mounten.
-7. Reset ausprobieren, dann `Schliessen` oder `/declarus hide`. Wieder oeffnen und
-   sicherstellen, dass kein zusaetzlicher aktiver Playground zurueckbleibt.
+1. Put the same Declarus directory in the chosen client's addon directory.
+2. Enable it and log in. No demo should open automatically.
+3. Run `/declarus info` and record client, build, interface and locale.
+4. Open `/declarus` and visit all six pages described in [Playground](Playground.md).
+5. Check fonts, padding, textures, draw order, alpha and both gradient directions.
+6. Try TextField, both Sliders, Toggle, Dropdown and left/right mouse clicks.
+7. Check that the fixed preview updates without losing input focus or page scroll.
+8. Toggle the preview gradient, change direction and check both scroll limits.
+9. Add/remove dynamic children, reset, close and reopen several times.
 
-Bei Fehlern Client-Ausgabe, konkrete Aktion und vollständigen Lua-Fehler melden.
-Erst nach erfolgreichem Ablauf wird die entsprechende Ingame-Abnahme eingetragen.
-Die Library verarbeitet hier ausschließlich eigene UI-/Einstellungswerte, keine
-geheimen Kampfwerte und keine geschützten Aktionsbuttons.
+For a failure, keep the full Lua error and the action that triggered it. Record a
+full pass only after completing the steps on that client. The demo uses its own
+UI/settings values; it does not implement protected action buttons or combat-data
+processing.
 
-## Rückmeldung aus dem Client
+## Sources behind the target setup
 
-Der Nutzer hat den bestehenden Aufbau auf Classic als funktionsfähig
-zurückgemeldet. Eine genaue Build-/Sprach-/UI-Skalierungs-Kombination und eine
-vollständige Abnahme aller später ergänzten Beispiele sind damit noch nicht
-protokolliert. Deshalb bleiben die gezielten Ingame-Prüfungen in der Matrix offen.
-Forever ist weiterhin nicht ingame bestätigt.
-
-## Weitere Dokumentation
-
-[Dokumentationsübersicht](README.md) · [API-Referenz](API.md) · [Playground](Playground.md)
-
-## Quellen und Evidenz
-
-- [BigWigs TOC](https://raw.githubusercontent.com/BigWigsMods/BigWigs/master/BigWigs.toc):
-  Primärquelle eines gepflegten Addons für gemeinsame Multi-Interface-Verteilung
-  und die berücksichtigten Interface-Kennungen. Kein Nachweis für Declarus-Ingame-Verhalten.
-- [KeyUI TOC](https://raw.githubusercontent.com/1onar/KeyUI/main/KeyUI.toc):
-  unabhängiges Beispiel für dieselbe gemeinsame Retail-/Classic-TOC-Verteilung.
-- [Blizzard: Forever](https://worldofwarcraft.blizzard.com/en-gb/news/24302093):
-  offizieller zusätzlicher Client; Release am 4. November 2026.
-- [Blizzard China: Titan Reforged](https://wow.blizzard.cn/trrnews/):
-  offizieller regionaler Zweig, kein Privatserver.
-- Lokal vorhandene Blizzard-Installationsmetadaten bestätigen Forever 1.60.1,
-  Build 70338. Die vorhandene Declarus-TOC verwendete bereits Interface 16001.
-  Dies ist keine erfolgreiche Ausführung im Client.
+- [BigWigs TOC](https://raw.githubusercontent.com/BigWigsMods/BigWigs/master/BigWigs.toc)
+  demonstrates shared multi-interface packaging and the relevant interface values.
+- [KeyUI TOC](https://raw.githubusercontent.com/1onar/KeyUI/main/KeyUI.toc) is another
+  maintained addon using shared Retail/Classic packaging.
+- [Blizzard's Forever announcement](https://worldofwarcraft.blizzard.com/en-gb/news/24302093)
+  identifies the additional official client.
+- [Blizzard China's Titan Reforged page](https://wow.blizzard.cn/trrnews/) identifies
+  the official regional branch.
+- Local Blizzard installation metadata identified Forever 1.60.1 build 70338.
+  The original Declarus TOC already used interface 16001. Neither observation is
+  an in-game execution test.

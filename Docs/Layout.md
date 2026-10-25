@@ -1,12 +1,11 @@
-# Layout: Stacks, Größen und Ausrichtung
+# Layout
 
-[Übersicht](README.md) · [Views und Modifier](ViewsAndModifiers.md)
+[Docs](README.md) · [Views and modifiers](ViewsAndModifiers.md)
 
-## HStack und VStack
+## Stacks arrange children
 
-`UI.HStack(children)` ordnet Kinder von links nach rechts an.
-`UI.VStack(children)` ordnet Kinder von oben nach unten an. Die Kinder werden als
-zusammenhängende Lua-Liste übergeben; keine `nil`-Lücken einsetzen.
+HStack puts children next to each other, left to right. VStack puts them below
+each other, top to bottom. Pass a dense Lua array without nil gaps.
 
 ```lua
 local UI = Declarus.UI
@@ -16,27 +15,26 @@ local view = UI.VStack({
 }):spacing(8):padding(10)
 ```
 
-**Ergebnis:** Außenbreite 120, Außenhöhe 78. Das erste Kind beginnt bei x=10/y=10,
-das zweite bei x=10/y=38. Der Stack benötigt die Breite des breitesten Kindes und
-die Summe der Kinderhöhen, des Zwischenraums und des Paddings.
+**Result:** Outer size is 120 by 78. The first child starts at x=10, y=10. The
+second starts at x=10, y=38. Width comes from the widest child plus padding.
+Height is both child heights, one gap and the top/bottom padding.
 
-Bei HStack werden die Achsen vertauscht: Breiten summieren sich, die größte Höhe
-bestimmt die intrinsische Quergröße. Spacing liegt nur **zwischen** den Kindern,
-nicht vor dem ersten oder nach dem letzten.
+For HStack, swap the axes: widths add up and the tallest child sets the content
+height. Spacing is only added between children.
 
-## Fixe Größe, Wrap und Fill
+## Fixed size, Wrap and Fill
 
-| Wert | Verhalten |
+| Value | Meaning |
 | --- | --- |
-| Zahl | feste Außenabmessung |
-| nicht gesetzt / `UI.Size.Wrap` | benötigte intrinsische Größe |
-| `UI.Size.Fill` | angebotenen Platz auf dieser Achse verwenden |
+| A number | Fixed outer size |
+| `UI.Size.Wrap` | Use the size needed by the content |
+| `UI.Size.Fill` | Use the space offered on that axis |
 
-Eine normale View ohne Text/Kinder hat keine Bild-/Inhaltsgröße. Wrap macht daraus
-also nicht automatisch eine sichtbare Fläche. Bei Text werden die Schriftmaße
-verwendet, bei Stacks die Kindermaße.
+Without a size modifier, elements generally use their content size. A plain View
+has no image content to measure. A Text uses its font measurements, and a stack
+uses its children.
 
-### Verbleibende Breite aufteilen
+### Split the remaining width
 
 ```lua
 local UI = Declarus.UI
@@ -47,41 +45,37 @@ local view = UI.HStack({
 }):width(400):spacing(10):padding(10)
 ```
 
-**Ergebnis:** Außen 400 × 50. Innen stehen 380 Einheiten Breite zur Verfügung.
-Nach dem festen Kind (80) und zwei Zwischenräumen (20) bleiben 280. Beide
-Fill-Kinder erhalten jeweils 140.
+**Result:** Outer size is 400 by 50. Padding leaves 380 units inside. Subtract the
+fixed child at 80 and two gaps at 10 each: 280 remain. Each Fill child gets 140.
 
-Dasselbe Prinzip gilt vertikal in einer VStack mit bekannter Höhe.
-Ein negativer Rest wird bei der Fill-Verteilung auf 0 begrenzt. Zu große fixe
-Kinder werden dabei nicht automatisch verkleinert.
+The same rule works vertically in a VStack with a known height. If fixed children
+already use all the space, remaining Fill space is clamped to zero. Fixed children
+are not automatically shrunk to fit.
 
-### Fill am Wurzelknoten
+### Fill needs a useful size constraint
 
-`UI.Mount` gibt die Größe des Eltern-Frames aktuell **nicht** als verfügbares
-Layoutmaß an die Messung weiter. `UI.View():width(UI.Size.Fill)` direkt unter
-`UIParent` bedeutet deshalb nicht automatisch Bildschirmbreite.
+Mount currently does not pass its parent frame's dimensions into measurement.
+A Fill root under UIParent therefore does not automatically become screen-wide.
+Give the root a fixed size and let its children fill that known area.
 
-Für verlässliche Ergebnisse die Wurzelbreite/-höhe explizit setzen und erst deren
-Kinder mit Fill ausstatten. Ist der Platz auf der Hauptachse unbekannt, verwendet
-die Engine die größte intrinsische bzw. bekannte Geschwistergröße als Fill-Basis.
-Das ist kein prozentuales Layout und kein Ersatz für eine feste Layoutgrenze.
+If the main-axis space is unknown, the engine uses the largest measured sibling
+or intrinsic Fill-child size as its Fill basis. This is a fallback sizing rule,
+not a percentage or weighted flex layout.
 
-Ein nicht gesetztes Hauptachsenmaß kann ein verfügbares Maß des Elternlayouts
-für die Fill-Verteilung nutzen. Explizites Wrap fordert dagegen eine intrinsische
-Messung auf dieser Achse. Bei Stacks mit Fill-Kindern sind „nicht gesetzt“ und
-„explizit Wrap“ daher nicht in jeder Verschachtelung austauschbar.
+For stacks, an unset main-axis size can use space offered by the parent when
+splitting Fill children. Explicit Wrap asks for intrinsic measurement instead.
+These two cases are not interchangeable in every nested layout.
 
-## Alignment wirkt auf die Querachse
+## Alignment works across the stack
 
-| Stack | Hauptachse | Querachse | erlaubtes Alignment |
+| Stack | Children flow along | Alignment acts along | Valid alignment |
 | --- | --- | --- | --- |
-| HStack | horizontal | vertikal | Top, Center, Bottom, Stretch |
-| VStack | vertikal | horizontal | Left, Center, Right, Stretch |
+| HStack | Horizontal axis | Vertical axis | Top, Center, Bottom, Stretch |
+| VStack | Vertical axis | Horizontal axis | Left, Center, Right, Stretch |
 
-Die Standardausrichtung ist Top bei HStack und Left bei VStack. Ungültige
-Kombinationen wie `UI.HStack({}):alignment(UI.Alignment.Left)` werden abgewiesen.
-Alignment steuert nicht die Verteilung auf der Hauptachse; es gibt noch kein
-`space-between`, `justifyContent` oder Flex-Gewicht.
+The defaults are Top for HStack and Left for VStack. A combination such as Left
+on a HStack is rejected. Alignment does not distribute children along the main
+axis. There is no space-between or flex-weight setting yet.
 
 ```lua
 local UI = Declarus.UI
@@ -91,50 +85,50 @@ local view = UI.HStack({
 }):height(70):spacing(10):alignment(UI.Alignment.Center)
 ```
 
-**Ergebnis:** Das 20 hohe Kind erhält oben 25 Einheiten Abstand; das 50 hohe Kind
-10. Beide sind in der bekannten Höhe 70 vertikal zentriert. Die Breite beträgt 90.
+**Result:** The first child gets 25 units above it, the second gets 10. Both are
+vertically centered inside the height of 70. Total width is 90.
 
-## Stretch und explizite Maße
+## Stretch respects fixed child sizes
 
 ```lua
 local UI = Declarus.UI
 local view = UI.VStack({
-    UI.Text("Kurz"),
-    UI.Text("Ein längerer Text"),
+    UI.Text("Short"),
+    UI.Text("A longer line"),
 }):width(300):spacing(8):alignment(UI.Alignment.Stretch)
 ```
 
-**Ergebnis:** Die Kinder-Frames werden auf der Querachse mindestens auf die
-verfügbare Breite 300 gebracht. Das skaliert nicht die Schrift und verteilt nicht
-die Buchstaben über diese Breite. Ein explizites `:width(100)` am Kind hat Vorrang
-und bleibt 100. Ein schon intrinsisch größeres Kind wird nicht zusammengedrückt.
+**Result:** Both child frames stretch to at least the available width of 300.
+The font itself is not stretched and letters are not spread across that width.
 
-`UI.Size.Fill` auf der Querachse löst ebenfalls die entsprechende Streckung aus.
-Eine HStack ohne eigene Breitenangabe wird innerhalb einer VStack zusätzlich
-an deren verfügbare Breite angepasst. Für lesbare, vorhersehbare Beispiele ist
-`:width(UI.Size.Fill)` trotzdem oft die deutlichere Absicht.
+An explicit numeric width on a child wins over Stretch. A child that is already
+intrinsically wider is not squeezed down either. Fill on the cross axis also
+requests stretching.
 
-## Verschachtelte Layouts
+A HStack without an explicit width is additionally stretched to the available
+width when placed inside a VStack. Writing `width(UI.Size.Fill)` is often clearer
+when that is the behavior you want.
+
+## Nested rows
 
 ```lua
 local UI = Declarus.UI
 local view = UI.VStack({
-    UI.Text("Einstellungen"):fontSize(20),
+    UI.Text("Settings"):fontSize(20),
     UI.HStack({
-        UI.Text("Profil"):width(100),
-        UI.TextField("Standard"):width(UI.Size.Fill),
+        UI.Text("Profile"):width(100),
+        UI.TextField("Default"):width(UI.Size.Fill),
     }):width(UI.Size.Fill):spacing(12):alignment(UI.Alignment.Center),
 }):width(420):padding(16):spacing(12)
 ```
 
-**Ergebnis:** Die Zeile liegt unter der Überschrift. Die 420 breite Wurzel hat
-innen 388 Einheiten. Die Zeile verwendet diese Breite; nach Label 100 und Spacing
-12 bleiben dem TextField 276. Die Kinder der Zeile sind vertikal zentriert.
+**Result:** The row sits below the heading. The root's inner width is 388. After
+the label at 100 and the gap at 12, the TextField gets 276. The row's children are
+vertically centered.
 
-## Grenzen
+## Current limits
 
-Die Engine bietet bisher keine Min-/Max-Größen, Prozentwerte, Flex-Gewichte,
-Overlay-/ZStack-Anordnung, automatische Zeilenumbrüche oder automatische
-Kollisionsvermeidung. Layoutüberläufe werden außerhalb einer ScrollView nicht
-generell abgeschnitten. Texte mit festem `width` erhalten dadurch allein weder
-Umbruch noch Ellipse. Inhalte und Größen entsprechend gestalten.
+There are no min/max dimensions, percentages, flex weights, overlay stacks or
+automatic collision handling yet. Outside a ScrollView, overflow is not generally
+clipped. Giving text a fixed width does not enable wrapping or an ellipsis.
+Choose sizes and content with those limits in mind.

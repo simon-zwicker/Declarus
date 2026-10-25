@@ -1,12 +1,12 @@
-# Text, Fonts und Localization
+# Text and localization
 
-[Übersicht](README.md) · [Controls](Controls.md)
+[Docs](README.md) · [Controls](Controls.md)
 
-## Text anzeigen und messen
+## Display text
 
 ```lua
 local UI = Declarus.UI
-local view = UI.Text("Hallo Azeroth")
+local view = UI.Text("Hello Azeroth")
     :fontSize(20)
     :padding(8)
     :foregroundColor(UI.Color.RGB(240, 220, 120))
@@ -15,66 +15,66 @@ local view = UI.Text("Hallo Azeroth")
 UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Gelber Text auf dunklem Hintergrund mit 8 Einheiten Innenabstand.
-Ohne explizite Größe ergeben Textbreite/-höhe plus Padding die Außenmaße. Exakte
-Maße hängen von der Client-Schrift ab. Leere Strings sind erlaubt, andere Werte
-als Strings werden von `UI.Text` abgewiesen.
+**Result:** Yellow text on a dark background with 8 units of padding. Without a
+fixed size, the outer dimensions are the measured text size plus padding.
 
-Die Library benutzt für Messung und Rendering denselben FontResolver. Die
-Messung verwendet einen wiederverwendeten nativen FontString, die Darstellung
-einen eigenen pro Text-View.
+Text takes a string. An empty string is fine; passing a number is not. Exact text
+dimensions depend on the font and client language. Measurement and rendering use
+the same font configuration.
 
-## Standardschrift und expliziter Font
+## Choose a font and size
 
 ```lua
 local UI = Declarus.UI
 local view = UI.VStack({
-    UI.Text("Standard: Client-Schrift, 16"),
-    UI.Text("Größer"):fontSize(24),
-    UI.Text("Mit Kontur")
+    UI.Text("Client font at 16"),
+    UI.Text("Larger text"):fontSize(24),
+    UI.Text("Outlined text")
         :font(Declarus.Client.GetDefaultFont(), "OUTLINE")
         :fontSize(18),
 }):spacing(12)
 ```
 
-**Ergebnis:** Drei Zeilen mit Standardschrift, größerer Schrift und Kontur.
-Standardmäßig wird `STANDARD_TEXT_FONT` des Clients verwendet, damit auch
-nichtlateinische Sprachen ihre Client-Schrift erhalten. Fehlt diese globale
-Angabe, fällt der Resolver auf `Fonts\\FRIZQT__.TTF` zurück. Die Standardgröße ist
-16, die Standard-Flags sind leer.
+**Result:** Three lines using the client font, a larger size and an outlined
+variant. Default size is 16 and default flags are empty.
 
-`:font(path, flags)` setzt Datei und optionale native WoW-Fontflags.
-`:fontSize(size)` setzt eine positive Zahl. Bei `:font(path)` werden zuvor gesetzte
-Flags zurückgesetzt. Die Datei muss im Zielclient verfügbar sein; für eine
-ungültige eigene Fontdatei gibt es keine automatische Reparatur.
+The default font comes from the client's `STANDARD_TEXT_FONT`. This also respects
+client fonts for non-Latin languages. If that global is missing, the resolver uses
+`Fonts\FRIZQT__.TTF`.
 
-Ein eigener Pfad könnte so angegeben werden, wenn die Datei tatsächlich existiert:
+`font(path, flags)` sets the file and optional native WoW font flags. Calling it
+without flags clears previously selected flags. `fontSize(size)` needs a positive
+number. Changing the font size does not automatically enlarge a Button's fixed
+standard dimensions.
+
+## Use a font shipped with your addon
 
 ```lua
 local UI = Declarus.UI
-local view = UI.Text("Eigene Schrift")
+local view = UI.Text("My addon font")
     :font("Interface\\AddOns\\MyAddon\\Media\\MyFont.ttf")
     :fontSize(18)
 ```
 
-**Ergebnis:** Der Text soll die mit deinem Addon ausgelieferte Schrift verwenden.
-Die Beispiel-Datei gehört nicht zu Declarus und muss selbst bereitgestellt werden.
+**Result:** This description uses your font file, provided that file actually
+exists in the target client. The example file is not included with Declarus.
+An invalid explicit font path is not automatically repaired by the default-font
+fallback.
 
-## Feste Textmaße sind kein Umbruch
+## Width is not wrapping
 
 ```lua
 local UI = Declarus.UI
-local view = UI.Text("Dieser Text kann breiter als seine View sein.")
-    :width(100)
+local view = UI.Text("This line can be wider than its view."):width(100)
 ```
 
-**Ergebnis:** Der View-Frame ist 100 breit. Der FontString bekommt derzeit allein
-dadurch keine Umbruch-/Kürzungsbreite. Text kann über die Fläche hinausragen.
-Automatischer Umbruch, Ellipsen, Textausrichtung und Zeilenabstände sind noch keine
-öffentlichen Text-Modifier. Eine größere Schrift vergrößert außerdem nicht
-automatisch einen Button mit seinen festen Standardmaßen.
+**Result:** The view frame is 100 units wide. The FontString does not get an
+automatic wrapping or truncation width, so the line can extend beyond it.
 
-## Übersetzungen registrieren
+Wrapping, ellipses, text alignment and line-spacing modifiers are not implemented
+yet. Use shorter lines, more room or deliberately separate text views.
+
+## Register translations
 
 ```lua
 local UI = Declarus.UI
@@ -83,7 +83,7 @@ local L = Declarus.Localization.Create("MyAddon.Options")
 L:Register("enUS", {
     TITLE = "Settings",
     SAVE = "Save",
-    ONLY_ENGLISH = "This text is the English fallback.",
+    ENGLISH_ONLY = "This line is the English fallback.",
 })
 L:Register("deDE", {
     TITLE = "Einstellungen",
@@ -92,34 +92,38 @@ L:Register("deDE", {
 
 local view = UI.VStack({
     UI.Text("TITLE"):localize(L):fontSize(22),
-    UI.Text("ONLY_ENGLISH"):localize(L),
+    UI.Text("ENGLISH_ONLY"):localize(L),
     UI.Text("MISSING_KEY"):localize(L),
-    UI.Button("SAVE", function() print("save") end):localize(L),
+    UI.Button("SAVE", function() print("Save requested") end):localize(L),
 }):spacing(10)
 
 UI.Mount(view, UIParent)
 ```
 
-**Ergebnis auf einem deutschen Client:** „Einstellungen“, der englische
-Fallback-Satz, der unveränderte Key `MISSING_KEY` und ein Button „Speichern“.
-Auf enUS wird „Settings“ und „Save“ verwendet. Für jede andere Sprache ohne
-Registrierung wird ebenfalls auf enUS zurückgegriffen.
+**Result:** On a German client, the heading is `Einstellungen` and the button says
+`Speichern`. The second line stays English because no German translation exists.
+The third line stays `MISSING_KEY` because neither language defines it.
 
-Die Auflösung läuft bei Textmessung und Rendering nach derselben Reihenfolge:
+The German strings here are translation data, included to show the fallback
+behavior. On an English client, the heading and button use Settings and Save.
+Other unregistered languages also fall back to enUS.
 
-1. registrierter Wert für `GetLocale()`;
-2. registrierter Wert für `enUS`;
-3. ursprünglicher Key.
+Resolution order is:
 
-## Namespaces und erneute Registrierung
+1. The current client locale from GetLocale.
+2. The enUS entry.
+3. The original key.
 
-`Create(namespace)` liefert für denselben Namen dieselbe Localization-Instanz.
-Unterschiedliche Namespaces halten ihre Tabellen getrennt. `Register` ergänzt
-die vorhandene Tabelle einer Sprache und überschreibt gleichnamige Keys; es
-löscht nicht die übrigen Einträge. Namespace und Locale müssen nichtleere Strings
-sein. Übersetzungswerte sollen Strings sein.
+The same resolution runs during measurement and rendering, so a translated title
+is measured using the text that will actually appear.
 
-Direkter Zugriff ist ebenfalls möglich:
+## Namespaces and repeated registration
+
+`Create(namespace)` returns the same instance when called with the same name.
+Different names keep separate translation tables. `Register` merges into the
+chosen locale and overwrites matching keys; it does not clear the other keys.
+Use non-empty strings for namespace and locale names, and string translation
+values.
 
 ```lua
 local L = Declarus.Localization.Create("MyAddon.Example")
@@ -128,16 +132,17 @@ print(L:Get("TITLE"))
 print(Declarus.Localization.GetActiveLocale())
 ```
 
-**Ergebnis:** Der aufgelöste Titel und die aktive Sprache werden ausgegeben.
-Eine bereits gemountete Ansicht aktualisiert sich durch `Register` nicht von
-selbst; dafür ein explizites Mount-Update auslösen.
+**Result:** Chat receives the resolved title and the active locale. Registering a
+new translation does not refresh an already mounted UI. Update that mount if you
+want it to use the changed translations.
 
-## Welche Komponenten übersetzen welchen Inhalt?
+## Which content gets localized?
 
-`UI.Text` und die Button-Beschriftung werden aufgelöst. Der gemeinsame TextView-
-Prototyp stellt Fonts und `localize` auch auf Controls bereit; daraus folgt keine
-automatische Übersetzung jedes Control-Werts. TextField-Werte, Dropdown-Optionen
-und -Auswahl werden aktuell unverändert verwendet. Solche Strings bei Bedarf
-vorher über `L:Get(...)` auflösen. Font-Modifier wirken sichtbar bei Text,
-Button-Beschriftung, TextField und Dropdown; Slider und Toggle zeichnen kein
-zusätzliches Textlabel.
+Text and the custom Button label resolve translation keys. TextField values and
+Dropdown options are used as supplied. Resolve those yourself with `L:Get(...)`
+if you want translated strings there.
+
+Controls inherit the TextView methods, but that does not mean every control value
+is localized or every control has a label. Font modifiers are visible on Text,
+Button, TextField and Dropdown. Slider and Toggle do not create additional text
+labels.

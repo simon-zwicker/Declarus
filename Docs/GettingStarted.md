@@ -1,25 +1,23 @@
-# Schnellstart
+# Getting started
 
-[Dokumentationsübersicht](README.md) · [API-Referenz](API.md)
+[Docs](README.md) · [API reference](API.md)
 
-## 1. Declarus verfügbar machen
+## Put Declarus in the client
 
-Den Repository-Ordner als `Declarus` im `Interface/AddOns`-Ordner des jeweiligen
-offiziellen Clients bereitstellen. Das geht als Kopie oder als Symlink auf den
-Checkout. Im Ordner müssen `Declarus.toc`, `Core/`, `UI/` und `Debug/` direkt liegen.
-Eine zusätzliche Verschachtelung `Declarus/Declarus/Declarus.toc` wäre falsch.
+Place the repository in the client's `Interface/AddOns/Declarus` directory. A
+symlink to your checkout works too. `Declarus.toc`, `Core`, `UI` and `Debug` must
+sit directly inside that directory.
 
-**Ergebnis:** Declarus erscheint im Addon-Menü. Aktivieren und das UI neu laden
-bzw. einloggen. Beim Laden öffnet die Library selbst kein Fenster.
+A path such as `Declarus/Declarus/Declarus.toc` has one directory too many.
 
-Bei einem Symlink sind Codeänderungen im Checkout nach dem nächsten UI-Reload
-auch im Client verfügbar; ein bereits geladener Lua-Code wird nicht automatisch
-ersetzt. Ein Symlink führt außerdem nicht dazu, dass neue Dateien ohne Eintrag in
-der TOC geladen werden.
+**Result:** Declarus appears in the client's addon list. Enable it and log in or
+reload the UI. The library does not open a window by itself.
 
-## 2. Playground starten
+With a symlink, changes to the checkout are available on the next UI reload.
+Already loaded Lua code is not replaced automatically. New runtime files still
+need an entry in the TOC.
 
-Im Chat:
+## Open the playground
 
 ```text
 /declarus
@@ -27,14 +25,13 @@ Im Chat:
 /declarus hide
 ```
 
-**Ergebnis:** Der erste Befehl öffnet die vollständige Demo. Der zweite gibt Client,
-Version, Build, Interface und Sprache aus. Der dritte schließt die Demo. Die
-[Playground-Anleitung](Playground.md) beschreibt sämtliche Bereiche.
+**Result:** The first command opens the demo, the second prints client details,
+and the third closes it. See [Playground](Playground.md) for the full walkthrough.
 
-## 3. Aus einem eigenen Addon verwenden
+## Use Declarus from another addon
 
-Ein eigenständiges Addon kann Declarus als Abhängigkeit eintragen. Schematischer
-Ausschnitt aus dessen TOC; die Interface-Kennung muss zum Zielclient passen:
+Declare the dependency in your addon's TOC. This is an excerpt; add the interface
+metadata appropriate for your target client:
 
 ```text
 ## Title: MyAddon
@@ -42,20 +39,18 @@ Ausschnitt aus dessen TOC; die Interface-Kennung muss zum Zielclient passen:
 Main.lua
 ```
 
-In `Main.lua`:
+Then build your UI in `Main.lua`:
 
 ```lua
 local UI = Declarus.UI
 
 local view = UI.VStack({
-    UI.Text("Mein erstes Declarus-UI")
+    UI.Text("My first Declarus UI")
         :fontSize(20)
         :foregroundColor(UI.Color.RGB(90, 195, 240)),
-
-    UI.Text("Diese Elemente stehen untereinander."),
-
-    UI.Button("Hallo", function(mouseButton)
-        print("Geklickt mit:", mouseButton)
+    UI.Text("These elements are stacked vertically."),
+    UI.Button("Hello", function(mouseButton)
+        print("Clicked with:", mouseButton)
     end):width(180),
 })
     :spacing(10)
@@ -65,46 +60,46 @@ local view = UI.VStack({
 local handle = UI.Mount(view, UIParent)
 ```
 
-**Ergebnis:** Ein zentrierter dunkler Bereich mit Überschrift, Erklärung und Button.
-Zwischen den Kindern liegen jeweils 10 UI-Einheiten; außen sind 16 Einheiten
-Padding. Der Button schreibt seinen Mausbutton in den Chat. Die Breite des
-Bereichs richtet sich nach dem breitesten Kind plus Padding.
+**Result:** A centered dark panel with a heading, a text line and a button. There
+are 10 UI units between the children and 16 units of padding around them. The
+widest child determines the content width. Clicking the button prints its mouse
+button to chat.
 
-`handle` aufbewahren, solange das UI lebt. Es wird für Änderungen und Cleanup
-benötigt. Der gezeigte Code verändert kein bestehendes PoisonFlow-Addon.
+Keep `handle` while this UI is open. You will use it for updates and cleanup.
 
-## 4. Den sichtbaren Inhalt ersetzen
+## Replace the content
 
-Fortsetzung des vorherigen Beispiels:
+This continues the previous example:
 
 ```lua
 handle:Update(
-    UI.Text("Der Inhalt wurde ersetzt.")
+    UI.Text("The content has been replaced.")
         :fontSize(20)
         :padding(16)
         :backgroundColor(UI.Color.RGB(20, 26, 35))
 )
 ```
 
-**Ergebnis:** Der ursprüngliche Stack verschwindet und wird durch einen Text
-ersetzt. Der Mount bleibt im selben Elternbereich zentriert und erhält eine neue
-Größe. Der gesamte Baum dieses Mounts wird ersetzt; Fokus und Scrollpositionen
-darin werden nicht übernommen.
+**Result:** The stack is replaced by one text view. The mount stays centered in
+the same parent and gets its new measured size. Focus and scroll positions inside
+the replaced tree are not preserved.
 
-## 5. Aufräumen
+## Close it
 
-Fortsetzung:
+Continuing with the same handle:
 
 ```lua
 handle:Unmount()
 ```
 
-**Ergebnis:** Der Inhalt wird ausgeblendet, die von Declarus verwalteten Handler
-werden entfernt und die Frame-Elternbeziehungen gelöst. Ein zweiter Unmount-Aufruf
-ist erlaubt. Ein Update auf demselben Handle ist danach nicht mehr erlaubt.
-Zum erneuten Öffnen einen neuen Mount erstellen.
+**Result:** The mounted UI is hidden and its library-managed handlers and parent
+links are removed. Calling Unmount again is fine. Updating that handle afterward
+is not. Create a new mount to open a new UI.
 
-## Position durch einen eigenen Elternbereich festlegen
+## Choose a different position
+
+Declarus centers a mount inside its parent. Use a parent region to control where
+that center is:
 
 ```lua
 local UI = Declarus.UI
@@ -113,12 +108,13 @@ region:SetSize(320, 100)
 region:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 30, -30)
 
 local handle = UI.Mount(
-    UI.Text("Oben links im eigenen Bereich"):fontSize(16),
+    UI.Text("Centered inside my own region"):fontSize(16),
     region
 )
 ```
 
-**Ergebnis:** Declarus zentriert den Text im 320 × 100 großen Elternbereich,
-der 30 Einheiten vom oberen und linken Bildschirmrand entfernt liegt.
-Declarus bietet aktuell keinen eigenen Anchor-/Position-Modifier an.
-Den manuell erstellten Elternbereich verwaltet das aufrufende Addon selbst.
+**Result:** The text is centered inside a 320 by 100 region, placed 30 units from
+the top and left edges of UIParent.
+
+There is no public position or anchor modifier yet. Your addon owns manually
+created parent regions and should hide or release them when it closes the UI.
