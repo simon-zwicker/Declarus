@@ -36,6 +36,7 @@
 ---@field height fun<T>(self: T, value: number|DeclarusSize): T
 ---@field size fun<T>(self: T, width: number|DeclarusSize, height: number|DeclarusSize): T
 ---@field padding fun<T>(self: T, edge: DeclarusEdge|number, value?: number): T
+---@field texture fun<T>(self: T, source: string|number): T
 ---@field backgroundColor fun<T>(self: T, color: DeclarusColor): T
 ---@field foregroundColor fun<T>(self: T, color: DeclarusColor): T
 ---@field opacity fun<T>(self: T, value: number): T

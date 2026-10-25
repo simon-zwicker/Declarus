@@ -19,6 +19,8 @@
 
 ---@class DeclarusTextView: DeclarusView
 ---@field properties DeclarusTextViewProperties
+---@field font fun(self: DeclarusTextView, path: string, flags?: string): DeclarusTextView
+---@field fontSize fun(self: DeclarusTextView, size: number): DeclarusTextView
 ---@field localize fun(self: DeclarusTextView, localization: DeclarusLocalization): DeclarusTextView
 
 -- ============================================================================

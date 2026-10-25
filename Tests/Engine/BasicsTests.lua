@@ -17,6 +17,19 @@ return {
         assert(frame.textures[1].source == 123 and frame.textures[1].allPoints == frame)
         assert(frame.alpha == 0.4 and frame.hidden)
     end,
+    TestFontDoesNotBleed = function()
+        render(UI.Text("custom"):font("other.ttf", "OUTLINE"):fontSize(40))
+        local view = UI.Text("abc")
+        local size = UI._Measure.Measure(view)
+        local text = render(view).fontStrings[1]
+        assert(size.width == 24 and size.height == 16)
+        assert(text.font == "Fonts\\FRIZQT__.TTF" and text.flags == "")
+    end,
+    TestTextureWithBackground = function()
+        local frame = render(UI.View():texture("icon.blp"):backgroundColor(UI.Color.RGB(255, 0, 0)))
+        assert(#frame.textures == 2 and frame.textures[1].layer == "BACKGROUND")
+        assert(frame.textures[2].source == "icon.blp" and frame.textures[2].layer == "ARTWORK")
+    end,
     TestFontValidation = function()
         assert(not pcall(function() UI.Text("x"):fontSize(0) end))
     end,

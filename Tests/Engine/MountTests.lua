@@ -10,6 +10,27 @@ return {
         assert(viewport.scroll == 0)
         handle:Unmount()
     end,
+    TestScrollPaddingAndFill = function()
+        local content = UI.VStack({UI.View():size(UI.Size.Fill, 40)}):width(UI.Size.Fill)
+        local handle = UI.Mount(UI.ScrollView(content):size(100, 80):padding(10), UIParent)
+        local viewport = handle.frame.children[1]
+        assert(viewport.width == 80 and viewport.height == 60)
+        assert(viewport.points[1].x == 10 and viewport.points[1].y == -10)
+        assert(viewport.scrollChild.width == 80 and viewport.scrollChild.points[1].x == 0)
+        viewport.scripts.OnMouseWheel(viewport, -10)
+        assert(viewport.scroll == 0)
+        handle:Unmount()
+    end,
+    TestRepeatedUpdatesReleaseNestedHandlers = function()
+        local handle = UI.Mount(UI.VStack({UI.Toggle(false), UI.TextField("a")}), UIParent)
+        local old = handle.frame
+        local toggle, field = old.children[1], old.children[2]
+        local host = old.parent
+        for i = 1, 20 do handle:Update(UI.Text(tostring(i))) end
+        assert(#host.children == 1 and #old.children == 0)
+        assert(toggle.scripts.OnClick == nil and field.scripts.OnTextChanged == nil)
+        handle:Unmount()
+    end,
     TestUpdateAndCleanup = function()
         local calls = 0
         local handle = UI.Mount(UI.Button("old", function() calls = calls + 1 end), UIParent)

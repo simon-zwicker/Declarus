@@ -17,6 +17,7 @@ local UI = _G.Declarus.UI
 ---@return DeclarusControl
 local function control(kind, width, height)
     local view = UI._TextView.New(kind):size(width, height)
+    view.properties.backgroundColor = UI.Color.RGBA(30, 30, 30, 0.9)
     return view
 end
 

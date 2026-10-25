@@ -14,6 +14,7 @@
 2. [x] Gemeinsamer FontResolver, Text-Padding, Font-Modifier und Texturen.
 3. [x] Buttons und Events; TextField, Slider, Toggle, Dropdown.
 4. [x] ScrollView und explizite dynamische Mount-Updates mit Cleanup.
-5. [ ] API-Beispiele, Regressionstests, lokale Abschlussprüfung; Ingame-Abnahme durch Nutzer.
+5. [x] API-Beispiele, Regressionstests und lokale Abschlussprüfung: 103 Tests; TOC vollständig mit Mocks geladen.
+6. [ ] Ingame-Abnahme durch Nutzer; LuaLS-Diagnoselauf bei installiertem Language Server.
 
 Die Reihenfolge ist ein Implementierungsplan. Nicht belegte PoisonFlow-Sonderanforderungen werden nicht erfunden.
