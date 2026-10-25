@@ -62,15 +62,19 @@ local function RenderText(frame, view)
 
     local fontString = frame:CreateFontString(nil, "ARTWORK")
 
-    fontString:SetFont("Fonts\\FRIZQT__.TTF", 16)
+    fontString:SetFont(UI._FontResolver.Resolve(properties))
     fontString:SetText(text)
+
+    local padding = properties.padding or {}
+    local color = properties.foregroundColor
+    if color then fontString:SetTextColor(unpack(color)) end
 
     fontString:SetPoint(
         "TOPLEFT",
         frame,
         "TOPLEFT",
-        0,
-        0
+        padding.left or 0,
+        -(padding.top or 0)
     )
 end
 
@@ -107,6 +111,13 @@ local function RenderView(view, arranged, parent, parentArranged)
     end
 
     ApplyBackground(frame, view)
+    if view.properties.texture then
+        local texture = frame:CreateTexture(nil, "ARTWORK")
+        texture:SetAllPoints(frame)
+        texture:SetTexture(view.properties.texture)
+    end
+    if view.properties.opacity then frame:SetAlpha(view.properties.opacity) end
+    if view.properties.visible == false then frame:Hide() end
 
     for index, child in ipairs(view.children) do
         RenderView(

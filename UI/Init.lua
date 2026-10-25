@@ -48,6 +48,7 @@
 ---@field _Render DeclarusRenderEngine
 ---@field _LocalizationResolver DeclarusLocalizationResolver
 ---@field _TextView DeclarusTextView
+---@field _FontResolver DeclarusFontResolver
 ---@field _TextMeasure DeclarusTextMeasure
 
 -- ============================================================================

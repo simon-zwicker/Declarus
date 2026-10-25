@@ -64,6 +64,7 @@ dofile("UI/Components/Text.lua")
 -- Title:       Typography
 -- ============================================================================
 
+dofile("UI/Typography/FontResolver.lua")
 dofile("UI/Typography/TextMeasure.lua")
 
 -- ============================================================================
@@ -119,5 +120,7 @@ TestRunner.RunSuite("Layout/StackTests")
 -- ============================================================================
 -- Title:       Summary
 -- ============================================================================
+
+TestRunner.RunSuite("Engine/BasicsTests")
 
 TestRunner.Summary()

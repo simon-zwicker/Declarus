@@ -23,6 +23,7 @@
 ---@field padding? DeclarusPadding
 ---@field backgroundColor? DeclarusColor
 ---@field foregroundColor? DeclarusColor
+---@field texture? string|number
 ---@field opacity? number
 ---@field visible? boolean
 ---@field localization? DeclarusLocalization
@@ -206,3 +207,13 @@ end
 ---@cast View DeclarusViewClass
 
 UI._View = View
+---Uses a texture file path or file ID, stretched over the view.
+---@generic T: DeclarusView
+---@param self T
+---@param source string|number
+---@return T
+function View:texture(source)
+    assert(type(source) == "string" or type(source) == "number", "Texture source required")
+    self.properties.texture = source
+    return self
+end

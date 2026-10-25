@@ -172,7 +172,8 @@ end
 -- Description: Simulates WoW FontString methods
 -- ============================================================================
 
-function FontStringMock:SetFont(font, size)
+function FontStringMock:SetFont(font, size, flags)
+    self.flags = flags
     self.font = font
     self.fontSize = size
 end
@@ -200,3 +201,8 @@ function FontStringMock:SetPoint(point, relativeTo, relativePoint, x, y)
 end
 
 UIParent = CreateFrame("Frame", "UIParent")
+function TextureMock:SetTexture(source) self.source = source end
+function FrameMock:SetAlpha(alpha) self.alpha = alpha end
+function FrameMock:Hide() self.hidden = true end
+function FrameMock:Show() self.hidden = false end
+function FontStringMock:SetTextColor(...) self.color = {...} end

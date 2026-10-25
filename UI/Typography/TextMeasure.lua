@@ -8,8 +8,6 @@
 
 local UI = _G.Declarus.UI
 
-local DEFAULT_FONT = "Fonts\\FRIZQT__.TTF"
-local DEFAULT_FONT_SIZE = 16
 
 ---@class DeclarusTextMeasure
 local TextMeasure = {}
@@ -29,10 +27,7 @@ function TextMeasure.Measure(view)
         properties.localization
     )
 
-    measurementText:SetFont(
-        DEFAULT_FONT,
-        DEFAULT_FONT_SIZE
-    )
+    measurementText:SetFont(UI._FontResolver.Resolve(properties))
 
     measurementText:SetText(text)
 

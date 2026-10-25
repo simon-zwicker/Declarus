@@ -11,6 +11,9 @@
 -- ============================================================================
 
 ---@class DeclarusTextViewProperties: DeclarusViewProperties
+---@field font? string
+---@field fontFlags? string
+---@field fontSize? number
 ---@field text? string
 ---@field localization? DeclarusLocalization
 
@@ -70,3 +73,21 @@ end
 -- ============================================================================
 
 UI._TextView = TextView
+---Sets the font file and optional WoW font flags.
+---@param path string
+---@param flags? string
+---@return DeclarusTextView
+function TextView:font(path, flags)
+    assert(type(path) == "string" and path ~= "", "Font path required")
+    self.properties.font = path
+    self.properties.fontFlags = flags
+    return self
+end
+
+---@param size number
+---@return DeclarusTextView
+function TextView:fontSize(size)
+    assert(type(size) == "number" and size > 0, "Font size must be positive")
+    self.properties.fontSize = size
+    return self
+end
