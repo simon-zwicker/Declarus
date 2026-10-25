@@ -1,110 +1,92 @@
 # Declarus
 
-Deklarative WoW-UI-Library für Lua 5.1 / LuaJIT. Beschreibungen werden mit
-Measure → Arrange → Render in WoW-Frames umgesetzt. Keine externen Laufzeit-Abhängigkeiten.
+Deklarative UI-Library für aktuelle offizielle World-of-Warcraft-Clients.
+Lua 5.1 / LuaJIT, gemeinsame View-API und LuaLS-Typannotationen.
+Keine externen Laufzeit-Abhängigkeiten. Keine Unterstützung für Privatserver oder
+historische Original-Clients.
 
-## Basics
+## Dokumentation
+
+Der zentrale Einstieg ist **[Docs/README.md](Docs/README.md)**. Die Dokumentation
+beschreibt Verwendung, Parameter, Defaults, erwartete Ergebnisse und die Grenzen
+des aktuell implementierten Stands.
+
+| Einstieg | Thema |
+| --- | --- |
+| [Schnellstart](Docs/GettingStarted.md) | bereitstellen, einbinden, mounten, aktualisieren und schließen |
+| [Views und Modifier](Docs/ViewsAndModifiers.md) | Größe, Padding, Farben, Sichtbarkeit und gemeinsame Eigenschaften |
+| [Layout](Docs/Layout.md) | Stacks, Wrap/Fill, Alignment und berechnete Größen |
+| [Text und Localization](Docs/TextAndLocalization.md) | Fonts, Übersetzungen und Fallbacks |
+| [Controls](Docs/Controls.md) | Button, TextField, Slider, Toggle und Dropdown |
+| [Texturen](Docs/Textures.md) | Ausschnitt, Spiegelung, Tönung, Layer und Sublevel |
+| [ScrollView](Docs/ScrollView.md) | Inhaltsgröße, Viewport und vertikales Scrollen |
+| [Zustand und Lifecycle](Docs/StateAndLifecycle.md) | explizite Updates, getrennte Mounts, Fokus und Cleanup |
+| [Praxisrezepte](Docs/Recipes.md) | kombinierbare, vollständige Anwendungsbeispiele |
+| [API-Referenz](Docs/API.md) | sämtliche öffentlichen Signaturen und Konstanten |
+| [Fehlersuche](Docs/Troubleshooting.md) | typische Symptome und passende Lösungen |
+| [Entwicklung und Tests](Docs/Development.md) | Architektur, TOC, LuaJIT und LuaLS |
+| [Playground](Docs/Playground.md) | vollständige interaktive Demo |
+| [Client-Kompatibilität](Docs/ClientCompatibility.md) | Zielmatrix und tatsächlicher Prüfstand |
+
+## Erstes Beispiel
+
+Der Code läuft in einem WoW-Addon, nachdem Declarus geladen wurde:
 
 ```lua
 local UI = Declarus.UI
-local view = UI.VStack({
-    UI.Text("Einstellungen"):font("Fonts\\FRIZQT__.TTF", "OUTLINE"):fontSize(20):padding(8),
-    UI.View():size(32, 32):texture("Interface\\Icons\\INV_Misc_QuestionMark"),
-    UI.Button("Speichern", function(button) print(button) end),
-    UI.TextField("Profil", function(text) print(text) end),
-    UI.Slider(50, 0, 100, 5, function(value) print(value) end),
-    UI.Toggle(true, function(enabled) print(enabled) end),
-    UI.Dropdown({"Standard", "Raid"}, "Standard", function(profile) print(profile) end),
-}):spacing(8):padding(12)
 
-local handle = UI.Mount(UI.ScrollView(view):size(300, 240), UIParent)
--- Neue Beschreibung explizit rendern:
-handle:Update(UI.Text("Gespeichert"))
--- Beim Schließen:
-handle:Unmount()
+local view = UI.VStack({
+    UI.Text("Hallo Declarus"):fontSize(22),
+    UI.Text("Text, Layout und Button in einer Beschreibung."),
+    UI.Button("Ausprobieren", function(mouseButton)
+        print("Declarus:", mouseButton)
+    end):width(180),
+}):spacing(10):padding(16):backgroundColor(UI.Color.RGB(20, 26, 35))
+
+local handle = UI.Mount(view, UIParent)
 ```
 
-`Text` und Controls unterstützen `:font(path, flags)` und `:fontSize(size)`.
-Textmessung und Rendering verwenden denselben FontResolver (Client-Standardschrift, 16; FRIZQT als Fallback).
-`Text` berücksichtigt Padding und Foreground-Farbe. `:texture(pathOrFileID)` legt
-auf jeder View eine gestreckte BORDER-Textur über einen optionalen Hintergrund.
-Text und Button-Beschriftungen liegen im OVERLAY-Layer darüber.
-`:texCoords(left, right, top, bottom)` bestimmt Ausschnitt oder Spiegelung,
-`:textureTint(UI.Color.RGB(...))` tönt das Bild. Optional überschreibt
-`:textureLayer("ARTWORK", 0)` Layer und Sublevel. Beispiele und Details:
-[Docs/Textures.md](Docs/Textures.md).
-Größe explizit setzen; Texturen besitzen keine automatische intrinsische Größe.
+**Ergebnis:** Ein zentrierter Bereich mit zwei Textzeilen und einem Button.
+Die View wird zunächst als Lua-Beschreibung erstellt und erst durch Mount sichtbar.
+Den Handle für spätere `handle:Update(view)`- und `handle:Unmount()`-Aufrufe behalten.
+Declarus aktualisiert geänderte Lua-Variablen nicht automatisch.
 
-Controls haben Standardgrößen und einen dunklen Hintergrund; View-Modifier können
-diese überschreiben. Buttons liefern den WoW-Mausbutton an ihren Callback.
-TextField meldet Benutzereingaben, bestätigt mit Enter und verliert mit Escape den
-Fokus. Slider rundet relativ zum Minimum auf die Schrittweite und begrenzt Werte.
-Toggle meldet boolean. Dropdown akzeptiert eine nicht leere String-Liste und einen
-darin enthaltenen Anfangswert; sein einfacher aufklappbarer Menübereich lässt
-sich per erneutem Klick schließen. Initialisierung löst keine onChange-Callbacks aus.
+## Playground
 
-## Dynamische Updates und Grenzen
+- `/declarus`: die sechs Bereiche Übersicht, Layouts, Typografie, Darstellung,
+  Controls und Updates öffnen.
+- `/declarus info`: Client, Version, Build, Interface und Sprache ausgeben.
+- `/declarus reset`: Demo-Zustand zurücksetzen.
+- `/declarus hide`: alle aktiven Playground-Mounts schließen.
 
-Control-Eingaben aktualisieren `view.properties.value` und rufen den Callback auf.
-Für abhängige Texte oder Layouts im Callback eine neue Beschreibung erstellen und
-`handle:Update(view)` aufrufen. Es gibt keine implizite Reaktivität.
+Eine separate Vorschau und Ereignisanzeige reagieren auf Eingaben, ohne die
+aktive Seite zu ersetzen. Beim Addon-Start öffnet sich keine Demo automatisch.
 
-Updates ersetzen den ganzen gerenderten Baum. Fokus und Scrollposition werden
-zurückgesetzt. Unmount entfernt Handler, registrierte Events und Elternbeziehungen;
-er ist mehrfach aufrufbar. Nach Unmount sind Updates unzulässig. WoW kann Frames
-nicht zerstören: häufige Updates erzeugen zusätzliche Frames; diese erste Version
-ist für gelegentliche Einstellungsänderungen vorgesehen, nicht für Updates pro Frame.
+## Aktueller Stand
 
-ScrollView scrollt vertikal per Mausrad und begrenzt den Offset. Seine Größe ist
-die Viewport-Größe; Content benötigt intrinsische oder explizite Höhe. Kein sichtbarer
-Scrollbar, kein horizontaler Scrollmodus. Dropdown hat weder Tastaturnavigation
-noch automatisches Schließen durch Außenklick. Keine geschützten Aktionsbuttons.
+Der gemeinsame Code zielt auf Retail, Forever und die aktuellen offiziellen
+Classic-Zweige einschließlich regionalem Titan Reforged. Der Nutzer hat einen
+funktionierenden Classic-Aufbau zurückgemeldet. Eine vollständige Ingame-Abnahme
+aller Beispiele je Client ist damit nicht abgeschlossen; Forever bleibt ohne
+echten Test unbestätigt.
+
+Updates ersetzen den ganzen Teilbaum eines Mounts und erhalten darin keinen
+Fokus oder Scrollzustand. Frames werden noch nicht gepoolt. Automatischer Text-
+umbruch, proportionaler Bildzuschnitt, horizontales Scrollen, sichtbare Scrollbars,
+Dropdown-Tastaturnavigation und geschützte Aktionsbuttons sind nicht implementiert.
 
 ## Prüfung
 
-Vom Repository-Verzeichnis: `luajit Tests/Run.lua`.
-Die WoW-Mocks prüfen Layout, Rendering, Eingaben und Mount-Lebenszyklus.
-LuaLS ist auf Lua 5.1 konfiguriert; öffentliche APIs sind annotiert.
-LuaLS kann auch aus einer vorhandenen VS-Code-Lua-Erweiterung gestartet werden.
-Für einen vollständigen Lauf einschließlich Hinweisen vom Repository-Verzeichnis:
-
 ```sh
+luajit Tests/Run.lua
+sh Tests/RunClients.sh
 "${LUA_LANGUAGE_SERVER:-lua-language-server}" --check=. --checklevel=Hint --logpath=/tmp/declarus-luals
 ```
 
-Die gemeinsame Konfiguration liegt in `.luarc.json`. Lua-5.1-Standardbibliotheken
-bleiben für Laufzeitcode und LuaJIT-Tests verfügbar. `.vscode/settings.json` enthält
-keine abweichenden Bibliotheksdefinitionen; eine zusätzliche WoW-Erweiterung ist
-für den dokumentierten Typumfang nicht erforderlich.
+Aktueller automatisierter Stand: **122 Tests pro Metadatenprofil**, sechs Profile;
+LuaLS 3.19.2 ohne Diagnosen einschließlich Hint. Die Matrix verwendet gemeinsame
+API-Mocks und keine vollständigen Client-Emulationen. LuaLS-Konfiguration aus
+`.luarc.json` und lokalen VS-Code-Einstellungen gemeinsam betrachten.
 
-Falls das Programm nicht im Suchpfad liegt, `LUA_LANGUAGE_SERVER` auf die ausführbare
-Datei setzen. `Types/WoW.lua` beschreibt den von Declarus verwendeten WoW-API-Ausschnitt
-nur für den Editor; diese Datei gehört nicht in die TOC und wird nicht ausgeführt.
-Mock-spezifische Daten bleiben in den Testtypen. Geprüft mit LuaLS 3.19.2:
-keine Diagnosen bei `--checklevel=Hint`, alle 122 LuaJIT-Tests erfolgreich.
-
-Noch nicht im WoW-Client abgenommen: Darstellung der Controls, Font-Dateien und
-Flags, EditBox-Fokus, Slider-Dragging, Checkbox-Klicks, Dropdown-Ebenen und Scroll-Clipping.
-PoisonFlow wurde nicht verändert; konkrete Integrationsanforderungen bleiben dort
-später separat zu prüfen. Lokale Entwicklungsregeln und Roadmap stehen in AGENTS.md.
-
-
-## Mehrere offizielle Clients
-
-Ein gemeinsamer Codekern und eine gemeinsame TOC zielen auf Retail, Forever und
-die aktuellen offiziellen Classic-Zweige, einschließlich regionalem Titan Reforged.
-Keine Unterstützung für Privatserver oder historische Original-Clients.
-`Declarus.Client.GetInfo()` liefert die Client-Diagnose. Die aktuelle Zielmatrix,
-Quellen und der genaue Abnahmestand stehen in [Docs/ClientCompatibility.md](Docs/ClientCompatibility.md).
-
-`/declarus` öffnet den umfangreichen Playground mit sechs Bereichen: Übersicht,
-Layouts, Typografie, Darstellung, Controls und Updates. Eine feste Live-Vorschau
-und Ereignisanzeige reagieren auf Eingaben, ohne die aktive Seite zu ersetzen.
-`/declarus info` zeigt Client-/Build-Informationen, `/declarus reset` setzt die
-Demo-Werte zurück, `/declarus hide` schließt den Playground.
-Bedienung und vollständige API-Abdeckung: [Docs/Playground.md](Docs/Playground.md).
-Beim Laden öffnet sich keine Demo mehr. Auf Retail und Classic ist derselbe
-Prüfablauf vorgesehen; Forever bleibt bis zu einem echten Client-Test unbestätigt.
-
-`sh Tests/RunClients.sh` prüft die gemeinsame Suite mit sechs Metadatenprofilen.
-Das sind keine vollständigen Client-Emulationen und keine Ingame-Abnahmen.
+Projektregeln und Roadmap: [AGENTS.md](AGENTS.md). PoisonFlow wird in diesem
+Repository-Auftrag nicht verändert; alle Commits bleiben lokal.

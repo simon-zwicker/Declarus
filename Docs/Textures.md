@@ -1,5 +1,7 @@
 # Texturen und Modifier
 
+[Dokumentationsübersicht](README.md) · [API-Referenz](API.md)
+
 Alle Views, Texte, Stacks und Controls erben die Textur-Modifier. Sie beeinflussen
 ausschliesslich die eigene Textur des Elements, nicht seine Kinder, sein Padding,
 seine intrinsische Groesse, die Textfarbe oder die Hintergrundfarbe.

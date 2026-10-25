@@ -82,6 +82,18 @@ Erst nach erfolgreichem Ablauf wird die entsprechende Ingame-Abnahme eingetragen
 Die Library verarbeitet hier ausschließlich eigene UI-/Einstellungswerte, keine
 geheimen Kampfwerte und keine geschützten Aktionsbuttons.
 
+## Rückmeldung aus dem Client
+
+Der Nutzer hat den bestehenden Aufbau auf Classic als funktionsfähig
+zurückgemeldet. Eine genaue Build-/Sprach-/UI-Skalierungs-Kombination und eine
+vollständige Abnahme aller später ergänzten Beispiele sind damit noch nicht
+protokolliert. Deshalb bleiben die gezielten Ingame-Prüfungen in der Matrix offen.
+Forever ist weiterhin nicht ingame bestätigt.
+
+## Weitere Dokumentation
+
+[Dokumentationsübersicht](README.md) · [API-Referenz](API.md) · [Playground](Playground.md)
+
 ## Quellen und Evidenz
 
 - [BigWigs TOC](https://raw.githubusercontent.com/BigWigsMods/BigWigs/master/BigWigs.toc):

@@ -1,5 +1,7 @@
 # Declarus Playground
 
+[Dokumentationsübersicht](README.md) · [API-Referenz](API.md)
+
 Der Playground zeigt die bisher implementierte UI-API in sechs navigierbaren
 Bereichen. Er wird mit derselben Library auf den offiziellen Client-Zielen
 betrieben. Kein automatisches Oeffnen beim Addon-Start, keine Abhaengigkeit von
