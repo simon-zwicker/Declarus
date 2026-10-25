@@ -17,6 +17,14 @@
 ---@field top number
 ---@field bottom number
 
+---@alias DeclarusTextureLayer 'BACKGROUND'|'BORDER'|'ARTWORK'|'OVERLAY'|'HIGHLIGHT'
+
+---@class DeclarusTexCoords
+---@field left number
+---@field right number
+---@field top number
+---@field bottom number
+
 ---@class DeclarusViewProperties
 ---@field width? number|DeclarusSize
 ---@field height? number|DeclarusSize
@@ -24,6 +32,10 @@
 ---@field backgroundColor? DeclarusColor
 ---@field foregroundColor? DeclarusColor
 ---@field texture? string|number
+---@field texCoords? DeclarusTexCoords
+---@field textureTint? DeclarusColor
+---@field textureLayer? DeclarusTextureLayer
+---@field textureSublevel? number
 ---@field opacity? number
 ---@field visible? boolean
 ---@field localization? DeclarusLocalization
@@ -37,6 +49,9 @@
 ---@field size fun<T>(self: T, width: number|DeclarusSize, height: number|DeclarusSize): T
 ---@field padding fun<T>(self: T, edge: DeclarusEdge|number, value?: number): T
 ---@field texture fun<T>(self: T, source: string|number): T
+---@field texCoords fun<T>(self: T, left: number, right: number, top: number, bottom: number): T
+---@field textureTint fun<T>(self: T, color: DeclarusColor): T
+---@field textureLayer fun<T>(self: T, layer: DeclarusTextureLayer, sublevel?: number): T
 ---@field backgroundColor fun<T>(self: T, color: DeclarusColor): T
 ---@field foregroundColor fun<T>(self: T, color: DeclarusColor): T
 ---@field opacity fun<T>(self: T, value: number): T
@@ -213,6 +228,59 @@ end
 function View:texture(source)
     assert(type(source) == "string" or type(source) == "number", "Texture source required")
     self.properties.texture = source
+    return self
+end
+
+-- Texture modifiers affect the image only, not padding, layout or text color.
+local TEXTURE_LAYERS = {BACKGROUND = true, BORDER = true, ARTWORK = true, OVERLAY = true, HIGHLIGHT = true}
+
+---@param value any
+---@return boolean
+local function normalized(value)
+    return type(value) == "number" and value >= 0 and value <= 1
+end
+
+---Selects normalized UV coordinates. Reversed edges mirror the texture.
+---@generic T: DeclarusView
+---@param self T
+---@param left number
+---@param right number
+---@param top number
+---@param bottom number
+---@return T
+function View:texCoords(left, right, top, bottom)
+    assert(normalized(left) and normalized(right) and normalized(top) and normalized(bottom),
+        "TexCoords must be numbers between 0 and 1")
+    self.properties.texCoords = {left = left, right = right, top = top, bottom = bottom}
+    return self
+end
+
+---Multiplies the texture's RGBA channels; white keeps the original image.
+---@generic T: DeclarusView
+---@param self T
+---@param color DeclarusColor
+---@return T
+function View:textureTint(color)
+    assert(type(color) == "table" and normalized(color[1]) and normalized(color[2])
+        and normalized(color[3]) and (color[4] == nil or normalized(color[4])),
+        "Texture tint requires normalized RGB or RGBA channels")
+    self.properties.textureTint = {color[1], color[2], color[3], color[4] or 1}
+    return self
+end
+
+---Overrides the default BORDER layer. Higher layers/sublevels draw later.
+---@generic T: DeclarusView
+---@param self T
+---@param layer DeclarusTextureLayer
+---@param sublevel? number
+---@return T
+function View:textureLayer(layer, sublevel)
+    if sublevel == nil then sublevel = 0 end
+    assert(TEXTURE_LAYERS[layer], "Invalid texture draw layer")
+    assert(type(sublevel) == "number" and sublevel >= -8 and sublevel <= 7
+        and sublevel == math.floor(sublevel), "Texture sublevel must be an integer from -8 to 7")
+    self.properties.textureLayer = layer
+    self.properties.textureSublevel = sublevel
     return self
 end
 

@@ -154,6 +154,25 @@ return {
         SlashCmdList.DECLARUS("hide")
         SetMockLocale(locale)
     end,
+    TestTextureExamples = function()
+        local root = open("Darstellung")
+        assert(findText(root, "TexCoords: Ausschnitt und Spiegelung"))
+        assert(findText(root, "Texturtoenung: nur das Bild"))
+        local button = assert(findText(root, "Text bleibt vorn"))
+        assert(button.fontStrings[1].layer == "OVERLAY")
+        assert(button.textures[2].layer == "BORDER" and button.textures[2].vertexColor[3] == 120 / 255)
+        assert(find(root, function(frame)
+            for _, texture in ipairs(frame.textures) do
+                if texture.texCoords and texture.texCoords[1] == 0.92 and texture.texCoords[2] == 0.08 then return true end
+            end
+            return false
+        end))
+        click(root, "Text bleibt vorn")
+        assert(findText(root, "Texturierter Button geklickt."))
+        click(root, "ARTWORK -2")
+        assert(findText(root, "ARTWORK-Button geklickt."))
+        SlashCmdList.DECLARUS("hide")
+    end,
     TestDemoLifecycle = function()
         SlashCmdList.DECLARUS("hide")
         local before = #parent().children

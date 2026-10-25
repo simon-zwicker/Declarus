@@ -5,6 +5,9 @@
 ---@field SetAllPoints fun(self: Texture, frame: Frame)
 ---@field SetColorTexture fun(self: Texture, r: number, g: number, b: number, a?: number)
 ---@field SetTexture fun(self: Texture, source: string|number)
+---@field SetTexCoord fun(self: Texture, left: number, right: number, top: number, bottom: number)
+---@field SetVertexColor fun(self: Texture, r: number, g: number, b: number, a?: number)
+---@field SetDrawLayer fun(self: Texture, layer: string, sublevel?: number)
 
 ---@class FontString
 ---@field SetFont fun(self: FontString, path: string, size: number, flags?: string): boolean

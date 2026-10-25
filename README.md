@@ -27,7 +27,12 @@ handle:Unmount()
 `Text` und Controls unterstützen `:font(path, flags)` und `:fontSize(size)`.
 Textmessung und Rendering verwenden denselben FontResolver (Client-Standardschrift, 16; FRIZQT als Fallback).
 `Text` berücksichtigt Padding und Foreground-Farbe. `:texture(pathOrFileID)` legt
-auf jeder View eine gestreckte ARTWORK-Textur über einen optionalen Hintergrund.
+auf jeder View eine gestreckte BORDER-Textur über einen optionalen Hintergrund.
+Text und Button-Beschriftungen liegen im OVERLAY-Layer darüber.
+`:texCoords(left, right, top, bottom)` bestimmt Ausschnitt oder Spiegelung,
+`:textureTint(UI.Color.RGB(...))` tönt das Bild. Optional überschreibt
+`:textureLayer("ARTWORK", 0)` Layer und Sublevel. Beispiele und Details:
+[Docs/Textures.md](Docs/Textures.md).
 Größe explizit setzen; Texturen besitzen keine automatische intrinsische Größe.
 
 Controls haben Standardgrößen und einen dunklen Hintergrund; View-Modifier können
@@ -76,7 +81,7 @@ Falls das Programm nicht im Suchpfad liegt, `LUA_LANGUAGE_SERVER` auf die ausfü
 Datei setzen. `Types/WoW.lua` beschreibt den von Declarus verwendeten WoW-API-Ausschnitt
 nur für den Editor; diese Datei gehört nicht in die TOC und wird nicht ausgeführt.
 Mock-spezifische Daten bleiben in den Testtypen. Geprüft mit LuaLS 3.19.2:
-keine Diagnosen bei `--checklevel=Hint`, alle 113 LuaJIT-Tests erfolgreich.
+keine Diagnosen bei `--checklevel=Hint`, alle 122 LuaJIT-Tests erfolgreich.
 
 Noch nicht im WoW-Client abgenommen: Darstellung der Controls, Font-Dateien und
 Flags, EditBox-Fokus, Slider-Dragging, Checkbox-Klicks, Dropdown-Ebenen und Scroll-Clipping.

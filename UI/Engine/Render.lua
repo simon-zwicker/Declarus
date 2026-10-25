@@ -60,7 +60,7 @@ local function RenderText(frame, view)
         properties.localization
     )
 
-    local fontString = frame:CreateFontString(nil, "ARTWORK")
+    local fontString = frame:CreateFontString(nil, "OVERLAY")
 
     fontString:SetFont(UI._FontResolver.Resolve(properties))
     fontString:SetText(text)
@@ -113,9 +113,15 @@ local function RenderView(view, arranged, parent, parentArranged)
     UI._ControlRender.Apply(frame, view)
     ApplyBackground(frame, view)
     if view.properties.texture then
-        local texture = frame:CreateTexture(nil, "ARTWORK")
+        local properties = view.properties
+        local texture = frame:CreateTexture(nil, properties.textureLayer or "BORDER")
+        texture:SetDrawLayer(properties.textureLayer or "BORDER", properties.textureSublevel or 0)
         texture:SetAllPoints(frame)
-        texture:SetTexture(view.properties.texture)
+        texture:SetTexture(properties.texture)
+        local coords = properties.texCoords
+        if coords then texture:SetTexCoord(coords.left, coords.right, coords.top, coords.bottom) end
+        local tint = properties.textureTint
+        if tint then texture:SetVertexColor(tint[1], tint[2], tint[3], tint[4]) end
     end
     if view.properties.opacity then frame:SetAlpha(view.properties.opacity) end
     if view.properties.visible == false then frame:Hide() end

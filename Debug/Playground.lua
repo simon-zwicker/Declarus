@@ -272,6 +272,36 @@ local function appearance()
             text("Dateipfad / gestreckte Textur / numerische File-ID (134400)."),
             text("Texturen brauchen eine Groesse; Hintergrund und Textur sind kombinierbar."),
         }),
+        card("TexCoords: Ausschnitt und Spiegelung", {
+            UI.HStack({
+                UI.View():size(64, 64):texture(134400),
+                UI.View():size(64, 64):texture(134400):texCoords(0.08, 0.92, 0.08, 0.92),
+                UI.View():size(64, 64):texture(134400):texCoords(0.92, 0.08, 0.08, 0.92),
+            }):spacing(18),
+            text("Original / Rand abgeschnitten / horizontal gespiegelt."),
+            text("UV-Werte: 0 bis 1. Kein automatischer proportionaler Zuschnitt."),
+        }),
+        card("Texturtoenung: nur das Bild", {
+            UI.HStack({
+                UI.View():size(64, 40):texture("Interface\\Buttons\\WHITE8X8"):textureTint(C.RGB(90, 220, 140)),
+                UI.View():size(64, 40):texture("Interface\\Buttons\\WHITE8X8"):textureTint(C.RGBA(240, 90, 90, 0.4)),
+                UI.View():size(64, 64):texture(134400):textureTint(C.RGB(90, 195, 240)),
+            }):spacing(18),
+            text("Weisse Textur: gruen / rot mit Alpha 0.4. Icon: blau getoent."),
+            text("Toenen multipliziert Bildfarben. Text und Hintergrund bleiben unveraendert."),
+        }),
+        card("Textur-Layer und lesbare Buttons", {
+            UI.HStack({
+                button("Text bleibt vorn", function() log("Texturierter Button geklickt.") end, 210)
+                    :texture("Interface\\Buttons\\WHITE8X8"):textureTint(C.RGB(30, 85, 120)),
+                button("ARTWORK -2", function() log("ARTWORK-Button geklickt.") end, 190)
+                    :texture("Interface\\Buttons\\WHITE8X8"):textureTint(C.RGB(75, 45, 100)):textureLayer("ARTWORK", -2),
+            }):spacing(16),
+            text("Standard: Hintergrund BACKGROUND, Textur BORDER, Beschriftung OVERLAY."),
+            text("Expliziter Layer und Sublevel koennen die Zeichenreihenfolge ueberschreiben."),
+            text("OVERLAY -1: Text bleibt sichtbar"):size(420, 30):padding(6)
+                :texture("Interface\\Buttons\\WHITE8X8"):textureTint(C.RGBA(75, 120, 65, 0.6)):textureLayer("OVERLAY", -1),
+        }),
         card("RGB / RGBA / Opacity", {
             UI.HStack({
                 tile(100, 46, C.RGB(90, 195, 240)),

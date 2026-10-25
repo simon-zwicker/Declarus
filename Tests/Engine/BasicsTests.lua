@@ -30,7 +30,7 @@ return {
     TestTextureWithBackground = function()
         local frame = render(UI.View():texture("icon.blp"):backgroundColor(UI.Color.RGB(255, 0, 0)))
         assert(#frame.textures == 2 and frame.textures[1].layer == "BACKGROUND")
-        assert(frame.textures[2].source == "icon.blp" and frame.textures[2].layer == "ARTWORK")
+        assert(frame.textures[2].source == "icon.blp" and frame.textures[2].layer == "BORDER")
     end,
     TestFontValidation = function()
         assert(not pcall(function() UI.Text("x"):fontSize(0) end))

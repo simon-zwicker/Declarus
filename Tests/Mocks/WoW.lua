@@ -13,6 +13,9 @@
 
 ---@class DeclarusMockTexture: Texture
 ---@field layer? string
+---@field sublevel? number
+---@field texCoords? number[]
+---@field vertexColor? number[]
 ---@field color number[]?
 ---@field allPoints Frame?
 ---@field SetAllPoints fun(self: DeclarusMockTexture, frame: Frame)
@@ -40,6 +43,7 @@
 ---@field CreateTexture fun(self: DeclarusMockFrame, name?: string, layer?: string): DeclarusMockTexture
 
 ---@class DeclarusMockFontString: FontString
+---@field layer? string
 ---@field text string
 ---@field font string
 ---@field fontSize number
@@ -266,3 +270,13 @@ end
 function FrameMock:EnableMouseWheel(value) self.mouseWheel = value end
 function FrameMock:GetVerticalScroll() return self.scroll or 0 end
 function FrameMock:SetVerticalScroll(value) self.scroll = value end
+
+function TextureMock:SetTexCoord(left, right, top, bottom)
+    self.texCoords = {left, right, top, bottom}
+end
+function TextureMock:SetVertexColor(r, g, b, a)
+    self.vertexColor = {r, g, b, a or 1}
+end
+function TextureMock:SetDrawLayer(layer, sublevel)
+    self.layer, self.sublevel = layer, sublevel or 0
+end
