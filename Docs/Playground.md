@@ -103,3 +103,6 @@ check. Forever remains unconfirmed until an actual client test is possible.
 
 Related guides: [Textures](Textures.md), [Gradients](Gradients.md),
 [State and lifecycle](StateAndLifecycle.md).
+
+The Controls page also includes text and formatted layout tooltips, plus native
+Hearthstone, Attack and player tooltips. Hover each example to check it.

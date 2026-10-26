@@ -369,7 +369,26 @@ end
 
 ---@return DeclarusView[]
 local function controls()
+    local WoW = _G.Declarus.WoW
     return {
+        card("WoW / Tooltips", {
+            text("Mit der Maus ueber Text, Flaeche und Buttons fahren."),
+            text("Einfacher Text-Tooltip")
+                :tooltip("Dieser Tooltip nutzt den Blizzard GameTooltip."),
+            UI.View()
+                :size(180, 30)
+                :backgroundColor(accent)
+                :tooltip({
+                    UI.Text("Declarus Layout"):fontSize(18),
+                    UI.HStack({UI.Text("Links"), UI.Text("Rechts")}):spacing(20),
+                }),
+            UI.HStack({
+                UI.Button("Item: Hearthstone", function() end):infoTooltip(WoW.Item(6948)),
+                UI.Button("Spell: Attack", function() end):infoTooltip(WoW.Spell(6603)),
+                UI.Button("Unit: player", function() end):infoTooltip(WoW.Unit("player")),
+            }):spacing(12),
+            text("IDs muessen auf dem jeweiligen Client existieren. Unit: player ist dynamisch."),
+        }),
         card("Button / Maus-Events", {
             text("Linke und rechte Maustaste werden getrennt im Ereignisbereich angezeigt."),
             button("Links / Rechts", function(mouse)

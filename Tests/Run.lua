@@ -75,6 +75,7 @@ TestRunner.RunSuite("Engine/GradientTests")
 TestRunner.RunSuite("Engine/ControlTests")
 
 TestRunner.RunSuite("Engine/MountTests")
+TestRunner.RunSuite("Engine/TooltipTests")
 
 TestRunner.RunSuite("Core/PlaygroundTests")
 

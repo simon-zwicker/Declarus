@@ -46,9 +46,13 @@
 ---@field textureSublevel? number
 ---@field opacity? number
 ---@field visible? boolean
+---@field tooltip? string|DeclarusView|DeclarusView[]
+---@field infoTooltip? DeclarusInfoTooltip
 ---@field localization? DeclarusLocalization
 
 ---@class DeclarusView
+---@field tooltip fun<T>(self: T, content?: string|DeclarusView|DeclarusView[]): T
+---@field infoTooltip fun<T>(self: T, source?: DeclarusInfoTooltip): T
 ---@field kind string
 ---@field properties DeclarusViewProperties
 ---@field children DeclarusView[]
@@ -318,6 +322,30 @@ function View:gradient(orientation, fromColor, toColor)
     local from = copyColor(fromColor)
     local to = copyColor(toColor)
     self.properties.gradient = {orientation = orientation, fromColor = from, toColor = to}
+    return self
+end
+
+---Shows text or a passive Declarus layout on hover. Nil removes the tooltip.
+---@generic T: DeclarusView
+---@param self T
+---@param content? string|DeclarusView|DeclarusView[]
+---@return T
+function View:tooltip(content)
+    _G.Declarus.WoW._ValidateTooltip(content)
+    self.properties.tooltip = content
+    self.properties.infoTooltip = nil
+    return self
+end
+
+---Shows Blizzard's tooltip for a WoW.Item, WoW.Spell or WoW.Unit descriptor.
+---@generic T: DeclarusView
+---@param self T
+---@param source? DeclarusInfoTooltip
+---@return T
+function View:infoTooltip(source)
+    _G.Declarus.WoW._ValidateInfo(source)
+    self.properties.infoTooltip = source and {kind = source.kind, value = source.value} or nil
+    self.properties.tooltip = nil
     return self
 end
 

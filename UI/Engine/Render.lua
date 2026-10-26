@@ -112,6 +112,7 @@ local function RenderView(view, arranged, parent, parentArranged)
 
     UI._ControlRender.Apply(frame, view)
     ApplyBackground(frame, view)
+    _G.Declarus.WoW._ApplyTooltip(frame, view)
     if view.properties.texture or view.properties.gradient then
         local properties = view.properties
         local texture = frame:CreateTexture(nil, properties.textureLayer or "BORDER")

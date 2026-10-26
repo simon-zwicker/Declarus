@@ -30,6 +30,7 @@ UI\Engine\Arrange.lua
 UI\Engine\ControlRender.lua
 UI\Engine\Render.lua
 UI\Mount.lua
+WoW\Tooltip.lua
 
 UI\Layout\Stack.lua
 UI\Layout\HStack.lua

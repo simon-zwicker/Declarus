@@ -291,3 +291,29 @@ function TextureMock:SetGradient(orientation, fromColor, toColor)
     self.gradient = {orientation = orientation,
         fromColor = {fromColor:GetRGBA()}, toColor = {toColor:GetRGBA()}}
 end
+
+function FrameMock:EnableMouse(enabled) self.mouseEnabled = enabled end
+function FrameMock:GetScript(event) return self.scripts and self.scripts[event] end
+function FrameMock:SetClampedToScreen(enabled) self.clamped = enabled end
+
+-- The global tooltip is not a Declarus-owned child of UIParent.
+---@class DeclarusMockTooltip: DeclarusMockFrame, GameTooltip
+---@field owner? Frame
+---@field anchor string
+---@field data? table
+local TooltipMock = setmetatable({}, {__index = FrameMock})
+TooltipMock.__index = TooltipMock
+function TooltipMock:SetOwner(ownerFrame, anchor)
+    self.owner = ownerFrame
+    self.anchor = anchor
+    self.hidden = true
+    self.data = nil
+end
+function TooltipMock:IsOwned(ownerFrame) return self.owner == ownerFrame end
+function TooltipMock:SetText(text) self.text = text end
+function TooltipMock:SetItemByID(id) self.data = {"item", id}; self:Show() end
+function TooltipMock:SetSpellByID(id) self.data = {"spell", id}; self:Show() end
+function TooltipMock:SetUnit(token) self.data = {"unit", token}; self:Show() end
+function UnitExists(token) return token == "player" or token == "target" end
+
+GameTooltip = setmetatable({children = {}, textures = {}, fontStrings = {}, points = {}}, TooltipMock)

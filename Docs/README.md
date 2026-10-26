@@ -14,6 +14,7 @@ no old original clients.
 | [Views and modifiers](ViewsAndModifiers.md) | Common styling and sizing options |
 | [Layout](Layout.md) | Arranging elements and understanding their sizes |
 | [Text and localization](TextAndLocalization.md) | Fonts, text measurement and translations |
+| [WoW helpers](WoW.md) | Text, layout, item, spell and unit tooltips |
 | [Controls](Controls.md) | User input and callbacks |
 | [Textures](Textures.md) | Icons, image cropping, tint and draw order |
 | [Gradients](Gradients.md) | Color transitions on surfaces and images |

@@ -59,3 +59,22 @@ function Client._ApplyGradient(texture, orientation, fromColor, toColor)
 end
 
 Declarus.Client = Client
+
+---Internal capability boundary for Blizzard tooltip data.
+---@param tooltip GameTooltip
+---@param source DeclarusInfoTooltip
+function Client._SetInfoTooltip(tooltip, source)
+    if source.kind == "unit" then
+        local token = source.value
+        ---@cast token string
+        if UnitExists(token) then tooltip:SetUnit(token) end
+    elseif source.kind == "item" then
+        local id = source.value
+        ---@cast id number
+        tooltip:SetItemByID(id)
+    else
+        local id = source.value
+        ---@cast id number
+        tooltip:SetSpellByID(id)
+    end
+end

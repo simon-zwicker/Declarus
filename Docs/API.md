@@ -201,3 +201,17 @@ _LocalizationResolver, _FontResolver and _TextMeasure, plus
 Declarus.Client._ApplyGradient.
 
 Tests use these deliberately. Application examples should use the public API.
+
+## WoW tooltips
+
+```text
+Declarus.WoW.Item(itemID: number) -> DeclarusInfoTooltip
+Declarus.WoW.Spell(spellID: number) -> DeclarusInfoTooltip
+Declarus.WoW.Unit(unitToken: string) -> DeclarusInfoTooltip
+view:tooltip(content?: string | DeclarusView | DeclarusView[]) -> self
+view:infoTooltip(source?: DeclarusInfoTooltip) -> self
+```
+
+The last tooltip modifier wins. Nil clears it. Text uses GameTooltip; passive
+layouts use a Declarus tooltip frame. Info descriptors request Blizzard's native
+data. See [WoW helpers](WoW.md) for examples, hover behavior and limits.

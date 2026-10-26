@@ -8,9 +8,10 @@ local UI = _G.Declarus.UI
 -- WoW frames cannot be destroyed. Retire old trees and remove event closures.
 ---@param frame Frame
 local function release(frame)
+    _G.Declarus.WoW._ReleaseTooltip(frame)
     frame:Hide()
     for _, child in ipairs({frame:GetChildren()}) do release(child) end
-    for _, event in ipairs({"OnClick", "OnTextChanged", "OnEscapePressed", "OnEnterPressed", "OnValueChanged", "OnMouseWheel", "OnHide"}) do
+    for _, event in ipairs({"OnClick", "OnTextChanged", "OnEscapePressed", "OnEnterPressed", "OnValueChanged", "OnMouseWheel", "OnHide", "OnEnter", "OnLeave"}) do
         if frame:HasScript(event) then frame:SetScript(event, nil) end
     end
     frame:UnregisterAllEvents()

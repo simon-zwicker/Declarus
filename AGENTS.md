@@ -41,3 +41,10 @@ PoisonFlow-specific requirements.
 - [x] Tests cover navigation, events, alignment, dynamic children, Unicode and cleanup.
 - [x] Texture modifiers and gradients have examples and documentation.
 - [ ] Full visual acceptance pass on the available official clients.
+
+## WoW helpers
+
+- [x] Declarus.WoW descriptors and shared tooltip modifiers for text, passive layouts, items, spells and units.
+- [x] Owner lifecycle cleanup, cached layout tooltips, LuaLS and six-profile mock tests.
+- [x] English guide and Controls playground examples.
+- [ ] In-game tooltip placement, native data loading and owner lifecycle acceptance.

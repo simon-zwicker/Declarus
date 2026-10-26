@@ -109,3 +109,23 @@ function GetBuildInfo() end
 SlashCmdList = {}
 ---@type string
 SLASH_DECLARUS1 = "/declarus"
+
+---@class Frame
+---@field EnableMouse fun(self: Frame, enabled: boolean)
+---@field GetScript fun(self: Frame, event: string): function?
+---@field SetClampedToScreen fun(self: Frame, enabled: boolean)
+
+---@class GameTooltip: Frame
+---@field SetOwner fun(self: GameTooltip, owner: Frame, anchor: string)
+---@field IsOwned fun(self: GameTooltip, owner: Frame): boolean
+---@field SetText fun(self: GameTooltip, text: string, r: number, g: number, b: number, alpha: number, wrap: boolean)
+---@field SetItemByID fun(self: GameTooltip, itemID: number)
+---@field SetSpellByID fun(self: GameTooltip, spellID: number)
+---@field SetUnit fun(self: GameTooltip, unitToken: string)
+
+---@type GameTooltip
+GameTooltip = nil
+
+---@param unitToken string
+---@return boolean
+function UnitExists(unitToken) end
