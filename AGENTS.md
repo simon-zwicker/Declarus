@@ -36,7 +36,7 @@ PoisonFlow-specific requirements.
 
 ## Playground and docs
 
-- [x] Six playground pages cover the implemented UI API.
+- [x] Seven playground pages cover the implemented UI API.
 - [x] Separate preview/status mounts preserve page input focus and scroll during input changes.
 - [x] Tests cover navigation, events, alignment, dynamic children, Unicode and cleanup.
 - [x] Texture modifiers and gradients have examples and documentation.
@@ -46,5 +46,5 @@ PoisonFlow-specific requirements.
 
 - [x] Declarus.WoW descriptors and shared tooltip modifiers for text, passive layouts, items, spells and units.
 - [x] Owner lifecycle cleanup, cached layout tooltips, LuaLS and six-profile mock tests.
-- [x] English guide and Controls playground examples.
+- [x] English guide and dedicated WoW playground page.
 - [ ] In-game tooltip placement, native data loading and owner lifecycle acceptance.

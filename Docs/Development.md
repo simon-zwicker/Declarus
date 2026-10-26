@@ -67,7 +67,7 @@ sh Tests/RunClients.sh
 ```
 
 **Result:** The first command runs the full suite. The second runs it in separate
-LuaJIT processes for six client metadata profiles. The current suite has 132 tests
+LuaJIT processes for six client metadata profiles. The current suite has 138 tests
 per profile.
 
 These profiles vary client identity, not the entire native implementation. They

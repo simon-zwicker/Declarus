@@ -17,6 +17,7 @@ The full documentation starts at [Docs/README.md](Docs/README.md).
 | [Views and modifiers](Docs/ViewsAndModifiers.md) | Size, padding, colors, opacity and visibility |
 | [Layout](Docs/Layout.md) | Stacks, spacing, Wrap, Fill and alignment |
 | [Text and localization](Docs/TextAndLocalization.md) | Fonts, translation keys and fallbacks |
+| [WoW helpers](Docs/WoW.md) | Text, layout, item, spell and unit tooltips |
 | [Controls](Docs/Controls.md) | Buttons, text fields, sliders, toggles and dropdowns |
 | [Textures](Docs/Textures.md) | Image sources, cropping, tint and layers |
 | [Gradients](Docs/Gradients.md) | Horizontal and vertical gradients, including alpha |
@@ -60,8 +61,8 @@ this UI later.
 
 ## Try the playground
 
-Use `/declarus` to open it. The six pages cover layout, typography, appearance,
-controls and updates. Gradients are on the Appearance page, labelled `Darstellung`
+Use `/declarus` to open it. The seven pages cover layout, typography, appearance,
+controls, WoW tooltips and updates. Gradients are on the Appearance page, labelled `Darstellung`
 in the current playground UI.
 
 `/declarus info` prints client details. `/declarus reset` resets the demo values.
@@ -92,7 +93,7 @@ sh Tests/RunClients.sh
 "${LUA_LANGUAGE_SERVER:-lua-language-server}" --check=. --checklevel=Hint --logpath=/tmp/declarus-luals
 ```
 
-The current suite has 132 tests per client metadata profile. The matrix runs six
+The current suite has 138 tests per client metadata profile. The matrix runs six
 profiles using the same API mocks. It does not emulate six actual clients.
 LuaLS 3.19.2 passes without diagnostics, including hints.
 

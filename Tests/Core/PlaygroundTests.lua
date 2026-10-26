@@ -53,7 +53,7 @@ return {
         local expected = {
             {"Uebersicht", "Dieser Client"}, {"Layouts", "VStack Alignment: Stretch"},
             {"Typografie", "Padding: alle Edges"}, {"Darstellung", "Visible: Layout bleibt erhalten"},
-            {"Controls", "Dropdown"}, {"Updates", "Lifecycle: Update / Unmount / Mount"},
+            {"Controls", "Dropdown"}, {"WoW", "Blizzard: Units"}, {"Updates", "Lifecycle: Update / Unmount / Mount"},
         }
         for _, entry in ipairs(expected) do
             local root = open(entry[1])
@@ -193,6 +193,38 @@ return {
         click(root, "Verlauf an/aus")
         assert(#previewBar().textures == 1 and not previewBar().textures[1].gradient)
         assert(scroll.parent and scroll.scroll == 120)
+        SlashCmdList.DECLARUS("hide")
+    end,
+    TestWoWTooltipsAndNavigationCleanup = function()
+        local root = open("WoW")
+        local native = assert(findText(root, "Text mit Tooltip"))
+        native.scripts.OnEnter(native)
+        assert(GameTooltip:IsShown() and GameTooltip:IsOwned(native))
+        native.scripts.OnLeave(native)
+        assert(not GameTooltip:IsShown())
+
+        click(root, "Button mit Tooltip")
+        assert(findText(root, "Tooltip-Button: Klick funktioniert weiterhin."))
+        local removed = assert(findText(root, "Tooltip explizit entfernt"))
+        assert(not removed.scripts or not removed.scripts.OnEnter)
+        for _, label in ipairs({"Item: Hearthstone", "Spell: Attack", "Unit: player", "Unit: target"}) do
+            local frame = assert(findText(root, label))
+            frame.scripts.OnEnter(frame)
+            assert(GameTooltip:IsOwned(frame) and GameTooltip:IsShown())
+            frame.scripts.OnLeave(frame)
+        end
+
+        local formatted = assert(findText(root, "Stack-Tooltip"))
+        formatted.scripts.OnEnter(formatted)
+        assert(findText(parent(), "Icon und Text nebeneinander"))
+        click(root, "Controls")
+        assert(not findText(parent(), "Icon und Text nebeneinander"))
+        assert(formatted.parent == nil and formatted.scripts.OnEnter == nil)
+        click(root, "WoW")
+        local cleanup = assert(findText(root, "Cleanup testen"))
+        cleanup.scripts.OnEnter(cleanup)
+        SlashCmdList.DECLARUS("reset")
+        assert(cleanup.parent == nil and cleanup.scripts.OnEnter == nil)
         SlashCmdList.DECLARUS("hide")
     end,
     TestDemoLifecycle = function()

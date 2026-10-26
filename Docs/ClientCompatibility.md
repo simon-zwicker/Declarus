@@ -64,7 +64,7 @@ to new features such as gradients.
 1. Put the same Declarus directory in the chosen client's addon directory.
 2. Enable it and log in. No demo should open automatically.
 3. Run `/declarus info` and record client, build, interface and locale.
-4. Open `/declarus` and visit all six pages described in [Playground](Playground.md).
+4. Open `/declarus` and visit all seven pages described in [Playground](Playground.md).
 5. Check fonts, padding, textures, draw order, alpha and both gradient directions.
 6. Try TextField, both Sliders, Toggle, Dropdown and left/right mouse clicks.
 7. Check that the fixed preview updates without losing input focus or page scroll.

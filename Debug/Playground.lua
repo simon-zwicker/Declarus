@@ -5,7 +5,7 @@ local C = UI.Color
 local accent = C.RGB(90, 195, 240)
 local muted = C.RGB(170, 185, 200)
 local panel = C.RGB(25, 32, 43)
-local pages = {"Uebersicht", "Layouts", "Typografie", "Darstellung", "Controls", "Updates"}
+local pages = {"Uebersicht", "Layouts", "Typografie", "Darstellung", "Controls", "WoW", "Updates"}
 local activePage = 1
 
 ---@class DeclarusPlaygroundState
@@ -144,7 +144,7 @@ local function overview()
     local info = Declarus.Client.GetInfo()
     return {
         card("Alles an einem Ort", {
-            text("Sechs Bereiche zeigen die bisher implementierte oeffentliche UI-API."),
+            text("Sieben Bereiche zeigen die bisher implementierte oeffentliche UI-API."),
             text("Inhalte scrollen mit dem Mausrad. Die Vorschau unten bleibt sichtbar."),
             text("Eingaben aktualisieren nur Vorschau und Ereignisse: Fokus bleibt erhalten."),
             text("Navigation und expliziter Neuaufbau setzen die Seiten-Scrollposition zurueck."),
@@ -369,26 +369,7 @@ end
 
 ---@return DeclarusView[]
 local function controls()
-    local WoW = _G.Declarus.WoW
     return {
-        card("WoW / Tooltips", {
-            text("Mit der Maus ueber Text, Flaeche und Buttons fahren."),
-            text("Einfacher Text-Tooltip")
-                :tooltip("Dieser Tooltip nutzt den Blizzard GameTooltip."),
-            UI.View()
-                :size(180, 30)
-                :backgroundColor(accent)
-                :tooltip({
-                    UI.Text("Declarus Layout"):fontSize(18),
-                    UI.HStack({UI.Text("Links"), UI.Text("Rechts")}):spacing(20),
-                }),
-            UI.HStack({
-                UI.Button("Item: Hearthstone", function() end):infoTooltip(WoW.Item(6948)),
-                UI.Button("Spell: Attack", function() end):infoTooltip(WoW.Spell(6603)),
-                UI.Button("Unit: player", function() end):infoTooltip(WoW.Unit("player")),
-            }):spacing(12),
-            text("IDs muessen auf dem jeweiligen Client existieren. Unit: player ist dynamisch."),
-        }),
         card("Button / Maus-Events", {
             text("Linke und rechte Maustaste werden getrennt im Ereignisbereich angezeigt."),
             button("Links / Rechts", function(mouse)
@@ -469,7 +450,83 @@ local function updates()
     }
 end
 
-local builders = {overview, layouts, typography, appearance, controls, updates}
+---@return DeclarusView[]
+local function wow()
+    local WoW = Declarus.WoW
+    return {
+        card("Text-Tooltips", {
+            text("Mit der Maus ueber die Beispiele fahren. Klicken ist nicht erforderlich."),
+            text("Text mit Tooltip")
+                :tooltip("Ein einfacher Blizzard-Tooltip. Auch langer Text wird umgebrochen."),
+
+            button("Button mit Tooltip", function()
+                log("Tooltip-Button: Klick funktioniert weiterhin.")
+            end, 210)
+                :tooltip("Der Tooltip ersetzt keinen Button-Callback."),
+        }),
+
+        card("Formatierte Tooltips: Array und Stacks", {
+            text("Array: vertikale Liste mit 4 Pixel Abstand. Stack: eigenes Layout."),
+            UI.HStack({
+                text("Array-Tooltip")
+                    :tooltip({
+                        UI.Text("Titel"):fontSize(20):foregroundColor(accent),
+                        UI.Text("Eigene Farbe, Schriftgroesse und Abstaende."),
+                    }),
+
+                text("Stack-Tooltip")
+                    :tooltip(UI.VStack({
+                        UI.Text("Item-Vorschau"):fontSize(18),
+
+                        UI.HStack({
+                            UI.View():size(32, 32):texture(134400),
+                            UI.Text("Icon und Text nebeneinander"),
+                        }):spacing(12):alignment(UI.Alignment.Center),
+                    }):spacing(8)),
+            }):spacing(30),
+            text("Nur passive Views: Text, View, HStack und VStack. Keine Controls im Tooltip."),
+        }),
+
+        card("Blizzard: Item und Spell", {
+            text("Native Daten: Item 6948 (Hearthstone) und Spell 6603 (Attack)."),
+            UI.HStack({
+                button("Item: Hearthstone", function() end, 190)
+                    :infoTooltip(WoW.Item(6948)),
+
+                button("Spell: Attack", function() end, 190)
+                    :infoTooltip(WoW.Spell(6603)),
+            }):spacing(12),
+            text("IDs muessen im Client existieren. Nicht geladene Daten koennen zunaechst fehlen."),
+        }),
+
+        card("Blizzard: Units", {
+            text("player funktioniert ohne Ziel. target benoetigt ein ausgewaehltes Ziel."),
+            UI.HStack({
+                text("Unit: player"):infoTooltip(WoW.Unit("player")),
+                text("Unit: target"):infoTooltip(WoW.Unit("target")),
+                text("Unit: party1"):infoTooltip(WoW.Unit("party1")),
+            }):spacing(24),
+            text("Ohne passende Unit bleibt der Tooltip aus. Keine Creature-ID oder GUID verwenden."),
+        }),
+
+        card("Ersetzen, Entfernen und Cleanup", {
+            text("Letzter Modifier gewinnt")
+                :tooltip("Dieser Text wird ersetzt.")
+                :infoTooltip(WoW.Item(6948)),
+
+            text("Tooltip explizit entfernt")
+                :tooltip("Dieser Text darf nicht erscheinen.")
+                :tooltip(nil),
+
+            text("Cleanup testen")
+                :tooltip(UI.Text("Seite wechseln, Reset oder Schliessen entfernt diesen Tooltip.")),
+            text("Tooltip oeffnen, dann /declarus reset oder /declarus hide eingeben."),
+            text("Beim erneuten Hover wird derselbe Layout-Tooltip wiederverwendet."),
+        }),
+    }
+end
+
+local builders = {overview, layouts, typography, appearance, controls, wow, updates}
 refreshPage = function()
     mountRegion("page", UI.ScrollView(UI.VStack(builders[activePage]()):spacing(12):padding(12):width(UI.Size.Fill))
         :size(820, 350):backgroundColor(C.RGB(12, 17, 24)))
@@ -480,7 +537,7 @@ refreshHeader = function()
     for index, label in ipairs(pages) do
         navigation[#navigation + 1] = button(label, function()
             activePage = index; refreshHeader(); refreshPage(); log("Bereich: " .. label)
-        end, 131):backgroundColor(index == activePage and C.RGB(35, 90, 120) or panel)
+        end, 112):backgroundColor(index == activePage and C.RGB(35, 90, 120) or panel)
     end
     local info = Declarus.Client.GetInfo()
     mountRegion("header", UI.VStack({

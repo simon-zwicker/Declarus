@@ -4,7 +4,7 @@
 
 The playground is where we try the implemented API in one place. It uses the same
 library and shared code on the target clients. It does not depend on PoisonFlow,
-save settings or read combat data.
+save settings or process combat data. Native unit tooltips show Blizzard's own unit details.
 
 The current demo UI uses German labels. The page names below match those labels
 so you can find the examples while reading this English guide.
@@ -41,6 +41,7 @@ controls for this window yet.
 | Darstellung | Gradient/tint combination and interactive preview gradient controls |
 | Darstellung | RGB/RGBA, parent opacity and visibility with retained layout space |
 | Controls | Mouse buttons, TextField, integer/decimal Slider, Toggle and Dropdown |
+| WoW | Text, array and stack tooltips; native items, spells and units; replacement and cleanup |
 | Updates | Dynamic child lists, explicit subtree updates and preview Unmount/Remount |
 | All pages | Scroll limits, independent mounts, navigation and cleanup |
 
@@ -104,5 +105,30 @@ check. Forever remains unconfirmed until an actual client test is possible.
 Related guides: [Textures](Textures.md), [Gradients](Gradients.md),
 [State and lifecycle](StateAndLifecycle.md).
 
-The Controls page also includes text and formatted layout tooltips, plus native
-Hearthstone, Attack and player tooltips. Hover each example to check it.
+## WoW tooltip walkthrough
+
+Open `/declarus` and choose **WoW**. Scroll through these sections:
+
+| Section | Try this | Expected result |
+| --- | --- | --- |
+| Text-Tooltips | Hover Text mit Tooltip | A wrapped Blizzard text tooltip appears |
+| Text-Tooltips | Hover and click Button mit Tooltip | Tooltip appears; clicking still logs an event |
+| Formatierte Tooltips | Hover Array-Tooltip | Colored title and description appear as two rows |
+| Formatierte Tooltips | Hover Stack-Tooltip | A title sits above an icon and text row |
+| Blizzard: Item und Spell | Hover the Hearthstone and Attack buttons | Blizzard supplies the item or spell details |
+| Blizzard: Units | Hover player, target and party1 | Existing units show details; missing units show nothing |
+| Ersetzen, Entfernen und Cleanup | Hover Letzter Modifier gewinnt | Item details replace the earlier text tooltip |
+| Ersetzen, Entfernen und Cleanup | Hover Tooltip explizit entfernt | Nothing opens |
+| Ersetzen, Entfernen und Cleanup | Hover Cleanup testen, then run reset or hide | The formatted tooltip disappears with its owner |
+
+Move the pointer between examples, leave the window, and reopen a formatted
+tooltip several times. Only the active owner's tooltip should remain visible.
+Navigate away from WoW and back; old tooltip layouts must not remain on screen.
+For a target test, select a unit before hovering target. For party1, join a group.
+
+Check placement near screen edges and with your normal UI scale. Formatted
+layouts clamp to the screen; plain text and info tooltips use Blizzard's anchor.
+Native item loading, live unit details and visual placement still require these
+in-game checks. Passing mocks alone does not confirm them.
+
+See [WoW helpers and tooltips](WoW.md) for the actual API and copyable examples.

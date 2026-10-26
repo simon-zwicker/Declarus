@@ -87,7 +87,8 @@ does not add a polling loop.
 The last tooltip modifier wins. `:tooltip(nil)` or `:infoTooltip(nil)` removes the
 configuration. As with other modifiers, update the mount to apply a change.
 Updating, unmounting or hiding the owner closes its tooltip. Formatted layouts
-reuse their native frames on repeated hover and release them with the owner. Leaving an old owner
+reuse their native frames on repeated hover and release them with the owner.
+Leaving an old owner
 does not close a tooltip that now belongs to another frame or addon.
 
 Only one Declarus tooltip is open at a time. A child with its own tooltip takes
@@ -95,6 +96,78 @@ hover ownership when the pointer enters that child. The parent tooltip opens
 again on the next mouse entry into the parent. Tooltips enable mouse input on the
 owning view, so put the modifier on the smallest useful hover area.
 
-Try all variants on the playground's Controls page. Mock tests cover lifecycle
+Try all variants on the playground's **WoW** page. Mock tests cover lifecycle
 and dispatch; visual placement and native data still need an in-game test on the
 available official clients.
+
+## A stack instead of an array
+
+Use an explicit stack when you want control over spacing and alignment:
+
+```lua
+local UI = Declarus.UI
+
+local view = UI.Text("Item preview")
+    :tooltip(UI.VStack({
+        UI.Text("A custom tooltip")
+            :fontSize(20),
+
+        UI.HStack({
+            UI.View()
+                :size(32, 32)
+                :texture(134400),
+
+            UI.Text("Icon and description"),
+        })
+            :spacing(12)
+            :alignment(UI.Alignment.Center),
+    })
+        :spacing(8))
+```
+
+**Result:** A title appears above a row containing an icon and description.
+The outer stack controls the row spacing. The HStack centers the text beside
+the icon. This layout does not query an item; use infoTooltip for native data.
+
+## Changing or removing a tooltip
+
+```lua
+local UI = Declarus.UI
+local WoW = Declarus.WoW
+
+local handle = UI.Mount(
+    UI.Text("Hover me")
+        :tooltip("Original explanation"),
+    UIParent
+)
+
+handle:Update(
+    UI.Text("Hover me")
+        :infoTooltip(WoW.Item(6948))
+)
+
+handle:Update(
+    UI.Text("Hover me")
+        :tooltip("This explanation is cleared before mounting")
+        :tooltip(nil)
+)
+
+handle:Unmount()
+```
+
+**Result:** The first update replaces text help with native item details. The
+second update has no hover tooltip. Each update closes the old owner's tooltip;
+unmount removes the final view. The calls run immediately here to show the API.
+In an addon, trigger each update from the corresponding application event.
+
+## When nothing appears
+
+- Mount the view first. A description alone does not create a hover target.
+- Give an empty View an explicit size. A zero-size view has no useful hover area.
+- Check that the item or spell ID exists on the client you are testing.
+- For units, start with player. Target and party tokens require an existing unit.
+- Move into the hover area again after changing the target or updating the UI.
+- Keep tooltip layouts passive. A Button or ScrollView inside one is rejected.
+
+The [playground walkthrough](Playground.md#wow-tooltip-walkthrough) lists the
+examples and expected results. Run it on each available official client.
